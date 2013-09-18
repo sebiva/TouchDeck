@@ -21,3 +21,6 @@ local.properties
 
 # Backup files
 *~
+
+# Lock files
+.~*#
