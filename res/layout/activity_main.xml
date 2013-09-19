@@ -1,106 +1,11 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" 
-        android:padding="0dp">
-
-        <TableRow android:layout_weight="1" >
-
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-        </TableRow>
-        
-        <TableRow android:layout_weight="1" >
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-        </TableRow>
-        <TableRow android:layout_weight="1" >
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-            <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Hej" />
-        </TableRow>
-    </TableLayout>
-
-</RelativeLayout>
+    android:padding="0dp"
+    tools:context=".MainActivity" 
+    android:id="@+id/tableTable"
+    android:background="#00ff00">
+    
+ 
+</TableLayout>
