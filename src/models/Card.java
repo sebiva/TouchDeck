@@ -7,7 +7,7 @@ import enums.Suit;
 /**
  * Class modeling a card in a deck
  * 
- * @author fwe, ke
+ * @author group17
  */
 public class Card {
 	private final Suit	mSuit;

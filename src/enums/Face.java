@@ -3,7 +3,7 @@ package enums;
 /**
  * Enum representing a cards face status
  * 
- * @author fwe, ke
+ * @author group17
  */
 public enum Face {
 	up, down

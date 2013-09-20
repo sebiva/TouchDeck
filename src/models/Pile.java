@@ -1,15 +1,12 @@
 package models;
 
 import java.util.LinkedList;
-
-import enums.Rank;
-import enums.Suit;
 import exceptions.CardNotFoundException;
 
 /**
  * Class modeling a pile
  * 
- * @author fwe
+ * @author group17
  */
 public class Pile {
 	private final LinkedList<Card>	cards	= new LinkedList<Card>();
@@ -33,17 +30,16 @@ public class Pile {
 	/**
 	 * Takes one card from the pile
 	 * 
-	 * @param suit The suit of the card to take
-	 * @param rank The rank of the card to take
+	 * @param pos	The position of the card
 	 * @return The card
 	 * @throws CardNotFoundException If there is no such card in the pile
 	 */
-	public Card takeCard(Suit suit, Rank rank) throws CardNotFoundException {
+	public Card takeCard(int pos) throws CardNotFoundException {
 		try {
-			Card card = cards.remove(cards.indexOf(new Card(suit, rank)));
+			Card card = cards.remove(pos);
 			return card;
 		} catch (IndexOutOfBoundsException e) {
-			throw new CardNotFoundException("Couldn't take card from pile: " + suit + "," + rank, e);
+			throw new CardNotFoundException("Couldn't take card from pile at position: " + pos, e);
 		}
 	}
 

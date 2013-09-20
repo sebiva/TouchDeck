@@ -3,7 +3,7 @@ package enums;
 /**
  * Enum representing a cards suit
  * 
- * @author fwe, ke
+ * @author group17
  */
 public enum Suit {
 	hearts, diamonds, spades, clubs

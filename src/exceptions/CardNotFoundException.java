@@ -3,7 +3,7 @@ package exceptions;
 /**
  * Exception thrown when a card is not found
  * 
- * @author fwe, ke
+ * @author group17
  */
 public class CardNotFoundException extends Exception {
 	private static final long	serialVersionUID	= 6883143284907049675L;
