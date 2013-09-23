@@ -6,7 +6,7 @@ import se.chalmers.touchdeck.exceptions.CardNotFoundException;
 import se.chalmers.touchdeck.gamecontroller.*;
 import se.chalmers.touchdeck.models.*;
 
-import com.example.fortytwo.R;
+import se.chalmers.touchdeck.R;
 
 import android.app.Activity;
 import android.view.View;

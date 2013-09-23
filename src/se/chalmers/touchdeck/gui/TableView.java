@@ -1,7 +1,7 @@
 package se.chalmers.touchdeck.gui;
 
 import java.util.ArrayList;
-import com.example.fortytwo.R;
+import se.chalmers.touchdeck.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -15,7 +15,7 @@ import android.widget.TableRow;
 
 
 /**
- * The main activity of the application, contains a grid with 
+ * The Activity for the table view, contains a grid with 
  * pile positions represented as buttons.  
  * 
  * @author group17

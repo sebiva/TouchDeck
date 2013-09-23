@@ -1,6 +1,6 @@
 package se.chalmers.touchdeck.gui;
 
-import com.example.fortytwo.R;
+import se.chalmers.touchdeck.R;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +8,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
+/**
+ * Activity for the startup screen of the application, allows the user to
+ * choose game mode. For now, only local play is available
+ * 
+ * @author group17
+ *
+ */
 public class StartScreen extends Activity {
 	
 	@Override
@@ -23,6 +30,11 @@ public class StartScreen extends Activity {
 		return true;
 	}
 	
+	/**
+	 * Called when the 'start local game' - button is pressed. An intent is 
+	 * created and a TableView activity is started
+	 * @param v		The view (button) that is pressed
+	 */
 	public void startLocal(View v) {
 		Intent localGame = new Intent(this, TableView.class);
 		startActivity(localGame);

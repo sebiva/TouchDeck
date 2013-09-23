@@ -3,6 +3,6 @@
 
     <string name="app_name">TouchDeck</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">The answer to life, the universe and everything!</string>
+    <string name="local_btn">Start Local Game</string>
 
 </resources>

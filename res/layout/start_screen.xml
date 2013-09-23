@@ -9,13 +9,15 @@
         android:id="@+id/textView1"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:textSize="48dp"
-        android:text="TouchDeck" />
+        android:textSize="48sp"
+        android:text="@string/app_name" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="startLocal"
-        android:text="Local game" />
+        android:background="#00000000"
+        android:textColor="@drawable/start_btn_text_hi_color"
+        android:text="@string/local_btn" />
 
     
 
