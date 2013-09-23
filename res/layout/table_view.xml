@@ -6,6 +6,4 @@
     tools:context=".TableView" 
     android:id="@+id/tableTable"
     android:background="#00cc00">
-    
- 
 </TableLayout>

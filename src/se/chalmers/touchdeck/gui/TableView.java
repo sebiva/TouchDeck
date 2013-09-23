@@ -2,6 +2,7 @@ package se.chalmers.touchdeck.gui;
 
 import java.util.ArrayList;
 
+import se.chalmers.touchdeck.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,8 +12,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-
-import com.example.fortytwo.R;
 
 /**
  * The main activity of the application, contains a grid with pile positions represented as buttons.
@@ -24,7 +23,7 @@ public class TableView extends Activity implements OnClickListener {
 	private static int				NUM_ROWS	= 3;
 	private static int				NUM_COLUMNS	= 7;
 	private TableLayout				tl;
-	// Contains all buttons of the table
+
 	private final ArrayList<Button>	buttons		= new ArrayList<Button>();
 	private GuiController			gc;
 
@@ -33,9 +32,10 @@ public class TableView extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.table_view);
 		// Create Buttons in the tableview
-		setupButtons(NUM_ROWS, NUM_COLUMNS);
+		setupButtons();
 
-		gc = new GuiController(this, buttons);
+		gc = GuiController.getInstance();
+		gc.updateTableViewReferences(this, buttons);
 	}
 
 	@Override
@@ -49,10 +49,10 @@ public class TableView extends Activity implements OnClickListener {
 	 * Creates the buttons in a grid on the "table". The number of rows and columns are specified by NUM_ROWS and
 	 * NUM_COLUMNS.
 	 */
-	public void setupButtons(int num_rows, int num_columns) {
+	public void setupButtons() {
 		tl = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
-		for (int i = 0; i < num_rows; i++) {
+		for (int i = 0; i < NUM_ROWS; i++) {
 			TableRow tr = new TableRow(this);
 			tr.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should be the same size

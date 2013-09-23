@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.fortytwo"
+    package="se.chalmers.touchdeck"
     android:versionCode="1"
     android:versionName="0.1" >
 
@@ -34,6 +34,17 @@
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value="se.chalmers.touchdeck.gui.StartScreen" />
+    </activity>
+    
+    
+         <activity
+        android:name="se.chalmers.touchdeck.gui.PileView"
+        android:label="@string/app_name" 
+        android:screenOrientation="landscape"
+        android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">   
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="se.chalmers.touchdeck.gui.TableView" />
     </activity>
         
     </application>
