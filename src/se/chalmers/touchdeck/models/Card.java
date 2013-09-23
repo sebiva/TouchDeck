@@ -1,8 +1,8 @@
-package models;
+package se.chalmers.touchdeck.models;
 
-import enums.Face;
-import enums.Rank;
-import enums.Suit;
+import se.chalmers.touchdeck.enums.Face;
+import se.chalmers.touchdeck.enums.Rank;
+import se.chalmers.touchdeck.enums.Suit;
 
 /**
  * Class modeling a card in a deck

@@ -1,7 +1,8 @@
-package models;
+package se.chalmers.touchdeck.models;
 
 import java.util.LinkedList;
-import exceptions.CardNotFoundException;
+
+import se.chalmers.touchdeck.exceptions.CardNotFoundException;
 
 /**
  * Class modeling a pile

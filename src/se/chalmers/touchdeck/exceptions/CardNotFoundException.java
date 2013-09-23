@@ -1,4 +1,4 @@
-package exceptions;
+package se.chalmers.touchdeck.exceptions;
 
 /**
  * Exception thrown when a card is not found
