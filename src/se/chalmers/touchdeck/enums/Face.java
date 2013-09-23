@@ -1,4 +1,4 @@
-package enums;
+package se.chalmers.touchdeck.enums;
 
 /**
  * Enum representing a cards face status

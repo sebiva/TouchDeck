@@ -1,6 +1,7 @@
-package com.example.fortytwo;
+package se.chalmers.touchdeck.gui;
 
 import java.util.ArrayList;
+import com.example.fortytwo.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -11,7 +12,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import gui.*;
 
 
 /**
@@ -20,7 +20,7 @@ import gui.*;
  * 
  * @author group17
  */
-public class MainActivity extends Activity implements OnClickListener {
+public class TableView extends Activity implements OnClickListener {
 
 	private static int NUM_ROWS = 3;
 	private static int NUM_COLUMNS = 7;
@@ -32,7 +32,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.table_view);
 		// Create Buttons in the tableview 
 		setupButtons(NUM_ROWS,NUM_COLUMNS);
 		

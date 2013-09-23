@@ -1,11 +1,11 @@
-package game.contoller;
+package se.chalmers.touchdeck.gamecontroller;
 
 import java.util.ArrayList;
 
-import models.Card;
-import models.Pile;
-import enums.Rank;
-import enums.Suit;
+import se.chalmers.touchdeck.enums.Rank;
+import se.chalmers.touchdeck.enums.Suit;
+import se.chalmers.touchdeck.models.Card;
+import se.chalmers.touchdeck.models.Pile;
 
 /**
  * Controls the game logic

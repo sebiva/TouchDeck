@@ -1,5 +1,10 @@
-package gui;
+package se.chalmers.touchdeck.gui;
 import java.util.ArrayList;
+
+import se.chalmers.touchdeck.enums.*;
+import se.chalmers.touchdeck.exceptions.CardNotFoundException;
+import se.chalmers.touchdeck.gamecontroller.*;
+import se.chalmers.touchdeck.models.*;
 
 import com.example.fortytwo.R;
 
@@ -7,10 +12,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import models.*;
-import game.contoller.*;
-import enums.*;
-import exceptions.CardNotFoundException;
 
 /**
  * Controls the gui of the game
