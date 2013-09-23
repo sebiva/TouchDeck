@@ -1,9 +1,6 @@
 package se.chalmers.touchdeck.gui;
 
-import gui.GuiController;
-
 import java.util.ArrayList;
-import com.example.fortytwo.R;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,10 +11,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-<<<<<<< HEAD:src/com/example/fortytwo/MainActivity.java
-=======
 
->>>>>>> startgui:src/se/chalmers/touchdeck/gui/TableView.java
+import com.example.fortytwo.R;
 
 /**
  * The main activity of the application, contains a grid with pile positions represented as buttons.
@@ -36,17 +31,10 @@ public class TableView extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-<<<<<<< HEAD:src/com/example/fortytwo/MainActivity.java
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.table_view);
 		// Create Buttons in the tableview
 		setupButtons(NUM_ROWS, NUM_COLUMNS);
 
-=======
-		setContentView(R.layout.table_view);
-		// Create Buttons in the tableview 
-		setupButtons(NUM_ROWS,NUM_COLUMNS);
-		
->>>>>>> startgui:src/se/chalmers/touchdeck/gui/TableView.java
 		gc = new GuiController(this, buttons);
 	}
 
