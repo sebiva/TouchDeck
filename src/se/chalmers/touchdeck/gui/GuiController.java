@@ -1,53 +1,49 @@
 package se.chalmers.touchdeck.gui;
+
 import java.util.ArrayList;
 
-import se.chalmers.touchdeck.enums.*;
-import se.chalmers.touchdeck.exceptions.CardNotFoundException;
-import se.chalmers.touchdeck.gamecontroller.*;
-import se.chalmers.touchdeck.models.*;
-
 import se.chalmers.touchdeck.R;
-
+import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 /**
  * Controls the gui of the game
  * 
  * @author group17
- *
  */
 public class GuiController {
-	private Activity a;
-	private ArrayList<Button> buttons;
-	private GameController gc;
-	private ArrayList<Pile> piles;
-	private Toast toast;
 
-	/**
-	 * Creates a new guicontroller
-	 * @param a			The activity that is associated with the table
-	 * @param buttons	A list of all the buttons representing the pile positions
-	 */
-	public GuiController(Activity a, ArrayList<Button> buttons) {
-		this.a = a;
-		this.buttons = buttons;
+	private final GameController	gc;
+	private ArrayList<Pile>			piles;
+	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
+	private Activity				mTableView;
+
+	private static GuiController	instance			= null;
+
+	public static GuiController getInstance() {
+		if (instance == null) {
+			instance = new GuiController();
+		}
+		return instance;
+	}
+
+	private GuiController() {
 		gc = new GameController();
-		updateTable();
 	}
 
 	/**
 	 * Updates the tableview based on the current state of the piles
-	 * 
 	 */
 	public void updateTable() {
 		piles = gc.getPiles();
 		int i = 0;
 		for (Pile p : piles) {
-			Button b = buttons.get(i);
-			if (p==null) {
+			Button b = mTableViewButtons.get(i);
+			if (p == null) {
 				b.setBackgroundResource(0);
 			} else {
 				if (p.getSize() > 0) {
@@ -55,7 +51,7 @@ public class GuiController {
 				} else {
 					b.setBackgroundColor(0xff00dd00);
 				}
-				
+
 			}
 			i++;
 		}
@@ -65,36 +61,31 @@ public class GuiController {
 	/**
 	 * Called when a button is pressed in the tableview
 	 * 
-	 * @param v		The view (button) that has been pressed
+	 * @param v The view (button) that has been pressed
 	 */
 	public void buttonPressed(View v) {
 		// Get which button has been pressed
 		int id = v.getId();
-		Pile p = piles.get(id);
-		String msg;
+		Pile p = getPile(id);
+
 		if (p != null) {
-			Card topCard;
-			try {
-				// Take out the top of the pile
-				topCard = p.takeCard(0);
-				Rank r = topCard.getRank();
-				Suit s = topCard.getSuit();
-				msg = r.toString() + " of " + s.toString();
-			} catch (CardNotFoundException e) {
-				msg = "Pile empty";
-			}
-			
+			Intent pileView = new Intent(mTableView, PileView.class);
+			pileView.putExtra("pileId", id);
+			mTableView.startActivity(pileView);
 		} else {
-			msg = "No pile";
+			// No pile
 		}
-		// Remove The previous toast
-		if (toast != null) {
-			toast.cancel();
-		}
-		// Update the piles on the table
+
+	}
+
+	public Pile getPile(int id) {
+		Pile p = piles.get(id);
+		return p;
+	}
+
+	public void updateTableViewReferences(Activity act, ArrayList<Button> buttons) {
+		mTableView = act;
+		mTableViewButtons = buttons;
 		updateTable();
-		// Show which card was taken from the pile or if it were empty
-		toast = Toast.makeText(a, msg, Toast.LENGTH_SHORT);
-		toast.show();
 	}
 }

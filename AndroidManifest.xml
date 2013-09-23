@@ -36,6 +36,16 @@
             android:value="se.chalmers.touchdeck.gui.StartScreen" />
     </activity>
         
+    <activity
+        android:name="se.chalmers.touchdeck.gui.PileView"
+        android:label="@string/app_name" 
+        android:screenOrientation="landscape"
+        android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">   
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="se.chalmers.touchdeck.gui.TableView" />
+    </activity>
+         
     </application>
 
 </manifest>
