@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.content.Intent;
@@ -72,8 +73,27 @@ public class GuiController {
 			Intent pileView = new Intent(mTableView, PileView.class);
 			pileView.putExtra("pileId", id);
 			mTableView.startActivity(pileView);
-		} else {
-			// No pile
+		} else { 
+			// No pile was found!
+			// ------------------------------------------------------------------------------
+			// To-do:
+			
+			// - Open an input dialog for the user where the name of the pile is entered:			
+			// 		- Create new PileNameDialogFragment object and call show() on the object to display dialog.
+			// 		- Call the getName() method to receive the input.
+			// 		- If no name was supplied, give the pile a default name.
+			
+			PileNameDialog dialog = new PileNameDialog();
+			dialog.show(mTableView);
+			
+			// - Create a pile in this spot.
+			// 		- Call createPile in GameController with parameter "id" (int) and "name" (String).
+			//		- Call updateTable().
+			gc.createPile(id, dialog.getName());
+			updateTable();
+			
+			// - If possible, highlight the view's border to show there's an empty pile there
+			// 	 and change background color (already handled in updateTable() above!)			
 		}
 
 	}
@@ -99,5 +119,5 @@ public class GuiController {
 		mTableView = act;
 		mTableViewButtons = buttons;
 		updateTable();
-	}
+	}		
 }

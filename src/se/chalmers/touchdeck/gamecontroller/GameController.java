@@ -54,4 +54,13 @@ public class GameController {
 		return mTable;
 		
 	}
+	
+	/**
+	 * Insert a new, empty pile into the list of piles
+	 * @param id The table position identifier
+	 */
+	public void createPile(int id, String name) {
+		// Make a new Pile object and set() it in the list
+		mTable.set(id, new Pile(name));		
+	}
 }

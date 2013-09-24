@@ -11,12 +11,17 @@ import se.chalmers.touchdeck.exceptions.CardNotFoundException;
  */
 public class Pile {
 	private final LinkedList<Card>	cards	= new LinkedList<Card>();
+	private String name;
 
 	/**
 	 * Constructor
 	 */
 	public Pile() {
 
+	}
+	
+	public Pile(String name) {
+		this.name = name;
 	}
 
 	/**
