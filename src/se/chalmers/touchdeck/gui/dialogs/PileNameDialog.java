@@ -2,7 +2,6 @@ package se.chalmers.touchdeck.gui.dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.EditText;
 import android.text.Editable;
@@ -11,7 +10,7 @@ import android.util.Log;
 
 public class PileNameDialog { 
 	
-	private EditText input;
+	private EditText input;	
 	
 	public String getName() {
 		
@@ -33,7 +32,7 @@ public class PileNameDialog {
 	    alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int id) {
 	            // OK
-	        	Log.d("dialog", "Name is " + input.getText().toString());
+	        	Log.d("dialog", "Name is " + input.getText().toString());	        	
 	        }
 	    });
 	    alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -45,6 +44,6 @@ public class PileNameDialog {
 	    
 	    alert.show();
 		
-	}
+	}	
 
 }

@@ -84,16 +84,22 @@ public class GuiController {
 			// 		- If no name was supplied, give the pile a default name.
 			
 			PileNameDialog dialog = new PileNameDialog();
-			dialog.show(mTableView);
+			dialog.show(mTableView);			
 			
 			// - Create a pile in this spot.
 			// 		- Call createPile in GameController with parameter "id" (int) and "name" (String).
 			//		- Call updateTable().
+			
+			/* 
+			 *** Not really functional right now because of continuous program flow, what pattern to use? ***
+			--------------------------------------------------------
 			gc.createPile(id, dialog.getName());
 			updateTable();
+			--------------------------------------------------------
+			*/
 			
-			// - If possible, highlight the view's border to show there's an empty pile there
-			// 	 and change background color (already handled in updateTable() above!)			
+			// - If possible, highlight the view's border to show there's an empty pile there.
+			// - Change background color (already handled in updateTable() above!).
 		}
 
 	}
