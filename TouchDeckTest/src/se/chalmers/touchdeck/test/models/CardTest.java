@@ -27,19 +27,28 @@ public class CardTest extends TestCase {
 		Card cardOne;
 		Card cardTwo;
 		
-		cardOne = new Card(Suit.hearts, Rank.five);			// Create Five of Hearts with default face state.
-		cardTwo = new Card(Suit.hearts, Rank.five);			// Create Five of Hearts with default face state.
-		assertTrue(cardOne.equals(cardTwo));				// Should have identical suit+rank. Face State shouldn't matter. I.e. they should be equal. 
+		cardOne = new Card(Suit.hearts, Rank.five);				// Create Five of Hearts with default face state.
+		cardTwo = new Card(Suit.hearts, Rank.five);				// Create Five of Hearts with default face state.
+		assertTrue(cardOne.equals(cardTwo));					// Should have identical suit+rank. 
+																// Face State shouldn't matter. I.e. they should be equal. 
 		
 		cardTwo = new Card(Suit.hearts, Rank.four);
 		assertFalse(cardOne.equals(cardTwo));
 		
-		cardOne = new Card(Suit.hearts, Rank.five, true); 	// Create Five of Hearts with face up.
-		cardTwo = new Card(Suit.hearts, Rank.five, false); 	// Create Five of Hearts with face down.
-		assertTrue(cardOne.equals(cardTwo)); 				// Face State shouldn't matter, i.e. they should be equal.
+		cardOne = new Card(Suit.hearts, Rank.five, true); 		// Create Five of Hearts with face up.
+		cardTwo = new Card(Suit.hearts, Rank.five, false); 		// Create Five of Hearts with face down.
+		assertTrue(cardOne.equals(cardTwo)); 					// Face State shouldn't matter, i.e. they should be equal.
+		
+		cardOne = new Card(Suit.hearts, Rank.five, true); 		// Create Five of Hearts with face up.
+		cardTwo = new Card(Suit.hearts, Rank.six, false); 		// Create Six of Hearts with face down.
+		assertFalse(cardOne.equals(cardTwo)); 					// Only rank differs. Should NOT be equal.
+		
+		cardOne = new Card(Suit.hearts, Rank.five, true); 		// Create Five of Hearts with face up.
+		cardTwo = new Card(Suit.diamonds, Rank.five, false); 	// Create Five of Diamonds with face down.
+		assertFalse(cardOne.equals(cardTwo)); 					// Only suit differs. Should NOT be equal.
 		
 		cardTwo = cardOne;
-		assertTrue(cardOne.equals(cardTwo));				// Same object should = equal cards.
+		assertTrue(cardOne.equals(cardTwo));					// Same object should = equal cards.
 	}
 
 	/**
