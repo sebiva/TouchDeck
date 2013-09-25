@@ -11,7 +11,7 @@ import se.chalmers.touchdeck.exceptions.CardNotFoundException;
  */
 public class Pile {
 	private final LinkedList<Card>	cards	= new LinkedList<Card>();
-	private String name;
+	private String					name;
 
 	/**
 	 * Constructor
@@ -19,7 +19,7 @@ public class Pile {
 	public Pile() {
 
 	}
-	
+
 	public Pile(String name) {
 		this.name = name;
 	}
@@ -36,7 +36,7 @@ public class Pile {
 	/**
 	 * Takes one card from the pile
 	 * 
-	 * @param pos	The position of the card
+	 * @param pos The position of the card
 	 * @return The card
 	 * @throws CardNotFoundException If there is no such card in the pile
 	 */
@@ -66,14 +66,22 @@ public class Pile {
 	public LinkedList<Card> getCards() {
 		return cards;
 	}
-	
-	
+
 	/**
 	 * Gives the name of pile
 	 * 
-	 * @return 		The name
+	 * @return The name
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Returns the card at a certain index
+	 * 
+	 * @return The requested card
+	 */
+	public Card getCard(int cardPos) {
+		return cards.get(cardPos);
 	}
 }

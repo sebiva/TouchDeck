@@ -1,6 +1,7 @@
 package se.chalmers.touchdeck.gui;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -9,7 +10,6 @@ import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
-import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
@@ -20,12 +20,15 @@ import android.widget.Button;
  * 
  * @author group17
  */
-public class GuiController implements Observer{
+public class GuiController implements Observer {
 
 	private final GameController	gc;
 	private ArrayList<Pile>			piles;
 	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
-	private Activity				mTableView;
+	private TableView				mTableView;
+
+	private LinkedList<Button>		mPileViewButtons	= new LinkedList<Button>();
+	private PileView				mPileView;
 
 	private static GuiController	instance			= null;
 
@@ -43,7 +46,7 @@ public class GuiController implements Observer{
 	/**
 	 * Updates the tableview based on the current state of the piles
 	 */
-	public void updateTable() {
+	public void updateTableView() {
 		piles = gc.getPiles();
 		int i = 0;
 		for (Pile p : piles) {
@@ -80,7 +83,7 @@ public class GuiController implements Observer{
 			Intent pileView = new Intent(mTableView, PileView.class);
 			pileView.putExtra("pileId", id);
 			mTableView.startActivity(pileView);
-		} else { 
+		} else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
 			PileNameDialog dialog = new PileNameDialog(this, id, msg);
@@ -103,23 +106,20 @@ public class GuiController implements Observer{
 	/**
 	 * Updates the GuiController with the TableView activity and its buttons
 	 * 
-	 * @param act The TableView activity
+	 * @param table The TableView activity
 	 * @param buttons Tables buttons
 	 */
-	public void updateTableViewReferences(Activity act, ArrayList<Button> buttons) {
-		mTableView = act;
+	public void updateTableViewReferences(TableView table, ArrayList<Button> buttons) {
+		mTableView = table;
 		mTableViewButtons = buttons;
-		updateTable();
+		updateTableView();
 	}
 
 	/**
-	 * Called when a dialog gets text input. Creates a new pile with the name
-	 * given in the dialog
+	 * Called when a dialog gets text input. Creates a new pile with the name given in the dialog
 	 * 
-	 * @param	obs		The object (Dialogtext) that has been updated
-	 * @param	param	The parameter that is passed along (in the case of the
-	 * 					Dialogtext, it's the same object)
-	 * 
+	 * @param obs The object (Dialogtext) that has been updated
+	 * @param param The parameter that is passed along (in the case of the Dialogtext, it's the same object)
 	 */
 	@Override
 	public void update(Observable obs, Object param) {
@@ -128,14 +128,43 @@ public class GuiController implements Observer{
 			if (gc.checkIfNameExists(dt.getString())) {
 				String msg = "Please enter a unique name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg);
-				dialog.show(mTableView);	
+				dialog.show(mTableView);
 			} else {
 				gc.createPile(dt.getId(), dt.getString());
 				Log.d("dialog", "in update!");
-				updateTable();
+				updateTableView();
 			}
-			
+
 		}
-		
-	}		
+
+	}
+
+	/**
+	 * Updates the GuiController with the PileView activity and its buttons
+	 * 
+	 * @param pile The pile view
+	 * @param buttons The pile views buttons
+	 */
+	public void updatePileViewReferences(PileView pile, LinkedList<Button> buttons) {
+		mPileView = pile;
+		mPileViewButtons = buttons;
+	}
+
+	/**
+	 * Flips a card
+	 * 
+	 * @param pilePos The pile to where the card is located
+	 * @param cardPos The position of the card in the pile to flip
+	 */
+	public void flip(int pilePos, int cardPos) {
+		gc.flip(pilePos, cardPos);
+		updatePileView();
+	}
+
+	/**
+	 * Updates the pile view
+	 */
+	private void updatePileView() {
+		mPileView.setupButtons();
+	}
 }
