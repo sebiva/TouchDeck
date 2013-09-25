@@ -18,6 +18,11 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+/**
+ * Activity for inspecting a pile.
+ * 
+ * @author Group 17
+ */
 public class PileView extends Activity implements OnClickListener {
 
 	private GuiController			gc;
@@ -37,11 +42,15 @@ public class PileView extends Activity implements OnClickListener {
 		return true;
 	}
 
+	/**
+	 * Creates buttons that represents the cards in the pile.
+	 */
 	public void setupButtons() {
+		// Get the pile id
 		int pileId = getIntent().getExtras().getInt("pileId");
 		Pile pile = gc.getPile(pileId);
 		LinkedList<Card> cards = pile.getCards();
-		LinearLayout row = (LinearLayout) findViewById(R.id.pileLinear);
+		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		for (int i = 0; i < pile.getSize(); i++) {
 
 			Button b = new Button(this);
@@ -54,6 +63,8 @@ public class PileView extends Activity implements OnClickListener {
 			Card card = cards.get(i);
 
 			int image;
+
+			// Setting the buttons picture based on the face up/down state of the card
 			if (card.getFaceState() == Face.down) {
 				image = R.drawable.b2fv;
 			} else {
@@ -63,6 +74,7 @@ public class PileView extends Activity implements OnClickListener {
 
 			b.setBackgroundResource(image);
 
+			// Calculate the size of the button
 			Display display = getWindowManager().getDefaultDisplay();
 			Point size = new Point();
 			display.getSize(size);
@@ -73,7 +85,7 @@ public class PileView extends Activity implements OnClickListener {
 			b.setHeight(y);
 			b.setWidth(x);
 
-			row.addView(b);
+			layout.addView(b);
 			buttons.add(b);
 			b.setOnClickListener(this);
 			b.setLayoutParams(bp);

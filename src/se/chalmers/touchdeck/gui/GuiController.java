@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 /**
- * Controls the gui of the game
+ * Controls the gui of the game. Singleton class
  * 
  * @author group17
  */
@@ -63,7 +63,7 @@ public class GuiController {
 	 * 
 	 * @param v The view (button) that has been pressed
 	 */
-	public void buttonPressed(View v) {
+	public void tableButtonPressed(View v) {
 		// Get which button has been pressed
 		int id = v.getId();
 		Pile p = getPile(id);
@@ -78,11 +78,23 @@ public class GuiController {
 
 	}
 
+	/**
+	 * Get a pile from an id
+	 * 
+	 * @param id The id of the pile you want to retrieve
+	 * @return The requested pile
+	 */
 	public Pile getPile(int id) {
 		Pile p = piles.get(id);
 		return p;
 	}
 
+	/**
+	 * Updates the GuiController with the TableView activity and its buttons
+	 * 
+	 * @param act The TableView activity
+	 * @param buttons Tables buttons
+	 */
 	public void updateTableViewReferences(Activity act, ArrayList<Button> buttons) {
 		mTableView = act;
 		mTableViewButtons = buttons;

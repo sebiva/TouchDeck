@@ -87,6 +87,6 @@ public class TableView extends Activity implements OnClickListener {
 	 */
 	@Override
 	public void onClick(View v) {
-		gc.buttonPressed(v);
+		gc.tableButtonPressed(v);
 	}
 }
