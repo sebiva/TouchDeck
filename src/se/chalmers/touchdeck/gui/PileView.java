@@ -68,7 +68,7 @@ public class PileView extends Activity implements OnClickListener {
 			if (card.getFaceState() == Face.down) {
 				image = R.drawable.b2fv;
 			} else {
-				String pic = card.getSuit() + "_" + card.getRank();
+				String pic = card.getRank() + "_of_" + card.getSuit();
 				image = getResources().getIdentifier(pic, "drawable", getPackageName());
 			}
 
