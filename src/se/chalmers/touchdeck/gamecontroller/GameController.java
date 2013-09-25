@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import se.chalmers.touchdeck.enums.Rank;
 import se.chalmers.touchdeck.enums.Suit;
+import se.chalmers.touchdeck.exceptions.CardNotFoundException;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 
@@ -74,7 +75,24 @@ public class GameController {
 	 * @return			Whether it already exists or not
 	 */
 	public boolean checkIfNameExists(String s) {
-		return pileNames.contains(s);
+		return pileNames.contains(s);	
+	}
+	
+	/**
+	 * Move a card from one pile to another
+	 * 
+	 * @param p1	The Pile to send from
+	 * @param pos	The position in p1 to send from
+	 * @param p2	The pile to send to
+	 */
+	public void moveCard(Pile p1, int pos, Pile p2) {
+		try {
+			Card c = p1.takeCard(pos);
+			p2.addCard(c);
+		} catch (CardNotFoundException e) {
+			// Will not happen
+		}
 		
 	}
+	
 }
