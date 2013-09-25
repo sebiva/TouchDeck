@@ -127,4 +127,18 @@ public class Card {
 	public String toString() {
 		return mRank + " of " + mSuit;
 	}
+
+	/**
+	 * Returns the image name based on the cards face state
+	 * 
+	 * @return The image name
+	 */
+	public String getImageName() {
+		// Setting the buttons picture based on the face up/down state of the card
+		if (!mFaceUp) {
+			return "b2fv";
+		} else {
+			return mRank + "_of_" + mSuit;
+		}
+	}
 }

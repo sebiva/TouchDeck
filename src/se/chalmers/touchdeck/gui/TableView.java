@@ -3,6 +3,7 @@ package se.chalmers.touchdeck.gui;
 import java.util.ArrayList;
 
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.gamecontroller.GameController;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,8 +21,6 @@ import android.widget.TableRow;
  */
 public class TableView extends Activity implements OnClickListener {
 
-	private static int				NUM_ROWS	= 3;
-	private static int				NUM_COLUMNS	= 7;
 	private TableLayout				tl;
 
 	private final ArrayList<Button>	buttons		= new ArrayList<Button>();
@@ -52,17 +51,17 @@ public class TableView extends Activity implements OnClickListener {
 	public void setupButtons() {
 		tl = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
-		for (int i = 0; i < NUM_ROWS; i++) {
+		for (int i = 0; i < GameController.NUM_ROWS; i++) {
 			TableRow tr = new TableRow(this);
 			tr.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should be the same size
 			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
-			for (int j = 0; j < NUM_COLUMNS; j++) {
+			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
 				Button b = new Button(this);
 				// Create the layout parameters for the button, all buttons should be the same size
 				LayoutParams bp = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT, 1.0f);
-				b.setId(NUM_COLUMNS * i + j);
-				b.setTag("Pile " + (NUM_COLUMNS * i + j));
+				b.setId(GameController.NUM_COLUMNS * i + j);
+				b.setTag("Pile " + (GameController.NUM_COLUMNS * i + j));
 				// b.setText("Pile " + (num_columns*i + j));
 				b.setPadding(5, 5, 5, 5);
 				tr.addView(b);
