@@ -94,6 +94,7 @@ public class GuiController implements Observer{
 	 * 
 	 * @param id The id of the pile you want to retrieve
 	 * @return The requested pile
+
 	 */
 	public Pile getPile(int id) {
 		Pile p = piles.get(id);
