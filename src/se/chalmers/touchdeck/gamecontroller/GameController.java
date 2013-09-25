@@ -82,7 +82,6 @@ public class GameController {
 	 */
 	public boolean checkIfNameExists(String s) {
 		return pileNames.contains(s);
-
 	}
 	
 	/**
@@ -108,7 +107,6 @@ public class GameController {
 			mTable.get(destPileId).addCard(c);
 		} catch (CardNotFoundException e) {
 			// Will not happen
-		}
+		}	
 	}
-	
 }

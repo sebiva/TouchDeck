@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
  */
 public class PileView extends Activity implements OnClickListener, OnLongClickListener {
 
+
 	private GuiController				gc;
 	private final LinkedList<Button>	buttons	= new LinkedList<Button>();
 
@@ -57,7 +58,6 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
 
 	/**
 	 * Create the context menus that appear when clicking a card. 
