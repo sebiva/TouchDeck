@@ -1,11 +1,10 @@
 package se.chalmers.touchdeck.test.gui;
 
-import se.chalmers.touchdeck.gui.*;
 import se.chalmers.touchdeck.R;
-
+import se.chalmers.touchdeck.gui.TableView;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
-//import android.view.View;
+
 
 public class TableViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
@@ -17,15 +16,18 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		setActivityInitialTouchMode(false); //Turn off touch mode in the emulator.
-		view = getActivity();
+		setActivityInitialTouchMode(false); // Turn off touch mode in the emulator.
+		view = getActivity();				// Get the Activity under test, starting it if necessary.
 	}
 	
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		setActivityInitialTouchMode(true); // Turn on touch mode in the emulator.
 	}
 	
 	public void testButtonPressed(){
-		TouchUtils.clickView(this, view.findViewById(R.id.tableTable).findViewWithTag("Pile 5"));
+		TouchUtils.clickView(this, view.findViewById(view.getResources().getInteger(R.integer.initial_pile_id)));
+		view = getActivity();
+		TouchUtils.clickView(this, view.findViewById(0));
 	}
 }
