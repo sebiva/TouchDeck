@@ -14,9 +14,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 /**
- * <<<<<<< HEAD The main activity of the application, contains a grid with pile positions represented as buttons.
- * ======= The Activity for the table view, contains a grid with pile positions represented as buttons. >>>>>>>
- * refs/heads/dev
+ * The Activity for the table view, contains a grid with pile positions represented as buttons. 
  * 
  * @author group17
  */
