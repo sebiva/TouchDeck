@@ -84,17 +84,6 @@ public class GameController {
 		return pileNames.contains(s);
 
 	}
-
-	/**
-	 * Flips a card in a pile
-	 * 
-	 * @param pilePos The pile index where the card is located in
-	 * @param cardPos The card to flips index in the pile
-	 */
-	public void flip(int pilePos, int cardPos) {
-		mTable.get(pilePos).getCard(cardPos).flipFace();
-		return pileNames.contains(s);	
-	}
 	
 	/**
 	 * Flips a card in a pile

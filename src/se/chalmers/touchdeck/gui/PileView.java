@@ -58,26 +58,6 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		return true;
 	}
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		cardId = v.getId();
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.card_menu, menu);
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_item_flip:
-			gc.flip(pileId, cardId);
-			break;
-		case R.id.menu_item_move:
-			break;
-		}
-
-		return true;
-	}
 
 	/**
 	 * Create the context menus that appear when clicking a card. 
