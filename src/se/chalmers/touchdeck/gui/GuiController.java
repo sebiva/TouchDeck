@@ -1,13 +1,17 @@
 package se.chalmers.touchdeck.gui;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -16,7 +20,7 @@ import android.widget.Button;
  * 
  * @author group17
  */
-public class GuiController {
+public class GuiController implements Observer{
 
 	private final GameController	gc;
 	private ArrayList<Pile>			piles;
@@ -47,6 +51,7 @@ public class GuiController {
 			if (p == null) {
 				b.setBackgroundResource(0);
 			} else {
+				b.setText(p.getName());
 				if (p.getSize() > 0) {
 					b.setBackgroundResource(R.drawable.b2fv);
 				} else {
@@ -69,37 +74,17 @@ public class GuiController {
 		int id = v.getId();
 		Pile p = getPile(id);
 
+		// Check if there is a pile on this position
 		if (p != null) {
+			// Open the pile in the pileview
 			Intent pileView = new Intent(mTableView, PileView.class);
 			pileView.putExtra("pileId", id);
 			mTableView.startActivity(pileView);
 		} else { 
-			// No pile was found!
-			// ------------------------------------------------------------------------------
-			// To-do:
-			
-			// - Open an input dialog for the user where the name of the pile is entered:			
-			// 		- Create new PileNameDialogFragment object and call show() on the object to display dialog.
-			// 		- Call the getName() method to receive the input.
-			// 		- If no name was supplied, give the pile a default name.
-			
-			PileNameDialog dialog = new PileNameDialog();
-			dialog.show(mTableView);			
-			
-			// - Create a pile in this spot.
-			// 		- Call createPile in GameController with parameter "id" (int) and "name" (String).
-			//		- Call updateTable().
-			
-			/* 
-			 *** Not really functional right now because of continuous program flow, what pattern to use? ***
-			--------------------------------------------------------
-			gc.createPile(id, dialog.getName());
-			updateTable();
-			--------------------------------------------------------
-			*/
-			
-			// - If possible, highlight the view's border to show there's an empty pile there.
-			// - Change background color (already handled in updateTable() above!).
+			// Prompt the user to create a new pile
+			String msg = "Please enter a name for the pile: ";
+			PileNameDialog dialog = new PileNameDialog(this, id, msg);
+			dialog.show(mTableView);
 		}
 
 	}
@@ -125,5 +110,32 @@ public class GuiController {
 		mTableView = act;
 		mTableViewButtons = buttons;
 		updateTable();
+	}
+
+	/**
+	 * Called when a dialog gets text input. Creates a new pile with the name
+	 * given in the dialog
+	 * 
+	 * @param	obs		The object (Dialogtext) that has been updated
+	 * @param	param	The parameter that is passed along (in the case of the
+	 * 					Dialogtext, it's the same object)
+	 * 
+	 */
+	@Override
+	public void update(Observable obs, Object param) {
+		if (obs instanceof DialogText) {
+			DialogText dt = (DialogText) param;
+			if (gc.checkIfNameExists(dt.getString())) {
+				String msg = "Please enter a unique name: ";
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg);
+				dialog.show(mTableView);	
+			} else {
+				gc.createPile(dt.getId(), dt.getString());
+				Log.d("dialog", "in update!");
+				updateTable();
+			}
+			
+		}
+		
 	}		
 }
