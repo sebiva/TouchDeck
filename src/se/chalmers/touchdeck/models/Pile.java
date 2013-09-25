@@ -66,4 +66,14 @@ public class Pile {
 	public LinkedList<Card> getCards() {
 		return cards;
 	}
+	
+	
+	/**
+	 * Gives the name of pile
+	 * 
+	 * @return 		The name
+	 */
+	public String getName() {
+		return name;
+	}
 }

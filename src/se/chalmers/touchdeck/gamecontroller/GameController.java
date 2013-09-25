@@ -1,6 +1,7 @@
 package se.chalmers.touchdeck.gamecontroller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import se.chalmers.touchdeck.enums.Rank;
 import se.chalmers.touchdeck.enums.Suit;
@@ -17,7 +18,9 @@ public class GameController {
 	private static final int		MAX_NUMBER_OF_PILES	= 21;
 	private static final int		MID_OF_TABLE		= 10;
 	private final ArrayList<Pile>	mTable				= new ArrayList<Pile>();
-
+	private HashSet<String> pileNames = new HashSet<String>();
+	private final String DECK_NAME = "deck";
+	
 	/**
 	 * Creates a new gamecontroller and sets up a deck. 
 	 */
@@ -35,7 +38,7 @@ public class GameController {
 	 * @return A pile containing the deck
 	 */
 	private Pile createDeck() {
-		Pile deck = new Pile();
+		Pile deck = new Pile(DECK_NAME);
 		for (Suit suit : Suit.values()) {
 			for (Rank rank : Rank.values()) {
 				deck.addCard(new Card(suit, rank));
@@ -62,5 +65,16 @@ public class GameController {
 	public void createPile(int id, String name) {
 		// Make a new Pile object and set() it in the list
 		mTable.set(id, new Pile(name));		
+		pileNames.add(name);
+	}
+	/**
+	 * Check if the name is already taken by another pile
+	 * 
+	 * @param s			The name to check
+	 * @return			Whether it already exists or not
+	 */
+	public boolean checkIfNameExists(String s) {
+		return pileNames.contains(s);
+		
 	}
 }
