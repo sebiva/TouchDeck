@@ -30,7 +30,7 @@ public class Pile {
 	 * @param card The card to add
 	 */
 	public void addCard(Card card) {
-		cards.add(card);
+		cards.addFirst(card);
 	}
 
 	/**
