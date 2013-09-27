@@ -31,7 +31,6 @@ public class CardTest extends TestCase {
 		cardTwo = new Card(Suit.hearts, Rank.five);				// Create Five of Hearts with default face state.
 		
 		assertFalse(cardOne.equals(null));						// Test for null. Should not be equal.
-		
 		assertTrue(cardOne.equals(cardTwo));					// Should have identical suit+rank. 
 																// Face State shouldn't matter. I.e. they should be equal. 
 		
@@ -52,7 +51,6 @@ public class CardTest extends TestCase {
 		
 		cardTwo = cardOne;
 		assertTrue(cardOne.equals(cardTwo));					// Same object should = equal cards.
-		
 	}
 
 	/**

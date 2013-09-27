@@ -1,5 +1,4 @@
 package se.chalmers.touchdeck.test.gui;
-
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gui.PileView;
 import se.chalmers.touchdeck.gui.TableView;
