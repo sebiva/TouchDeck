@@ -40,12 +40,12 @@ public class Pile {
 	 * @return The card
 	 * @throws CardNotFoundException If there is no such card in the pile
 	 */
-	public Card takeCard(int pos) throws CardNotFoundException {
+	public Card takeCard(int pos) {
 		try {
 			Card card = cards.remove(pos);
 			return card;
 		} catch (IndexOutOfBoundsException e) {
-			throw new CardNotFoundException("Couldn't take card from pile at position: " + pos, e);
+			return null;
 		}
 	}
 
@@ -79,9 +79,15 @@ public class Pile {
 	/**
 	 * Returns the card at a certain index
 	 * 
-	 * @return The requested card
+	 * @return The requested card, or null if pos was out of range
 	 */
 	public Card getCard(int cardPos) {
-		return cards.get(cardPos);
+		try {
+			Card card = cards.get(cardPos);
+			return card;
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
+
 	}
 }
