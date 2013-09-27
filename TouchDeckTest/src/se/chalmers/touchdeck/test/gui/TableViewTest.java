@@ -30,11 +30,15 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
 	public void testCreatePile() {
 		Solo solo = new Solo(getInstrumentation(), tableView);
+		// Click on an empty pile position
 		solo.clickOnView(tableView.findViewById(tableView.getResources().getInteger(R.integer.initial_pile_id) + 1));
 		solo.clickOnButton("OK");
+		// Click on the new created pile
 		solo.clickOnButton("Pile 1");
+		// Go back to table view
 		clickBack(solo);
 
+		// Click on a different empty pile position
 		solo.clickOnView(tableView.findViewById(tableView.getResources().getInteger(R.integer.initial_pile_id) - 1));
 		solo.enterText(0, "MyCoolPile");
 		solo.clickOnButton("OK");

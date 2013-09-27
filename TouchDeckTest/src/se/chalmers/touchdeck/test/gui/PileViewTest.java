@@ -47,6 +47,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
 		String startImage = deck.getCard(0).getImageName();
 
+		// Clicks on the first card in the pile and flips it
 		solo.clickOnButton(0);
 		solo.clickOnText(FLIP_CARD_OPTION);
 
@@ -54,6 +55,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
 		assertNotSame(startImage, firstImage);
 
+		// Flips the card again
 		solo.clickOnButton(0);
 		solo.clickOnText(FLIP_CARD_OPTION);
 
@@ -63,6 +65,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		String startImageCard2 = deck.getCard(1).getImageName();
 		assertEquals(startImage, startImageCard2);
 
+		// Flips the second card
 		solo.clickOnButton(1);
 		solo.clickOnText(FLIP_CARD_OPTION);
 
@@ -81,6 +84,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
 		Solo solo = new Solo(getInstrumentation(), tableView);
 
+		// Create a new pile
 		solo.clickOnView(tableView.findViewById(secondPilePos));
 		solo.enterText(0, secondPileName);
 		solo.clickOnButton("OK");
@@ -90,6 +94,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		Pile deck = gc.getPile(pilePos);
 		Card cardToBeMoved = deck.getCard(3);
 
+		// Send the fourth card to the new pile
 		solo.clickOnButton(3);
 		solo.clickOnText(MOVE_CARD_OPTION);
 		solo.clickOnText(secondPileName);
@@ -108,9 +113,11 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
 		Card secondCardToBeMoved = deck.getCard(2);
 
+		// Flips the third card
 		solo.clickOnButton(2);
 		solo.clickOnText(FLIP_CARD_OPTION);
 
+		// Send it to the new pile
 		solo.clickOnButton(2);
 		solo.clickOnText(MOVE_CARD_OPTION);
 		solo.clickOnText(secondPileName);
