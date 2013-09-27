@@ -5,13 +5,11 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -27,7 +25,6 @@ public class GuiController implements Observer {
 	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
 	private TableView				mTableView;
 
-	private LinkedList<Button>		mPileViewButtons	= new LinkedList<Button>();
 	private PileView				mPileView;
 
 	private static GuiController	instance			= null;
@@ -56,7 +53,10 @@ public class GuiController implements Observer {
 			} else {
 				b.setText(p.getName());
 				if (p.getSize() > 0) {
-					b.setBackgroundResource(R.drawable.b2fv);
+					// Set the picture of the pile to be the picture of the card on top. 
+					String imgName = p.getCard(0).getImageName();
+					int imgRes = mTableView.getResources().getIdentifier(imgName, "drawable", mTableView.getPackageName());
+					b.setBackgroundResource(imgRes);
 				} else {
 					b.setBackgroundColor(0xff00dd00);
 				}
@@ -125,13 +125,15 @@ public class GuiController implements Observer {
 	public void update(Observable obs, Object param) {
 		if (obs instanceof DialogText) {
 			DialogText dt = (DialogText) param;
+			// See if the name provided is unique
 			if (gc.checkIfNameExists(dt.getString())) {
+				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg);
 				dialog.show(mTableView);
 			} else {
+				// Create the pile
 				gc.createPile(dt.getId(), dt.getString());
-				Log.d("dialog", "in update!");
 				updateTableView();
 			}
 
@@ -147,7 +149,6 @@ public class GuiController implements Observer {
 	 */
 	public void updatePileViewReferences(PileView pile, LinkedList<Button> buttons) {
 		mPileView = pile;
-		mPileViewButtons = buttons;
 	}
 
 	/**
@@ -159,6 +160,19 @@ public class GuiController implements Observer {
 	public void flip(int pilePos, int cardPos) {
 		gc.flip(pilePos, cardPos);
 		updatePileView();
+		updateTableView();
+	}
+	/**
+	 * Moves a card from one pile to another
+	 * 
+	 * @param pileId		The id of the pile to move from
+	 * @param cardPos		The position of the card to move
+	 * @param destPileId	The id of the pile to move to
+	 */
+	public void moveCard(int pileId, int cardPos, int destPileId ) {
+		gc.moveCard(pileId, cardPos, destPileId);
+		updatePileView();
+		updateTableView();
 	}
 
 	/**

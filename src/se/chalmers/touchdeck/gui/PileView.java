@@ -1,8 +1,8 @@
 package se.chalmers.touchdeck.gui;
 
 import java.util.LinkedList;
-
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
@@ -14,6 +14,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -33,6 +34,8 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 	private int							pileId;
 	private int							cardId;
+
+	private static final int 			INDEX_OF_MOVE = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +58,36 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		return true;
 	}
 
+
+	/**
+	 * Create the context menus that appear when clicking a card. 
+	 * 
+	 */
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		cardId = v.getId();
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
+		
+		// Get the position of the move button and its submenu
+		MenuItem item = menu.getItem(INDEX_OF_MOVE);
+		SubMenu subMenu = item.getSubMenu();
+
+		// Create a submenu entry for each pile on the table
+		for (int i = 0; i<GameController.MAX_NUMBER_OF_PILES; i++){
+			Pile p = gc.getPile(i);
+			if (p!=null) {
+				subMenu.add(Menu.NONE, i, Menu.NONE, p.getName());
+			}
+		}
+		
 	}
 
+	/**
+	 * Called when an option in the context menu is chosen
+	 * 
+	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -71,8 +96,9 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			break;
 		case R.id.menu_item_move:
 			break;
+		default:
+			gc.moveCard(pileId, cardId, item.getItemId());
 		}
-
 		return true;
 	}
 
@@ -82,6 +108,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	public void setupButtons() {
 		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		layout.removeAllViewsInLayout();
+		layout.invalidate();
 		// Get the pile id
 		Pile pile = gc.getPile(pileId);
 		LinkedList<Card> cards = pile.getCards();
