@@ -12,9 +12,13 @@ import com.jayway.android.robotium.solo.Solo;
 
 public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
-	private TableView		tableView;
-	private GuiController	gc;
-	private int				pilePos;
+	private static final String	FLIP_CARD_OPTION	= "Flip card";
+	private static final String	MOVE_CARD_OPTION	= "Move card";
+	private static final String	DECK				= "deck";
+
+	private TableView			tableView;
+	private GuiController		gc;
+	private int					pilePos;
 
 	public PileViewTest() {
 		super(TableView.class);
@@ -37,21 +41,21 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 
 	public void testFlipCard() {
 		Solo solo = new Solo(getInstrumentation(), tableView);
-		solo.clickOnButton("deck");
+		solo.clickOnButton(DECK);
 
 		Pile deck = gc.getPile(pilePos);
 
 		String startImage = deck.getCard(0).getImageName();
 
 		solo.clickOnButton(0);
-		solo.clickOnText("Flip card");
+		solo.clickOnText(FLIP_CARD_OPTION);
 
 		String firstImage = deck.getCard(0).getImageName();
 
 		assertNotSame(startImage, firstImage);
 
 		solo.clickOnButton(0);
-		solo.clickOnText("Flip card");
+		solo.clickOnText(FLIP_CARD_OPTION);
 
 		String secondImage = deck.getCard(0).getImageName();
 		assertEquals(startImage, secondImage);
@@ -60,7 +64,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		assertEquals(startImage, startImageCard2);
 
 		solo.clickOnButton(1);
-		solo.clickOnText("Flip card");
+		solo.clickOnText(FLIP_CARD_OPTION);
 
 		String firstImageCard2 = deck.getCard(1).getImageName();
 		assertNotSame(firstImageCard2, startImageCard2);
@@ -81,13 +85,13 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		solo.enterText(0, secondPileName);
 		solo.clickOnButton("OK");
 
-		solo.clickOnButton("deck");
+		solo.clickOnButton(DECK);
 
 		Pile deck = gc.getPile(pilePos);
-		Card cardToBeMoved = deck.getCard(5);
+		Card cardToBeMoved = deck.getCard(3);
 
-		solo.clickOnButton(1);
-		solo.clickOnText("Move card");
+		solo.clickOnButton(3);
+		solo.clickOnText(MOVE_CARD_OPTION);
 		solo.clickOnText(secondPileName);
 
 		clickBack(solo);
@@ -98,6 +102,23 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		Card movedCard = secondPile.getCard(0);
 
 		assertEquals(movedCard, cardToBeMoved);
+
+		clickBack(solo);
+		solo.clickOnButton(DECK);
+
+		Card secondCardToBeMoved = deck.getCard(2);
+
+		solo.clickOnButton(2);
+		solo.clickOnText(FLIP_CARD_OPTION);
+
+		solo.clickOnButton(2);
+		solo.clickOnText(MOVE_CARD_OPTION);
+		solo.clickOnText(secondPileName);
+		clickBack(solo);
+
+		solo.clickOnButton(secondPilePos);
+		Card secondMovedCard = secondPile.getCard(0);
+		assertEquals(secondMovedCard, secondCardToBeMoved);
 
 	}
 
