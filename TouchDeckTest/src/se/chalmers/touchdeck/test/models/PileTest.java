@@ -3,10 +3,14 @@ package se.chalmers.touchdeck.test.models;
 import junit.framework.TestCase;
 import se.chalmers.touchdeck.enums.Rank;
 import se.chalmers.touchdeck.enums.Suit;
-import se.chalmers.touchdeck.exceptions.CardNotFoundException;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 
+/**
+ * Tests the pile class
+ * 
+ * @author group17
+ */
 public class PileTest extends TestCase {
 
 	@Override
@@ -14,6 +18,9 @@ public class PileTest extends TestCase {
 		super.setUp();
 	}
 
+	/**
+	 * Test creating piles
+	 */
 	public void testCreate() {
 		Pile p1 = new Pile();
 		Pile p2 = new Pile("name");
@@ -22,17 +29,17 @@ public class PileTest extends TestCase {
 		assertEquals("name", p2.getName());
 	}
 
+	/**
+	 * Test adding, taking and getting cards to a pile
+	 */
 	public void testAddTakeGet() {
 		Pile p = new Pile();
 		Card c = new Card(Suit.spades, Rank.ace);
 		p.addCard(c);
 		Card c2;
-		try {
-			c2 = p.takeCard(0);
-			assertEquals(c, c2);
-		} catch (CardNotFoundException e) {
-			assert (false); // Shouldn't happen
-		}
+
+		c2 = p.takeCard(0);
+		assertEquals(c, c2);
 
 		p.addCard(new Card(Suit.hearts, Rank.ace));
 		p.addCard(new Card(Suit.hearts, Rank.king));
@@ -41,30 +48,19 @@ public class PileTest extends TestCase {
 		p.addCard(new Card(Suit.hearts, Rank.ten));
 		p.addCard(new Card(Suit.hearts, Rank.nine));
 
-		try {
-			Card c3 = p.takeCard(0);
-			int x = p.getSize();
+		Card c3 = p.takeCard(0);
+		int x = p.getSize();
 
-			assertEquals(5, x);
-			assertEquals(new Card(Suit.hearts, Rank.ace), c3);
+		assertEquals(5, x);
+		assertEquals(new Card(Suit.hearts, Rank.ace), c3);
 
-			Card c4 = p.takeCard(4);
-			assertEquals(new Card(Suit.hearts, Rank.nine), c4);
-		} catch (CardNotFoundException e) {
-			assert (false); // Shouldn't happen
-		}
+		Card c4 = p.takeCard(4);
+		assertEquals(new Card(Suit.hearts, Rank.nine), c4);
+
 		for (int i = 0; i < 4; i++) {
-			try {
-				p.takeCard(i);
-			} catch (CardNotFoundException e) {
-				assert (false); // Shouldn't happen
-			}
+			p.takeCard(i);
 		}
-		try {
-			p.takeCard(0);
-			assert (false);
-		} catch (CardNotFoundException e) {
-			assert (true); // The pile should be empty now
-		}
+		Card c5 = p.takeCard(0);
+		assertEquals(null, c5);
 	}
 }
