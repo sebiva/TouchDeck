@@ -3,6 +3,7 @@ package se.chalmers.touchdeck.test.gui;
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gui.TableView;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.KeyEvent;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -27,17 +28,23 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		setActivityInitialTouchMode(true); // Turn on touch mode in the emulator.
 	}
 
-	public void testButtonPressed() {
+	public void testCreatePile() {
 		Solo solo = new Solo(getInstrumentation(), tableView);
 		solo.clickOnView(tableView.findViewById(tableView.getResources().getInteger(R.integer.initial_pile_id) + 1));
 		solo.clickOnButton("OK");
+		solo.clickOnButton("Pile 1");
+		clickBack(solo);
+
+		solo.clickOnView(tableView.findViewById(tableView.getResources().getInteger(R.integer.initial_pile_id) - 1));
+		solo.enterText(0, "MyPile");
+		solo.clickOnButton("OK");
+
+		solo.clickOnButton("Pile 1");
+		clickBack(solo);
+
 	}
 
-	public void testInspectPile() {
-		Solo solo = new Solo(getInstrumentation(), tableView);
-		solo.clickOnView(tableView.findViewById(tableView.getResources().getInteger(R.integer.initial_pile_id)));
-		solo.clickOnButton(0);
-		solo.clickOnText("Flip card");
-		solo.clickOnView(solo.getView(R.id.menu_item_move));
+	private void clickBack(Solo solo) {
+		solo.sendKey(KeyEvent.KEYCODE_BACK);
 	}
 }
