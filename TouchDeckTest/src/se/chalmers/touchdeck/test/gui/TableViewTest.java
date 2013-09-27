@@ -36,10 +36,10 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		clickBack(solo);
 
 		solo.clickOnView(tableView.findViewById(tableView.getResources().getInteger(R.integer.initial_pile_id) - 1));
-		solo.enterText(0, "MyPile");
+		solo.enterText(0, "MyCoolPile");
 		solo.clickOnButton("OK");
 
-		solo.clickOnButton("Pile 1");
+		solo.clickOnButton("MyCoolPile");
 		clickBack(solo);
 
 	}

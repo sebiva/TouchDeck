@@ -77,7 +77,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 	public void testSendCard() {
 
 		String secondPileName = "MyPile";
-		int secondPilePos = pilePos + 1;
+		int secondPilePos = pilePos + 6;
 
 		Solo solo = new Solo(getInstrumentation(), tableView);
 
@@ -119,6 +119,8 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<TableView> {
 		solo.clickOnButton(secondPilePos);
 		Card secondMovedCard = secondPile.getCard(0);
 		assertEquals(secondMovedCard, secondCardToBeMoved);
+
+		clickBack(solo);
 
 	}
 

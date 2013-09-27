@@ -38,8 +38,10 @@ public class PileTest extends TestCase {
 		p.addCard(c);
 		Card c2;
 
+		assertTrue(p.getSize() == 1);
 		c2 = p.takeCard(0);
 		assertEquals(c, c2);
+		assertTrue(p.getSize() == 0);
 
 		p.addCard(new Card(Suit.hearts, Rank.ace));
 		p.addCard(new Card(Suit.hearts, Rank.king));
@@ -52,13 +54,13 @@ public class PileTest extends TestCase {
 		int x = p.getSize();
 
 		assertEquals(5, x);
-		assertEquals(new Card(Suit.hearts, Rank.ace), c3);
+		assertEquals(new Card(Suit.hearts, Rank.nine), c3);
 
 		Card c4 = p.takeCard(4);
-		assertEquals(new Card(Suit.hearts, Rank.nine), c4);
+		assertEquals(new Card(Suit.hearts, Rank.ace), c4);
 
 		for (int i = 0; i < 4; i++) {
-			p.takeCard(i);
+			p.takeCard(0);
 		}
 		Card c5 = p.takeCard(0);
 		assertEquals(null, c5);
