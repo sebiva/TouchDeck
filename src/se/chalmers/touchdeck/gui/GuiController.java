@@ -10,6 +10,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import se.chalmers.touchdeck.gamecontroller.GameState;
+import se.chalmers.touchdeck.gamecontroller.Operation;
+import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
@@ -25,7 +27,7 @@ import android.widget.Button;
  */
 public class GuiController implements Observer {
 
-	private GameState				mgs;
+	private GameState				mGs;
 	private ArrayList<Pile>			piles;
 	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
 	private TableView				mTableView;
@@ -35,7 +37,8 @@ public class GuiController implements Observer {
 	private static GuiController	instance			= null;
 
 	private Socket					socket;
-	private final Thread			th;
+	private final int				port				= 4242;
+	private final String			ipAddr				= "127.0.0.1";
 
 	public static GuiController getInstance() {
 		if (instance == null) {
@@ -45,24 +48,48 @@ public class GuiController implements Observer {
 	}
 
 	private GuiController() {
-		th = new Thread(new Event());
+		new Updater(this);
+		Thread th = new Thread(new Connection());
 		th.start();
 	}
 
-	class Event implements Runnable {
-
+	/**
+	 * Sets up a connection to the gamecontroller
+	 */
+	private class Connection implements Runnable {
 		@Override
 		public void run() {
-
 			try {
-				InetAddress serverAddr = InetAddress.getByName("127.0.0.1");
-				// et.setText("IP: " + adr);
-				socket = new Socket(serverAddr, 4242);
-				Log.d("network", "Client socket setup at 4242");
-
+				InetAddress serverAddr = InetAddress.getByName(ipAddr);
+				socket = new Socket(serverAddr, port);
+				Log.d("network GuC", "Client socket setup at " + port);
+				// Tell the controller you want to connect
+				// TODO pass the ip
+				sendUpdate(Op.connect, null, null, null, null);
 			} catch (Exception e1) {
-				Log.d("network", "Error setting up client" + e1.getMessage());
+				Log.d("network GuC", "Error setting up client" + e1.getMessage());
 			}
+		}
+	}
+
+	/**
+	 * Sends an update of what the user has done
+	 * 
+	 * @param op The operation that has been made
+	 * @param pile1 The id of the first pile
+	 * @param pile2 The id of the second pile (if op==move)
+	 * @param cardPos The position of the card (if op==flip)
+	 * @param name The name of the pile (if op==create)
+	 */
+	public void sendUpdate(Op op, Integer pile1, Integer pile2, Integer cardPos, String name) {
+		Operation operation = new Operation(op, pile1, pile2, cardPos, name);
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(operation);
+			Log.d("network GuC", "Operation written into socket");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -70,7 +97,7 @@ public class GuiController implements Observer {
 	 * Updates the tableview based on the current state of the piles
 	 */
 	public void updateTableView() {
-		piles = mgs.getPiles();
+		piles = mGs.getPiles();
 		int i = 0;
 		for (Pile p : piles) {
 			Button b = mTableViewButtons.get(i);
@@ -86,7 +113,6 @@ public class GuiController implements Observer {
 				} else {
 					b.setBackgroundColor(0xff00dd00);
 				}
-
 			}
 			i++;
 		}
@@ -99,20 +125,6 @@ public class GuiController implements Observer {
 	 * @param v The view (button) that has been pressed
 	 */
 	public void tableButtonPressed(View v) {
-		String str = "hej";
-		// PrintWriter out;
-		ObjectOutputStream out = null;
-		try {
-			// out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-			out = new ObjectOutputStream(socket.getOutputStream());
-			// out.println(str);
-			// out.flush();
-			out.writeObject(mgs);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		// Get which button has been pressed
 		int id = v.getId();
 		Pile p = getPile(id);
@@ -148,10 +160,8 @@ public class GuiController implements Observer {
 	 * 
 	 * @param table The TableView activity
 	 * @param buttons Tables buttons
-	 * @param gs
 	 */
-	public void updateTableViewReferences(TableView table, ArrayList<Button> buttons, GameState gs) {
-		mgs = gs;
+	public void updateTableViewReferences(TableView table, ArrayList<Button> buttons) {
 		mTableView = table;
 		mTableViewButtons = buttons;
 		updateTableView();
@@ -165,19 +175,36 @@ public class GuiController implements Observer {
 	 */
 	@Override
 	public void update(Observable obs, Object param) {
+		Log.d("network GuC", "in observ");
 		if (obs instanceof DialogText) {
 			DialogText dt = (DialogText) param;
 			// See if the name provided is unique
-			// if (gc.checkIfNameExists(dt.getString())) {
-			// Prompt the user to try again
-			String msg = "Please enter a unique name: ";
-			PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg);
-			dialog.show(mTableView);
-			// } else {
-			// Create the pile
-			// gc.createPile(dt.getId(), dt.getString());
-			updateTableView();
-			// }
+			if (mGs.getPileNames().contains(dt.getString())) {
+				// Prompt the user to try again
+				String msg = "Please enter a unique name: ";
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg);
+				dialog.show(mTableView);
+			} else {
+				// Create the pile
+				sendUpdate(Op.create, dt.getId(), null, null, dt.getString());
+				// gc.createPile(dt.getId(), dt.getString());
+				updateTableView();
+			}
+
+		} else if (obs instanceof Updater) {
+			// Update the state of the game
+			GameState gs = (GameState) param;
+			updateGameState(gs);
+			// Force it to run on the UI-thread
+			mTableView.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					updateTableView();
+					if (mPileView != null) {
+						updatePileView();
+					}
+				}
+			});
 
 		}
 
@@ -201,6 +228,7 @@ public class GuiController implements Observer {
 	 */
 	public void flip(int pilePos, int cardPos) {
 		// gc.flip(pilePos, cardPos);
+		sendUpdate(Op.flip, pilePos, null, cardPos, null);
 		updatePileView();
 		updateTableView();
 	}
@@ -214,6 +242,7 @@ public class GuiController implements Observer {
 	 */
 	public void moveCard(int pileId, int cardPos, int destPileId) {
 		// gc.moveCard(pileId, cardPos, destPileId);
+		sendUpdate(Op.move, pileId, destPileId, cardPos, null);
 		updatePileView();
 		updateTableView();
 	}
@@ -221,7 +250,16 @@ public class GuiController implements Observer {
 	/**
 	 * Updates the pile view
 	 */
-	private void updatePileView() {
+	public void updatePileView() {
 		mPileView.setupButtons();
+	}
+
+	/**
+	 * Updates the gameState
+	 * 
+	 * @param gs The gameState
+	 */
+	public void updateGameState(GameState gs) {
+		mGs = gs;
 	}
 }

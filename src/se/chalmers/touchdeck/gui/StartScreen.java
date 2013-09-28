@@ -30,14 +30,14 @@ public class StartScreen extends Activity {
 	}
 
 	/**
-	 * Called when the 'start local game' - button is pressed. An intent is created and a TableView activity is started
+	 * Called when the 'start local game' - button is pressed. An intent is created and a TableView activity is started,
+	 * along with the gamecontroller as the user is the hosts of their own game.
 	 * 
 	 * @param v The view (button) that is pressed
 	 */
 	public void startLocal(View v) {
 		Intent localGame = new Intent(this, TableView.class);
 		GameController gc = new GameController();
-		gc.start();
 		localGame.putExtra("state", gc.getGameState());
 		startActivity(localGame);
 	}

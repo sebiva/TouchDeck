@@ -37,7 +37,8 @@ public class TableView extends Activity implements OnClickListener {
 		Serializable s = getIntent().getExtras().getSerializable("state");
 		GameState gs = (GameState) s;
 		gc = GuiController.getInstance();
-		gc.updateTableViewReferences(this, buttons, gs);
+		gc.updateGameState(gs);
+		gc.updateTableViewReferences(this, buttons);
 	}
 
 	@Override

@@ -1,5 +1,9 @@
 package se.chalmers.touchdeck.gamecontroller;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -7,6 +11,7 @@ import se.chalmers.touchdeck.enums.Rank;
 import se.chalmers.touchdeck.enums.Suit;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
+import android.util.Log;
 
 /**
  * Controls the game logic
@@ -26,6 +31,10 @@ public class GameController {
 	private final String			DECK_NAME			= "deck";
 
 	private final GameState			gs;
+	private final int				port				= 4243;
+	private final String			ipAddr				= "127.0.0.1";
+	private Socket					socket;
+	private Thread					thread;
 
 	/**
 	 * Creates a new gamecontroller and sets up a deck.
@@ -37,6 +46,7 @@ public class GameController {
 		}
 		createDeck();
 		gs = new GameState(mTable);
+		new Listener(this);
 	}
 
 	/**
@@ -57,10 +67,44 @@ public class GameController {
 	}
 
 	/**
-	 * Starts the listener
+	 * Sets up a connection back to the gui
 	 */
-	public void start() {
-		Listener l = new Listener(this);
+	// TODO Refactor
+	private class Connection implements Runnable {
+		@Override
+		public void run() {
+			try {
+				InetAddress serverAddr = InetAddress.getByName(ipAddr);
+				socket = new Socket(serverAddr, port);
+				Log.d("network GaC", "Client socket setup at " + port);
+				sendUpdatedState();
+			} catch (Exception e1) {
+				Log.d("network GaC", "Error setting up client" + e1.getMessage());
+			}
+
+		}
+	}
+
+	/**
+	 * Starts the thread for connecting back to the gui
+	 */
+	public void startConnectThread() {
+		thread = new Thread(new Connection());
+		thread.start();
+	}
+
+	/**
+	 * Sends the gamestate to the gui
+	 */
+	public void sendUpdatedState() {
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(gs);
+			Log.d("network GaC", "State written into socket");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -82,6 +126,7 @@ public class GameController {
 		// Make a new Pile object and set() it in the list
 		mTable.set(id, new Pile(name));
 		pileNames.add(name);
+		sendUpdatedState();
 	}
 
 	/**
@@ -103,6 +148,7 @@ public class GameController {
 	 */
 	public void flip(int pilePos, int cardPos) {
 		mTable.get(pilePos).getCard(cardPos).flipFace();
+		sendUpdatedState();
 	}
 
 	/**
@@ -116,6 +162,7 @@ public class GameController {
 		Card c = mTable.get(pileId).takeCard(pos);
 		if (c != null) {
 			mTable.get(destPileId).addCard(c);
+			sendUpdatedState();
 		}
 	}
 

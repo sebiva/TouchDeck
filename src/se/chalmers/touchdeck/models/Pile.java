@@ -14,7 +14,7 @@ public class Pile implements Serializable {
 	/**
 	 * Serializable
 	 */
-	private static final long		serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= -3056217673776714467L;
 	private final LinkedList<Card>	cards				= new LinkedList<Card>();
 	private String					name;
 
