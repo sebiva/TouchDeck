@@ -14,6 +14,7 @@ import se.chalmers.touchdeck.models.Pile;
  * @author group17
  */
 public class GameController {
+
 	// Public constants
 	public static final int			MAX_NUMBER_OF_PILES	= 21;
 	public static final int			MID_OF_TABLE		= 10;
@@ -24,6 +25,8 @@ public class GameController {
 	private final HashSet<String>	pileNames			= new HashSet<String>();
 	private final String			DECK_NAME			= "deck";
 
+	private final GameState			gs;
+
 	/**
 	 * Creates a new gamecontroller and sets up a deck.
 	 */
@@ -33,6 +36,7 @@ public class GameController {
 			mTable.add(i, null);
 		}
 		createDeck();
+		gs = new GameState(mTable);
 	}
 
 	/**
@@ -50,6 +54,13 @@ public class GameController {
 		// Put the deck at the middle of the table
 		mTable.set(MID_OF_TABLE, deck);
 		return deck;
+	}
+
+	/**
+	 * Starts the listener
+	 */
+	public void start() {
+		Listener l = new Listener(this);
 	}
 
 	/**
@@ -107,4 +118,12 @@ public class GameController {
 			mTable.get(destPileId).addCard(c);
 		}
 	}
+
+	/**
+	 * @return the gamestate
+	 */
+	public GameState getGameState() {
+		return gs;
+	}
+
 }

@@ -1,9 +1,11 @@
 package se.chalmers.touchdeck.gui;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.gamecontroller.GameState;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,7 +17,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 /**
- * The Activity for the table view, contains a grid with pile positions represented as buttons. 
+ * The Activity for the table view, contains a grid with pile positions represented as buttons.
  * 
  * @author group17
  */
@@ -23,7 +25,7 @@ public class TableView extends Activity implements OnClickListener {
 
 	private TableLayout				tl;
 
-	private final ArrayList<Button>	buttons		= new ArrayList<Button>();
+	private final ArrayList<Button>	buttons	= new ArrayList<Button>();
 	private GuiController			gc;
 
 	@Override
@@ -32,9 +34,10 @@ public class TableView extends Activity implements OnClickListener {
 		setContentView(R.layout.table_view);
 		// Create Buttons in the tableview
 		setupButtons();
-
+		Serializable s = getIntent().getExtras().getSerializable("state");
+		GameState gs = (GameState) s;
 		gc = GuiController.getInstance();
-		gc.updateTableViewReferences(this, buttons);
+		gc.updateTableViewReferences(this, buttons, gs);
 	}
 
 	@Override

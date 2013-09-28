@@ -1,5 +1,6 @@
 package se.chalmers.touchdeck.models;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.exceptions.CardNotFoundException;
@@ -9,8 +10,12 @@ import se.chalmers.touchdeck.exceptions.CardNotFoundException;
  * 
  * @author group17
  */
-public class Pile {
-	private final LinkedList<Card>	cards	= new LinkedList<Card>();
+public class Pile implements Serializable {
+	/**
+	 * Serializable
+	 */
+	private static final long		serialVersionUID	= 1L;
+	private final LinkedList<Card>	cards				= new LinkedList<Card>();
 	private String					name;
 
 	/**
