@@ -78,7 +78,7 @@ public class Listener {
 				try {
 					clientSocket = serverSocket.accept();
 					new Thread(new ConnectionHandler()).start();
-					Log.d("network L", "New connection handler started");
+					Log.d("network L", "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
 				} catch (IOException e) {
 					Log.d("network L", "Could not create socket on port " + port);
 					return;

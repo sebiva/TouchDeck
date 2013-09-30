@@ -15,7 +15,7 @@ import android.widget.EditText;
  * 
  * @author group17
  */
-public class PileNameDialog extends Observable {
+public class JoinGameDialog extends Observable {
 	private static int			num	= 1;
 	private EditText			input;
 	private final DialogText	dt;
@@ -28,7 +28,7 @@ public class PileNameDialog extends Observable {
 	 * @param id The id of the button that was pressed
 	 * @param msg The message that will be shown to the user
 	 */
-	public PileNameDialog(Observer o, int id, String msg) {
+	public JoinGameDialog(Observer o, int id, String msg) {
 		dt = new DialogText(o, id);
 		this.msg = msg;
 	}
@@ -44,7 +44,7 @@ public class PileNameDialog extends Observable {
 		input = new EditText(act);
 		AlertDialog.Builder alert = new AlertDialog.Builder(act);
 
-		alert.setTitle("Create pile");
+		alert.setTitle("Join game");
 		alert.setMessage(msg);
 
 		// Set an EditText view to get user input
@@ -53,18 +53,10 @@ public class PileNameDialog extends Observable {
 		alert.setPositiveButton(string.ok, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
-				// OK
-				// Check if a name was entered
-				if (input.getText().toString().equals("")) {
-					// Set the name to a unique default value
-					String defaultName = "Pile " + num++;
-					dt.setText(defaultName);
-					Log.d("dialog", "Name is (default) " + defaultName);
-				} else {
-					// Set the name to the entered value
-					dt.setText(input.getText().toString());
-					Log.d("dialog", "Name is " + input.getText().toString());
-				}
+
+				// Set the IP to the entered value
+				dt.setText(input.getText().toString());
+				Log.d("dialog", "IP is " + input.getText().toString());
 
 			}
 		});
@@ -79,6 +71,30 @@ public class PileNameDialog extends Observable {
 		// Show the dialog
 		alert.show();
 
+	}
+
+	public static boolean validIP(String ip) {
+		try {
+			if (ip == null || ip.isEmpty()) {
+				return false;
+			}
+
+			String[] parts = ip.split("\\.");
+			if (parts.length != 4) {
+				return false;
+			}
+
+			for (String s : parts) {
+				int i = Integer.parseInt(s);
+				if ((i < 0) || (i > 255)) {
+					return false;
+				}
+			}
+
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
 	}
 
 }

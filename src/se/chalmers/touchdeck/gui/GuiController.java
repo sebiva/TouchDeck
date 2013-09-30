@@ -37,7 +37,7 @@ public class GuiController implements Observer {
 
 	private Socket					socket;
 	private final int				port				= 4242;
-	private final String			ipAddr				= "127.0.0.1";
+	private String					ipAddr;
 
 	public static GuiController getInstance() {
 		if (instance == null) {
@@ -47,9 +47,6 @@ public class GuiController implements Observer {
 	}
 
 	private GuiController() {
-		new Updater(this);
-		Thread th = new Thread(new Connection());
-		th.start();
 	}
 
 	/**
@@ -87,6 +84,7 @@ public class GuiController implements Observer {
 			out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(operation);
 			Log.d("network GuC", "Operation written into socket");
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -261,4 +259,13 @@ public class GuiController implements Observer {
 		mGs = gs;
 	}
 
+	public void setIP(String ipAddr) {
+		// TODO Auto-generated method stub
+		this.ipAddr = ipAddr;
+
+		new Updater(this);
+		Thread th = new Thread(new Connection());
+		th.start();
+
+	}
 }

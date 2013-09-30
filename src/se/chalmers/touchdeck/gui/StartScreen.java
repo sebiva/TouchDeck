@@ -1,8 +1,15 @@
 package se.chalmers.touchdeck.gui;
 
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
+import se.chalmers.touchdeck.gui.dialogs.DialogText;
+import se.chalmers.touchdeck.gui.dialogs.JoinGameDialog;
+import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +22,7 @@ import android.view.View;
  * 
  * @author group17
  */
-public class StartScreen extends Activity {
+public class StartScreen extends Activity implements Observer {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,7 @@ public class StartScreen extends Activity {
 		Intent launchGui = new Intent(this, TableView.class);
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
+		launchGui.putExtra("IPaddr", "127.0.0.1");
 		startActivity(launchGui);
 	}
 
@@ -50,9 +58,11 @@ public class StartScreen extends Activity {
 	 * @param v The view (button) that is pressed
 	 */
 	public void joinGame(View v) {
-		Intent launchGui = new Intent(this, TableView.class);
-		launchGui.putExtra("state", new GameState(null)); // TODO
-		// startActivity(launchGui);
+		int id = v.getId();
+		String msg = "Please enter the host IP: ";
+		JoinGameDialog dialog = new JoinGameDialog(this, id, msg);
+		dialog.show(this);
+
 	}
 
 	/**
@@ -62,5 +72,26 @@ public class StartScreen extends Activity {
 	public void onPause() {
 		super.onPause();
 		finish();
+	}
+
+	@Override
+	public void update(Observable obs, Object param) {
+
+		if (obs instanceof DialogText) {
+			DialogText dt = (DialogText) param;
+
+			if (!JoinGameDialog.validIP(dt.getString())) {
+				// Prompt the user to try again
+				String msg = "Please enter a valid IP: ";
+				JoinGameDialog dialog = new JoinGameDialog(this, dt.getId(), msg);
+				dialog.show(this);
+			} else {
+				Intent launchGui = new Intent(this, TableView.class);
+				launchGui.putExtra("state", new GameState(new ArrayList<Pile>()));
+				launchGui.putExtra("IPaddr", dt.getString()); // TODO
+				startActivity(launchGui);
+			}
+
+		}
 	}
 }

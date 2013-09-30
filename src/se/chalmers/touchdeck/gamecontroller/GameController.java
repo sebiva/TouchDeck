@@ -33,7 +33,7 @@ public class GameController {
 
 	private final GameState				gs;
 	private final int					port				= 4243;
-	private Socket						socket;
+	private final LinkedList<Socket>	sockets				= new LinkedList<Socket>();
 	private final LinkedList<Thread>	threads				= new LinkedList<Thread>();
 
 	/**
@@ -81,7 +81,7 @@ public class GameController {
 		public void run() {
 			try {
 				InetAddress serverAddr = InetAddress.getByName(ipAddr);
-				socket = new Socket(serverAddr, port);
+				sockets.add(new Socket(serverAddr, port));
 				Log.d("network GaC", "Client socket setup at " + port);
 				sendUpdatedState();
 			} catch (Exception e1) {
@@ -105,9 +105,12 @@ public class GameController {
 	public void sendUpdatedState() {
 		ObjectOutputStream out = null;
 		try {
-			out = new ObjectOutputStream(socket.getOutputStream());
-			out.writeObject(gs);
-			Log.d("network GaC", "State written into socket");
+			for (Socket socket : sockets) {
+				out = new ObjectOutputStream(socket.getOutputStream());
+				out.writeObject(gs);
+				Log.d("network GaC", "State written into socket");
+				out.flush();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

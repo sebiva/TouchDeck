@@ -39,8 +39,10 @@ public class TableView extends Activity implements OnClickListener {
 		// Create Buttons in the tableview
 		setupButtons();
 		Serializable s = getIntent().getExtras().getSerializable("state");
+		String ipAddr = getIntent().getExtras().getString("IPaddr");
 		GameState gs = (GameState) s;
 		gc = GuiController.getInstance();
+		gc.setIP(ipAddr);
 		gc.updateGameState(gs);
 		gc.updateTableViewReferences(this, buttons);
 	}
@@ -95,6 +97,12 @@ public class TableView extends Activity implements OnClickListener {
 		gc.tableButtonPressed(v);
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		android.os.Process.killProcess(android.os.Process.myPid());
+	}
+
 	/**
 	 * Makes the user have to press the back-button twice to exit the app
 	 */
@@ -102,6 +110,8 @@ public class TableView extends Activity implements OnClickListener {
 	public void onBackPressed() {
 		if (isBackPressedBefore) {
 			super.onBackPressed();
+			// System.exit(0); // Ajajaj
+			finish();
 			return;
 		}
 		this.isBackPressedBefore = true;
