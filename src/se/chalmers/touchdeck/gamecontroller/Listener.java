@@ -50,7 +50,7 @@ public class Listener {
 			Log.d("handle", "create");
 			break;
 		case connect:
-			gc.startConnectThread();
+			gc.startConnectThread(op.getIpAddr());
 			Log.d("handle", "connected");
 			break;
 		default:
@@ -71,6 +71,7 @@ public class Listener {
 				Log.d("network L", "Server socket set up on port " + port);
 			} catch (IOException e1) {
 				Log.d("network L", "Server socket could not be set up on port " + port);
+				return;
 			}
 			// Accept all incomming requests to this socket and assign them a connection handler
 			while (true) {
@@ -80,6 +81,7 @@ public class Listener {
 					Log.d("network L", "New connection handler started");
 				} catch (IOException e) {
 					Log.d("network L", "Could not create socket on port " + port);
+					return;
 				}
 			}
 		}
@@ -99,11 +101,15 @@ public class Listener {
 					ois = (new ObjectInputStream(clientSocket.getInputStream()));
 				} catch (IOException e) {
 					e.printStackTrace();
+					return;
 				}
 				Operation op;
 				try {
 					// Read the object and handle the operation
 					op = (Operation) ois.readObject();
+					String ipAddr = clientSocket.getRemoteSocketAddress().toString();
+					ipAddr = ipAddr.substring(1, ipAddr.indexOf(":"));
+					op.setIpAddr(ipAddr);
 					handleOp(op);
 					Log.d("network L", "Operation completed");
 				} catch (IOException e) {

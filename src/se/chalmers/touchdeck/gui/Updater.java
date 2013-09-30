@@ -31,6 +31,18 @@ public class Updater extends Observable {
 		new Thread(new AcceptIncoming()).start();
 	}
 
+	public void close() {
+		try {
+			serverSocket.close();
+			clientSocket.close();
+			Log.d("close", "GuC in sockets closed");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	/**
 	 * Accept the incomming request from the gameController
 	 * 
@@ -55,6 +67,7 @@ public class Updater extends Observable {
 				Log.d("network U", "New connection handler started");
 			} catch (IOException e) {
 				Log.d("network U", "Could not create socket on port " + port);
+				return;
 			}
 		}
 	}
@@ -81,7 +94,7 @@ public class Updater extends Observable {
 						setChanged();
 						notifyObservers(gs);
 					}
-					Log.d("network U", "Operation completed ");
+					Log.d("network U", "New State received ");
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {

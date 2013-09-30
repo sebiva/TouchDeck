@@ -8,6 +8,7 @@ import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,6 +16,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 /**
  * The Activity for the table view, contains a grid with pile positions represented as buttons.
@@ -27,6 +29,8 @@ public class TableView extends Activity implements OnClickListener {
 
 	private final ArrayList<Button>	buttons	= new ArrayList<Button>();
 	private GuiController			gc;
+
+	private boolean					isBackPressedBefore;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,5 +93,26 @@ public class TableView extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		gc.tableButtonPressed(v);
+	}
+
+	/**
+	 * Makes the user have to press the back-button twice to exit the app
+	 */
+	@Override
+	public void onBackPressed() {
+		if (isBackPressedBefore) {
+			super.onBackPressed();
+			return;
+		}
+		this.isBackPressedBefore = true;
+		Toast.makeText(this, "Click back again to exit", Toast.LENGTH_SHORT).show();
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				isBackPressedBefore = false;
+
+			}
+		}, 2000);
 	}
 }

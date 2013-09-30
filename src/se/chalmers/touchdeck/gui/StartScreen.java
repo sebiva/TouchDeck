@@ -2,6 +2,7 @@ package se.chalmers.touchdeck.gui;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.gamecontroller.GameState;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,15 +31,36 @@ public class StartScreen extends Activity {
 	}
 
 	/**
-	 * Called when the 'start local game' - button is pressed. An intent is created and a TableView activity is started,
-	 * along with the gamecontroller as the user is the hosts of their own game.
+	 * Called when the 'create game' - button is pressed. An intent is created and a TableView activity is started,
+	 * along with the gamecontroller as the user is the host of the game.
 	 * 
 	 * @param v The view (button) that is pressed
 	 */
-	public void startLocal(View v) {
-		Intent localGame = new Intent(this, TableView.class);
+	public void createGame(View v) {
+		Intent launchGui = new Intent(this, TableView.class);
 		GameController gc = new GameController();
-		localGame.putExtra("state", gc.getGameState());
-		startActivity(localGame);
+		launchGui.putExtra("state", gc.getGameState());
+		startActivity(launchGui);
+	}
+
+	/**
+	 * Called when the 'join game' - button is pressed. An intent is created and a TableView activity is started. As the
+	 * user is not the host, no GameController will be created
+	 * 
+	 * @param v The view (button) that is pressed
+	 */
+	public void joinGame(View v) {
+		Intent launchGui = new Intent(this, TableView.class);
+		launchGui.putExtra("state", new GameState(null)); // TODO
+		// startActivity(launchGui);
+	}
+
+	/**
+	 * Make this view not open again when pressing back
+	 */
+	@Override
+	public void onPause() {
+		super.onPause();
+		finish();
 	}
 }

@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import se.chalmers.touchdeck.enums.Rank;
 import se.chalmers.touchdeck.enums.Suit;
@@ -21,20 +22,19 @@ import android.util.Log;
 public class GameController {
 
 	// Public constants
-	public static final int			MAX_NUMBER_OF_PILES	= 21;
-	public static final int			MID_OF_TABLE		= 10;
-	public static final int			NUM_ROWS			= 3;
-	public static final int			NUM_COLUMNS			= 7;
+	public static final int				MAX_NUMBER_OF_PILES	= 21;
+	public static final int				MID_OF_TABLE		= 10;
+	public static final int				NUM_ROWS			= 3;
+	public static final int				NUM_COLUMNS			= 7;
 
-	private final ArrayList<Pile>	mTable				= new ArrayList<Pile>();
-	private final HashSet<String>	pileNames			= new HashSet<String>();
-	private final String			DECK_NAME			= "deck";
+	private final ArrayList<Pile>		mTable				= new ArrayList<Pile>();
+	private final HashSet<String>		pileNames			= new HashSet<String>();
+	private final String				DECK_NAME			= "deck";
 
-	private final GameState			gs;
-	private final int				port				= 4243;
-	private final String			ipAddr				= "127.0.0.1";
-	private Socket					socket;
-	private Thread					thread;
+	private final GameState				gs;
+	private final int					port				= 4243;
+	private Socket						socket;
+	private final LinkedList<Thread>	threads				= new LinkedList<Thread>();
 
 	/**
 	 * Creates a new gamecontroller and sets up a deck.
@@ -71,6 +71,12 @@ public class GameController {
 	 */
 	// TODO Refactor
 	private class Connection implements Runnable {
+		private final String	ipAddr;
+
+		public Connection(String ipAddr) {
+			this.ipAddr = ipAddr;
+		}
+
 		@Override
 		public void run() {
 			try {
@@ -81,16 +87,16 @@ public class GameController {
 			} catch (Exception e1) {
 				Log.d("network GaC", "Error setting up client" + e1.getMessage());
 			}
-
 		}
 	}
 
 	/**
 	 * Starts the thread for connecting back to the gui
 	 */
-	public void startConnectThread() {
-		thread = new Thread(new Connection());
+	public void startConnectThread(String ipAddr) {
+		Thread thread = new Thread(new Connection(ipAddr));
 		thread.start();
+		threads.add(thread);
 	}
 
 	/**

@@ -14,14 +14,15 @@ public class Operation implements Serializable {
 	private static final long	serialVersionUID	= -2413214187514892785L;
 
 	public enum Op {
-		move, flip, create, connect
+		move, flip, create, connect, disconnect
 	}
 
-	private Op				op;
-	private Integer			pile1;
-	private Integer			pile2;
-	private Integer			cardPos;
-	private final String	name;
+	private Op		op;
+	private Integer	pile1;
+	private Integer	pile2;
+	private Integer	cardPos;
+	private String	name;
+	private String	ipAddr;
 
 	public Operation(Op op, Integer pile1, Integer pile2, Integer cardPos, String name) {
 		this.op = op;
@@ -92,5 +93,26 @@ public class Operation implements Serializable {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return the ipAddr
+	 */
+	public String getIpAddr() {
+		return ipAddr;
+	}
+
+	/**
+	 * @param ipAddr the ipAddr to set
+	 */
+	public void setIpAddr(String ipAddr) {
+		this.ipAddr = ipAddr;
 	}
 }

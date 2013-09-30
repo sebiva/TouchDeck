@@ -28,7 +28,6 @@ import android.widget.Button;
 public class GuiController implements Observer {
 
 	private GameState				mGs;
-	private ArrayList<Pile>			piles;
 	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
 	private TableView				mTableView;
 
@@ -97,9 +96,8 @@ public class GuiController implements Observer {
 	 * Updates the tableview based on the current state of the piles
 	 */
 	public void updateTableView() {
-		piles = mGs.getPiles();
 		int i = 0;
-		for (Pile p : piles) {
+		for (Pile p : mGs.getPiles()) {
 			Button b = mTableViewButtons.get(i);
 			if (p == null) {
 				b.setBackgroundResource(0);
@@ -151,7 +149,7 @@ public class GuiController implements Observer {
 	 * @return The requested pile
 	 */
 	public Pile getPile(int id) {
-		Pile p = piles.get(id);
+		Pile p = mGs.getPiles().get(id);
 		return p;
 	}
 
@@ -262,4 +260,5 @@ public class GuiController implements Observer {
 	public void updateGameState(GameState gs) {
 		mGs = gs;
 	}
+
 }
