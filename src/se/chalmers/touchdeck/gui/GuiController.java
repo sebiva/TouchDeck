@@ -134,7 +134,7 @@ public class GuiController implements Observer {
 		} else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, id, msg);
+			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGs.getDefaultPileName());
 			dialog.show(mTableView);
 		}
 
@@ -178,7 +178,7 @@ public class GuiController implements Observer {
 			if (mGs.getPileNames().contains(dt.getString())) {
 				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg);
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, mGs.getDefaultPileName());
 				dialog.show(mTableView);
 			} else {
 				// Create the pile

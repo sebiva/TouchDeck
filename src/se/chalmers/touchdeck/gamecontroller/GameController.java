@@ -35,6 +35,7 @@ public class GameController {
 	private final int					port				= 4243;
 	private final LinkedList<Socket>	sockets				= new LinkedList<Socket>();
 	private final LinkedList<Thread>	threads				= new LinkedList<Thread>();
+	private static int					pileNo				= 1;
 
 	/**
 	 * Creates a new gamecontroller and sets up a deck.
@@ -45,7 +46,7 @@ public class GameController {
 			mTable.add(i, null);
 		}
 		createDeck();
-		gs = new GameState(mTable);
+		gs = new GameState(mTable, pileNames, pileNo);
 		new Listener(this);
 	}
 
@@ -133,20 +134,13 @@ public class GameController {
 	 */
 	public void createPile(int id, String name) {
 		// Make a new Pile object and set() it in the list
+		if (name.equals("Pile " + pileNo)) {
+			pileNo++;
+			gs.setDefaultPileNo(pileNo);
+		}
 		mTable.set(id, new Pile(name));
 		pileNames.add(name);
 		sendUpdatedState();
-	}
-
-	/**
-	 * Check if the name is already taken by another pile
-	 * 
-	 * @param s The name to check
-	 * @return Whether it already exists or not
-	 */
-	public boolean checkIfNameExists(String s) {
-		return pileNames.contains(s);
-
 	}
 
 	/**

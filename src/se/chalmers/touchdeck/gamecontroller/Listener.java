@@ -16,7 +16,6 @@ public class Listener {
 
 	private final GameController	gc;
 	private ServerSocket			serverSocket;
-	private Socket					clientSocket;
 
 	private final int				port	= 4242;
 
@@ -76,11 +75,11 @@ public class Listener {
 			// Accept all incomming requests to this socket and assign them a connection handler
 			while (true) {
 				try {
-					clientSocket = serverSocket.accept();
-					new Thread(new ConnectionHandler()).start();
+					Socket clientSocket = serverSocket.accept();
+					new Thread(new ConnectionHandler(clientSocket)).start();
 					Log.d("network L", "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
 				} catch (IOException e) {
-					Log.d("network L", "Could not create socket on port " + port);
+					Log.d("network L", "Could not create client socket");
 					return;
 				}
 			}
@@ -91,17 +90,25 @@ public class Listener {
 	 * Handles the connection with one gui
 	 */
 	private class ConnectionHandler implements Runnable {
+		private final Socket	clientSocket;
+
+		public ConnectionHandler(Socket s) {
+			clientSocket = s;
+		}
 
 		@Override
 		public void run() {
 			// Keep reading the input
 			while (true) {
+				Log.d("network L", "In loop");
 				ObjectInputStream ois = null;
 				try {
 					ois = (new ObjectInputStream(clientSocket.getInputStream()));
-				} catch (IOException e) {
+					Log.d("network L", "InputStream created");
+				} catch (Exception e) { // TODO Should be IOException
+					Log.d("network L", "Exiting ConnectionHandler");
 					e.printStackTrace();
-					return;
+					break;// Should be return
 				}
 				Operation op;
 				try {
@@ -111,10 +118,12 @@ public class Listener {
 					ipAddr = ipAddr.substring(1, ipAddr.indexOf(":"));
 					op.setIpAddr(ipAddr);
 					handleOp(op);
-					Log.d("network L", "Operation completed");
+					Log.d("network L" + clientSocket.getLocalPort(), "Operation completed" + op.getOp());
 				} catch (IOException e) {
+					Log.d("network L", "Reading went wrong, IO");
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
+					Log.d("network L", "Reading went wrong, ClassNotFound");
 					e.printStackTrace();
 				}
 			}

@@ -11,12 +11,11 @@ import android.util.Log;
 import android.widget.EditText;
 
 /**
- * A dialog shown to the user that lets it choose a name when creating a new pile
+ * A dialog shown to the user that lets it enter the ip address of the game to join
  * 
  * @author group17
  */
 public class JoinGameDialog extends Observable {
-	private static int			num	= 1;
 	private EditText			input;
 	private final DialogText	dt;
 	private final String		msg;
@@ -34,14 +33,14 @@ public class JoinGameDialog extends Observable {
 	}
 
 	/**
-	 * Shows the dialog in the specified activity. Prompts the user to enter an name for the pile to be created. If no
-	 * name is entered, a default name is given
+	 * Shows the dialog in the specified activity. Prompts the user to enter the ip address of the host
 	 * 
 	 * @param act The activity to show the dialog in
 	 */
 	public void show(Activity act) {
 		// A text input for the user to enter the name in
 		input = new EditText(act);
+		input.setText("192.168.0.1");
 		AlertDialog.Builder alert = new AlertDialog.Builder(act);
 
 		alert.setTitle("Join game");
@@ -73,6 +72,12 @@ public class JoinGameDialog extends Observable {
 
 	}
 
+	/**
+	 * Checks if the given string is a valid ip address
+	 * 
+	 * @param ip The string to check
+	 * @return True if vaild
+	 */
 	public static boolean validIP(String ip) {
 		try {
 			if (ip == null || ip.isEmpty()) {

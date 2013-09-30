@@ -1,6 +1,7 @@
 package se.chalmers.touchdeck.gui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -87,7 +88,13 @@ public class StartScreen extends Activity implements Observer {
 				dialog.show(this);
 			} else {
 				Intent launchGui = new Intent(this, TableView.class);
-				launchGui.putExtra("state", new GameState(new ArrayList<Pile>()));
+				ArrayList<Pile> emptyPiles = new ArrayList<Pile>();
+				int numButtons = getResources().getInteger(R.integer.table_Col_Count)
+						* getResources().getInteger(R.integer.table_RowC_ount);
+				for (int i = 0; i < numButtons; i++) {
+					emptyPiles.add(null);
+				}
+				launchGui.putExtra("state", new GameState(emptyPiles, new HashSet<String>(), 1));
 				launchGui.putExtra("IPaddr", dt.getString()); // TODO
 				startActivity(launchGui);
 			}

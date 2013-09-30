@@ -16,10 +16,10 @@ import android.widget.EditText;
  * @author group17
  */
 public class PileNameDialog extends Observable {
-	private static int			num	= 1;
 	private EditText			input;
 	private final DialogText	dt;
 	private final String		msg;
+	private final String		defaultName;
 
 	/**
 	 * Creates a new Dialog object
@@ -28,9 +28,10 @@ public class PileNameDialog extends Observable {
 	 * @param id The id of the button that was pressed
 	 * @param msg The message that will be shown to the user
 	 */
-	public PileNameDialog(Observer o, int id, String msg) {
+	public PileNameDialog(Observer o, int id, String msg, String defaultName) {
 		dt = new DialogText(o, id);
 		this.msg = msg;
+		this.defaultName = defaultName;
 	}
 
 	/**
@@ -57,7 +58,6 @@ public class PileNameDialog extends Observable {
 				// Check if a name was entered
 				if (input.getText().toString().equals("")) {
 					// Set the name to a unique default value
-					String defaultName = "Pile " + num++;
 					dt.setText(defaultName);
 					Log.d("dialog", "Name is (default) " + defaultName);
 				} else {
