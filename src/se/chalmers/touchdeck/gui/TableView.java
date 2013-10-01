@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -23,7 +24,7 @@ import android.widget.Toast;
  * 
  * @author group17
  */
-public class TableView extends Activity implements OnClickListener {
+public class TableView extends Activity implements OnClickListener, OnLongClickListener {
 
 	private TableLayout				tl;
 
@@ -78,6 +79,7 @@ public class TableView extends Activity implements OnClickListener {
 				buttons.add(b);
 				// Set this interface as the listener to the button
 				b.setOnClickListener(this);
+				b.setOnLongClickListener(this);
 				// Apply the layout parameters
 				b.setLayoutParams(bp);
 			}
@@ -95,6 +97,20 @@ public class TableView extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		gc.tableButtonPressed(v);
+	}
+	
+	/**
+	 * Called when one of the buttons is held down
+	 * 
+	 * @param v The view (button) that has been held down
+	 */
+	@Override
+	public boolean onLongClick(View v) {		
+		if( gc.getPile( v.getId() ) != null ) {
+			gc.tableButtonLongPressed(v);			
+			return true;
+		}
+		else return false;
 	}
 
 	@Override
