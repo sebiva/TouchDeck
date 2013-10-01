@@ -9,8 +9,12 @@ import se.chalmers.touchdeck.gamecontroller.GameState;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -30,7 +34,8 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 
 	private final ArrayList<Button>	buttons	= new ArrayList<Button>();
 	private GuiController			gc;
-
+	
+	private int						pileId;
 	private boolean					isBackPressedBefore;
 
 	@Override
@@ -52,6 +57,35 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	/**
+	 * Create the context menus that appear when long-pressing a pile.
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		pileId = v.getId();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.pile_menu, menu);	
+	}
+	
+	/**
+	 * Called when an option in the context menu is chosen.
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_item_shuffle:
+				gc.shufflePile(pileId);
+				break;
+			case R.id.menu_item_delete:
+				// gc.deletePile(pileId);
+				break;
+			default:
+				//
+		}
 		return true;
 	}
 
@@ -80,6 +114,7 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 				// Set this interface as the listener to the button
 				b.setOnClickListener(this);
 				b.setOnLongClickListener(this);
+				registerForContextMenu(b);
 				// Apply the layout parameters
 				b.setLayoutParams(bp);
 			}
@@ -107,7 +142,7 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 	@Override
 	public boolean onLongClick(View v) {		
 		if( gc.getPile( v.getId() ) != null ) {
-			gc.tableButtonLongPressed(v);			
+			openContextMenu(v);		
 			return true;
 		}
 		else return false;

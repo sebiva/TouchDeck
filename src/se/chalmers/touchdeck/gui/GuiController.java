@@ -139,27 +139,23 @@ public class GuiController implements Observer {
 			dialog.show(mTableView);
 		}
 
-	}
-	
+	}	
+
 	/**
-	 * Called when a button is held down in the tableview
+	 * Shuffle the specified pile
 	 * 
-	 * @param v The view (button) that has been held down
+	 * @param pileId The id of the pile to shuffled
 	 */
-	public void tableButtonLongPressed(View v) {
-		int id = v.getId();
-		Pile p = getPile(id);
-		
-		if (p.getSize() > 0) {			
-			sendUpdate(Op.shuffle, id, null, null, null);
-			Toast.makeText(mTableView, "Pile shuffled!", Toast.LENGTH_SHORT).show();
-			updatePileView();
-			updateTableView();			
-		}
-		else {
-			//Delete pile
-		}
-	}
+	public void shufflePile(int pileId) {	
+		sendUpdate(Op.shuffle, pileId, null, null, null);
+		Toast.makeText(mTableView, "Pile shuffled!", Toast.LENGTH_SHORT).show();
+		updatePileView();
+		updateTableView();
+	}		
+	
+	//	public void deletePile(int pileId) {
+	//		sendUpdate(Op.delete, pileId, null, null, null);
+	//	}
 
 	/**
 	 * Get a pile from an id

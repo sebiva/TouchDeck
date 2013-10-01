@@ -7,5 +7,7 @@
     <string name="join_btn">Join Game</string>
     <string name="menu_item_flip">Flip card</string>
     <string name="menu_item_move">Move card</string>
+    <string name="menu_item_shuffle">Shuffle pile</string>
+    <string name="menu_item_delete">Delete pile</string>
     
 </resources>
