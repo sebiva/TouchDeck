@@ -168,6 +168,17 @@ public class GameController {
 			sendUpdatedState();
 		}
 	}
+	
+	/**
+	 * Shuffle the specified pile
+	 * 
+	 * @param pileId The pile to shuffle
+	 */
+	public void shufflePile(int pileId) {
+		Pile p = mTable.get(pileId);
+		p.shuffle();
+		sendUpdatedState();
+	}
 
 	/**
 	 * @return the gamestate

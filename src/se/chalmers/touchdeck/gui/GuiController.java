@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * Controls the gui of the game. Singleton class
@@ -138,6 +139,26 @@ public class GuiController implements Observer {
 			dialog.show(mTableView);
 		}
 
+	}
+	
+	/**
+	 * Called when a button is held down in the tableview
+	 * 
+	 * @param v The view (button) that has been held down
+	 */
+	public void tableButtonLongPressed(View v) {
+		int id = v.getId();
+		Pile p = getPile(id);
+		
+		if (p.getSize() > 0) {			
+			sendUpdate(Op.shuffle, id, null, null, null);
+			Toast.makeText(mTableView, "Pile shuffled!", Toast.LENGTH_SHORT).show();
+			updatePileView();
+			updateTableView();			
+		}
+		else {
+			//Delete pile
+		}
 	}
 
 	/**
