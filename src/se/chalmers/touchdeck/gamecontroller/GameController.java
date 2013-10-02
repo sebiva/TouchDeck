@@ -28,14 +28,14 @@ public class GameController {
 	public static final int				NUM_COLUMNS			= 7;
 
 	private final ArrayList<Pile>		mTable				= new ArrayList<Pile>();
-	private final HashSet<String>		pileNames			= new HashSet<String>();
+	private final HashSet<String>		mPileNames			= new HashSet<String>();
 
-	private final GameState				gs;
-	private final int					port				= 4243;
-	private final LinkedList<Socket>	sockets				= new LinkedList<Socket>();
-	private final LinkedList<Thread>	threads				= new LinkedList<Thread>();
+	private final GameState				mGameState;
+	private final int					mPort				= 4243;
+	private final LinkedList<Socket>	mSockets			= new LinkedList<Socket>();
+	private final LinkedList<Thread>	mThreads			= new LinkedList<Thread>();
 
-	private static int					pileNo				= 1;
+	private static int					defaultPileNameNo	= 1;
 
 	/**
 	 * Creates a new gamecontroller and sets up a deck.
@@ -46,7 +46,7 @@ public class GameController {
 			mTable.add(i, null);
 		}
 		createDeck();
-		gs = new GameState(mTable, pileNames, pileNo);
+		mGameState = new GameState(mTable, mPileNames, defaultPileNameNo);
 		new Listener(this);
 	}
 
@@ -57,7 +57,7 @@ public class GameController {
 	 */
 	private Pile createDeck() {
 		Pile deck = new Pile("deck"); // TODO Refactor, no hardcoded string
-		pileNames.add("deck");
+		mPileNames.add("deck");
 		for (Suit suit : Suit.values()) {
 			for (Rank rank : Rank.values()) {
 				deck.addCard(new Card(suit, rank));
@@ -83,8 +83,8 @@ public class GameController {
 		public void run() {
 			try {
 				InetAddress serverAddr = InetAddress.getByName(ipAddr);
-				sockets.add(new Socket(serverAddr, port));
-				Log.d("network GaC", "Client socket setup at " + port);
+				mSockets.add(new Socket(serverAddr, mPort));
+				Log.d("network GaC", "Client socket setup at " + mPort);
 				sendUpdatedState();
 			} catch (Exception e1) {
 				Log.d("network GaC", "Error setting up client" + e1.getMessage());
@@ -95,21 +95,21 @@ public class GameController {
 	/**
 	 * Starts the thread for connecting back to the gui
 	 */
-	public void startConnectThread(String ipAddr) {
-		Thread thread = new Thread(new Connection(ipAddr));
+	public void startConnectThread(Operation op) {
+		Thread thread = new Thread(new Connection(op.getIpAddr()));
 		thread.start();
-		threads.add(thread);
+		mThreads.add(thread);
 	}
 
 	/**
-	 * Sends the gamestate to the gui
+	 * Sends the gamestate to gui
 	 */
 	public void sendUpdatedState() {
 		ObjectOutputStream out = null;
 		try {
-			for (Socket socket : sockets) {
+			for (Socket socket : mSockets) {
 				out = new ObjectOutputStream(socket.getOutputStream());
-				out.writeObject(gs);
+				out.writeObject(mGameState);
 				Log.d("network GaC", "State written into socket");
 				out.flush();
 			}
@@ -131,22 +131,24 @@ public class GameController {
 	/**
 	 * Insert a new, empty pile into the list of piles
 	 * 
-	 * @param id The table position identifier
+	 * @param op The operation to carry out, including the position of the pile to create and its name
 	 */
-	public void createPile(int id, String name) {
-		if (mTable.get(id) != null) {
+	public void createPile(Operation op) {
+		int pile = op.getPile1();
+		String name = op.getName();
+		if (mTable.get(pile) != null) {
 			return; // There was already a pile there
 		}
 		// Check that the name is unique and that it
-		if (pileNames.contains(name)) {
+		if (mPileNames.contains(name)) {
 			return;
-		} else if (name.equals("Pile " + pileNo)) {
-			pileNo++;
-			gs.setDefaultPileNo(pileNo);
+		} else if (name.equals("Pile " + defaultPileNameNo)) {
+			defaultPileNameNo++;
+			mGameState.setDefaultPileNo(defaultPileNameNo);
 		}
 		// Make a new Pile object and set() it in the list
-		mTable.set(id, new Pile(name));
-		pileNames.add(name);
+		mTable.set(pile, new Pile(name));
+		mPileNames.add(name);
 		sendUpdatedState();
 	}
 
@@ -156,53 +158,70 @@ public class GameController {
 	 * @param pilePos The pile index where the card is located in
 	 * @param cardPos The card to flips index in the pile
 	 */
-	public void flip(int pilePos, int cardPos) {
-		mTable.get(pilePos).getCard(cardPos).flipFace();
-		sendUpdatedState();
+	public synchronized void flip(Operation op) {
+		Card cardToFlip = new Card(op.getSuit(), op.getRank());
+		Pile p = mTable.get(op.getPile1());
+		for (int i = 0; i < p.getSize(); i++) {
+			Card c = p.getCard(i);
+			if (c.equals(cardToFlip)) {
+				c.flipFace();
+				sendUpdatedState();
+				return;
+			}
+		}
 	}
 
 	/**
 	 * Move a card from one pile to another
 	 * 
-	 * @param pileId The Pile to send from
-	 * @param pos The position in p1 to send from
-	 * @param destPileId The pile to send to
+	 * @param op The operation to carry out, containing the pile to move from, the pile to move to, and the card to move
 	 */
-	public void moveCard(int pileId, int pos, int destPileId) {
-		Card c = mTable.get(pileId).takeCard(pos);
-		if (c != null) {
-			mTable.get(destPileId).addCard(c);
-			sendUpdatedState();
+	public synchronized void moveCard(Operation op) {
+		Pile p = mTable.get(op.getPile1());
+		Card cardToMove = new Card(op.getSuit(), op.getRank());
+		for (int i = 0; i < p.getSize(); i++) {
+			Card c = p.getCard(i);
+			if (c.equals(cardToMove)) {
+				p.takeCard(i);
+				mTable.get(op.getPile2()).addCard(c);
+				sendUpdatedState();
+				Log.d("aou", cardToMove.toString());
+				return;
+			}
 		}
 	}
 
 	/**
 	 * Shuffle the specified pile
 	 * 
-	 * @param pileId The pile to shuffle
+	 * @param op The operation to carry out, containing the pile shuffle
 	 */
-	public void shufflePile(int pileId) {
-		Pile p = mTable.get(pileId);
-		p.shuffle();
-		sendUpdatedState();
+	public synchronized void shufflePile(Operation op) {
+		Pile p = mTable.get(op.getPile1());
+		if (p != null) {
+			p.shuffle();
+			sendUpdatedState();
+		}
 	}
 
 	/**
 	 * Delete the specified pile
 	 * 
-	 * @param pileId The pile to delete
+	 * @param op The operation to carry out, containing the pile to delete
 	 */
-	public void deletePile(int pileId) {
-		pileNames.remove(mTable.get(pileId).getName());
-		mTable.set(pileId, null);
-		sendUpdatedState();
+	public synchronized void deletePile(Operation op) {
+		int pile = op.getPile1();
+		if (mTable.get(pile) != null && mTable.get(pile).getSize() == 0) {
+			mPileNames.remove(mTable.get(pile).getName());
+			mTable.set(pile, null);
+			sendUpdatedState();
+		}
 	}
 
 	/**
 	 * @return the gamestate
 	 */
 	public GameState getGameState() {
-		return gs;
+		return mGameState;
 	}
-
 }

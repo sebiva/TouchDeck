@@ -19,7 +19,7 @@ public class Updater extends Observable {
 	private ServerSocket	serverSocket;
 	private Socket			clientSocket;
 	private final int		port	= 4243;
-	private GameState		gs;
+	private GameState		gameState;
 
 	/**
 	 * Create a new Updater
@@ -89,10 +89,10 @@ public class Updater extends Observable {
 				}
 				try {
 					// Read the GameState
-					gs = (GameState) ois.readObject();
-					if (gs != null) {
+					gameState = (GameState) ois.readObject();
+					if (gameState != null) {
 						setChanged();
-						notifyObservers(gs);
+						notifyObservers(gameState);
 					}
 					Log.d("network U", "New State received ");
 				} catch (IOException e) {

@@ -29,13 +29,13 @@ import android.widget.Toast;
  */
 public class TableView extends Activity implements OnClickListener {
 
-	private TableLayout				tl;
+	private TableLayout				mTableLayout;
 
-	private final ArrayList<Button>	buttons	= new ArrayList<Button>();
-	private GuiController			gc;
+	private final ArrayList<Button>	mButtons	= new ArrayList<Button>();
+	private GuiController			mGuiController;
 	
-	private int						pileId;
-	private boolean					isBackPressedBefore;
+	private int						mPileId;
+	private boolean					mIsBackPressedBefore;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +46,10 @@ public class TableView extends Activity implements OnClickListener {
 		Serializable s = getIntent().getExtras().getSerializable("state");
 		String ipAddr = getIntent().getExtras().getString("IPaddr");
 		GameState gs = (GameState) s;
-		gc = GuiController.getInstance();
-		gc.setIP(ipAddr);
-		gc.updateGameState(gs);
-		gc.updateTableViewReferences(this, buttons);
+		mGuiController = GuiController.getInstance();
+		mGuiController.setIP(ipAddr);
+		mGuiController.updateGameState(gs);
+		mGuiController.updateTableViewReferences(this, mButtons);
 	}
 
 	@Override
@@ -65,10 +65,10 @@ public class TableView extends Activity implements OnClickListener {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		pileId = v.getId();
+		mPileId = v.getId();
 		MenuInflater inflater = getMenuInflater();
-		if(gc.getPile(pileId) != null) {			
-			if(gc.getPile(pileId).getSize() > 0) {
+		if(mGuiController.getPile(mPileId) != null) {			
+			if(mGuiController.getPile(mPileId).getSize() > 0) {
 				inflater.inflate(R.menu.pile_menu, menu);
 			}
 			else {
@@ -84,10 +84,10 @@ public class TableView extends Activity implements OnClickListener {
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_item_shuffle:
-				gc.shufflePile(pileId);
+				mGuiController.shufflePile(mPileId);
 				break;
 			case R.id.menu_item_delete:
-				gc.deletePile(pileId);
+				mGuiController.deletePile(mPileId);
 				break;
 			default:
 				//
@@ -100,7 +100,7 @@ public class TableView extends Activity implements OnClickListener {
 	 * NUM_COLUMNS.
 	 */
 	public void setupButtons() {
-		tl = (TableLayout) findViewById(R.id.tableTable);
+		mTableLayout = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
 		for (int i = 0; i < GameController.NUM_ROWS; i++) {
 			TableRow tr = new TableRow(this);
@@ -116,7 +116,7 @@ public class TableView extends Activity implements OnClickListener {
 				// b.setText("Pile " + (num_columns*i + j));
 				b.setPadding(5, 5, 5, 5);
 				tr.addView(b);
-				buttons.add(b);
+				mButtons.add(b);
 				// Set this interface as the listener to the button
 				b.setOnClickListener(this);				
 				registerForContextMenu(b);
@@ -124,7 +124,7 @@ public class TableView extends Activity implements OnClickListener {
 				b.setLayoutParams(bp);
 			}
 			// Add the row to the table and apply the layout
-			tl.addView(tr);
+			mTableLayout.addView(tr);
 			tr.setLayoutParams(tp);
 		}
 	}
@@ -136,7 +136,7 @@ public class TableView extends Activity implements OnClickListener {
 	 */
 	@Override
 	public void onClick(View v) {
-		gc.tableButtonPressed(v);
+		mGuiController.tableButtonPressed(v);
 	}
 
 	@Override
@@ -150,19 +150,19 @@ public class TableView extends Activity implements OnClickListener {
 	 */
 	@Override
 	public void onBackPressed() {
-		if (isBackPressedBefore) {
+		if (mIsBackPressedBefore) {
 			super.onBackPressed();
 			// System.exit(0); // Ajajaj
 			finish();
 			return;
 		}
-		this.isBackPressedBefore = true;
+		this.mIsBackPressedBefore = true;
 		Toast.makeText(this, "Click back again to exit", Toast.LENGTH_SHORT).show();
 		new Handler().postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				isBackPressedBefore = false;
+				mIsBackPressedBefore = false;
 
 			}
 		}, 2000);

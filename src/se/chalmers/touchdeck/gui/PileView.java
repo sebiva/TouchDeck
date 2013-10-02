@@ -4,11 +4,14 @@ import java.util.LinkedList;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.gamecontroller.Operation;
+import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -30,25 +33,24 @@ import android.widget.LinearLayout;
  */
 public class PileView extends Activity implements OnClickListener, OnLongClickListener {
 
-	private GuiController				gc;
-	private final LinkedList<Button>	buttons			= new LinkedList<Button>();
+	private GuiController				mGuiController;
+	private final LinkedList<Button>	mButtons		= new LinkedList<Button>();
 
-	private int							pileId;
-	private int							cardId;
-
+	private int							mPileId;
+	private Card						mCard;
 	private static final int			INDEX_OF_MOVE	= 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pile_view);
-		gc = GuiController.getInstance();
+		mGuiController = GuiController.getInstance();
 
-		pileId = getIntent().getExtras().getInt("pileId");
+		mPileId = getIntent().getExtras().getInt("pileId");
 
 		setupButtons();
 
-		gc.updatePileViewReferences(this, buttons);
+		mGuiController.updatePileViewReferences(this, mButtons);
 
 	}
 
@@ -65,7 +67,8 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		cardId = v.getId();
+		mCard = mGuiController.getPile(mPileId).getCard(v.getId());
+		Log.d("kort", mCard.toString());
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
 
@@ -75,7 +78,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 		// Create a submenu entry for each pile on the table
 		for (int i = 0; i < GameController.MAX_NUMBER_OF_PILES; i++) {
-			Pile p = gc.getPile(i);
+			Pile p = mGuiController.getPile(i);
 			if (p != null) {
 				subMenu.add(Menu.NONE, i, Menu.NONE, p.getName());
 			}
@@ -90,12 +93,14 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_item_flip:
-			gc.flip(pileId, cardId);
+			mGuiController.sendUpdate(new Operation(Op.flip, mPileId, mCard.getRank(), mCard.getSuit()));
 			break;
 		case R.id.menu_item_move:
 			break;
+		// Move destination
 		default:
-			gc.moveCard(pileId, cardId, item.getItemId());
+			Log.d("aou", mPileId + "");
+			mGuiController.sendUpdate(new Operation(Op.move, mPileId, item.getItemId(), mCard.getRank(), mCard.getSuit()));
 		}
 		return true;
 	}
@@ -108,7 +113,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
 		// Get the pile id
-		Pile pile = gc.getPile(pileId);
+		Pile pile = mGuiController.getPile(mPileId);
 		LinkedList<Card> cards = pile.getCards();
 		for (int i = 0; i < pile.getSize(); i++) {
 
@@ -136,7 +141,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			b.setWidth(x);
 
 			layout.addView(b);
-			buttons.add(b);
+			mButtons.add(b);
 			b.setOnClickListener(this);
 			b.setOnLongClickListener(this);
 			registerForContextMenu(b);
@@ -166,7 +171,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	}
 
 	public LinkedList<Button> getButtons() {
-		return buttons;
+		return mButtons;
 
 	}
 }

@@ -14,7 +14,7 @@ import android.util.Log;
  */
 public class Listener {
 
-	private final GameController	gc;
+	private final GameController	gameController;
 	private ServerSocket			serverSocket;
 
 	private final int				port	= 4242;
@@ -25,7 +25,7 @@ public class Listener {
 	 * @param gc The gamecontroller in the session
 	 */
 	public Listener(GameController gc) {
-		this.gc = gc;
+		this.gameController = gc;
 		new Thread(new AcceptIncoming()).start();
 	}
 
@@ -37,27 +37,27 @@ public class Listener {
 	public void handleOp(Operation op) {
 		switch (op.getOp()) {
 		case move:
-			gc.moveCard(op.getPile1(), op.getCardPos(), op.getPile2());
+			gameController.moveCard(op);
 			Log.d("handle", "move");
 			break;
 		case flip:
-			gc.flip(op.getPile1(), op.getCardPos());
+			gameController.flip(op);
 			Log.d("handle", "flip");
 			break;
 		case create:
-			gc.createPile(op.getPile1(), op.getName());
+			gameController.createPile(op);
 			Log.d("handle", "create");
 			break;
 		case connect:
-			gc.startConnectThread(op.getIpAddr());
+			gameController.startConnectThread(op);
 			Log.d("handle", "connected");
 			break;
 		case shuffle:
-			gc.shufflePile(op.getPile1());
+			gameController.shufflePile(op);
 			Log.d("handle", "shuffle");
 			break;
 		case delete:
-			gc.deletePile(op.getPile1());
+			gameController.deletePile(op);
 			break;
 		default:
 		}

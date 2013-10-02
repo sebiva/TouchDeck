@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import se.chalmers.touchdeck.enums.Rank;
+import se.chalmers.touchdeck.enums.Suit;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
@@ -28,23 +30,23 @@ import android.widget.Toast;
  */
 public class GuiController implements Observer {
 
-	private GameState				mGs;
+	private GameState				mGameState;
 	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
 	private TableView				mTableView;
 
 	private PileView				mPileView;
 
-	private static GuiController	instance			= null;
+	private static GuiController	sInstance			= null;
 
-	private Socket					socket;
-	private final int				port				= 4242;
-	private String					ipAddr;
+	private Socket					mSocket;
+	private final int				mPort				= 4242;
+	private String					mIpAddr;
 
 	public static GuiController getInstance() {
-		if (instance == null) {
-			instance = new GuiController();
+		if (sInstance == null) {
+			sInstance = new GuiController();
 		}
-		return instance;
+		return sInstance;
 	}
 
 	private GuiController() {
@@ -57,12 +59,11 @@ public class GuiController implements Observer {
 		@Override
 		public void run() {
 			try {
-				InetAddress serverAddr = InetAddress.getByName(ipAddr);
-				socket = new Socket(serverAddr, port);
-				Log.d("network GuC", "Client socket setup at " + port);
+				InetAddress serverAddr = InetAddress.getByName(mIpAddr);
+				mSocket = new Socket(serverAddr, mPort);
+				Log.d("network GuC", "Client socket setup at " + mPort);
 				// Tell the controller you want to connect
-				// TODO pass the ip
-				sendUpdate(Op.connect, null, null, null, null);
+				sendUpdate(new Operation(Op.connect));
 			} catch (Exception e1) {
 				Log.d("network GuC", "Error setting up client" + e1.getMessage());
 			}
@@ -73,17 +74,12 @@ public class GuiController implements Observer {
 	 * Sends an update of what the user has done
 	 * 
 	 * @param op The operation that has been made
-	 * @param pile1 The id of the first pile
-	 * @param pile2 The id of the second pile (if op==move)
-	 * @param cardPos The position of the card (if op==flip)
-	 * @param name The name of the pile (if op==create)
 	 */
-	public void sendUpdate(Op op, Integer pile1, Integer pile2, Integer cardPos, String name) {
-		Operation operation = new Operation(op, pile1, pile2, cardPos, name);
+	public void sendUpdate(Operation op) {
 		ObjectOutputStream out = null;
 		try {
-			out = new ObjectOutputStream(socket.getOutputStream());
-			out.writeObject(operation);
+			out = new ObjectOutputStream(mSocket.getOutputStream());
+			out.writeObject(op);
 			Log.d("network GuC", "Operation written into socket");
 			out.flush();
 		} catch (IOException e) {
@@ -91,12 +87,13 @@ public class GuiController implements Observer {
 		}
 	}
 
+	// TODO flytta till tableview
 	/**
 	 * Updates the tableview based on the current state of the piles
 	 */
 	public void updateTableView() {
 		int i = 0;
-		for (Pile p : mGs.getPiles()) {
+		for (Pile p : mGameState.getPiles()) {
 			Button b = mTableViewButtons.get(i);
 			if (p == null) {
 				b.setBackgroundResource(0);
@@ -117,6 +114,7 @@ public class GuiController implements Observer {
 
 	}
 
+	// TODO Flytta till tableview
 	/**
 	 * Called when a button is pressed in the tableview
 	 * 
@@ -136,30 +134,30 @@ public class GuiController implements Observer {
 		} else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGs.getDefaultPileName());
+			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGameState.getDefaultPileName());
 			dialog.show(mTableView);
 		}
 
-	}	
+	}
 
 	/**
 	 * Shuffle the specified pile
 	 * 
 	 * @param pileId The id of the pile to shuffled
 	 */
-	public void shufflePile(int pileId) {	
-		sendUpdate(Op.shuffle, pileId, null, null, null);
-		Toast.makeText(mTableView, mGs.getPiles().get(pileId).getName() + " shuffled!", Toast.LENGTH_SHORT).show();		
-	}		
-	
+	public void shufflePile(int pileId) {
+		sendUpdate(new Operation(Op.shuffle, pileId));
+		Toast.makeText(mTableView, mGameState.getPiles().get(pileId).getName() + " shuffled!", Toast.LENGTH_SHORT).show();
+	}
+
 	/**
 	 * Delete the specified pile
 	 * 
 	 * @param pileId The id of the pile to deleted
 	 */
 	public void deletePile(int pileId) {
-		String pileName = mGs.getPiles().get(pileId).getName();
-		sendUpdate(Op.delete, pileId, null, null, null);
+		String pileName = mGameState.getPiles().get(pileId).getName();
+		sendUpdate(new Operation(Op.delete, pileId));
 		Toast.makeText(mTableView, pileName + " deleted!", Toast.LENGTH_SHORT).show();
 	}
 
@@ -170,7 +168,7 @@ public class GuiController implements Observer {
 	 * @return The requested pile
 	 */
 	public Pile getPile(int id) {
-		Pile p = mGs.getPiles().get(id);
+		Pile p = mGameState.getPiles().get(id);
 		return p;
 	}
 
@@ -198,15 +196,14 @@ public class GuiController implements Observer {
 		if (obs instanceof DialogText) {
 			DialogText dt = (DialogText) param;
 			// See if the name provided is unique
-			if (mGs.getPileNames().contains(dt.getString())) {
+			if (mGameState.getPileNames().contains(dt.getString())) {
 				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, mGs.getDefaultPileName());
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, mGameState.getDefaultPileName());
 				dialog.show(mTableView);
 			} else {
 				// Create the pile
-				sendUpdate(Op.create, dt.getId(), null, null, dt.getString());
-				// gc.createPile(dt.getId(), dt.getString());
+				sendUpdate(new Operation(Op.create, dt.getId(), dt.getString()));
 				updateTableView();
 			}
 
@@ -243,23 +240,24 @@ public class GuiController implements Observer {
 	 * Flips a card
 	 * 
 	 * @param pilePos The pile to where the card is located
-	 * @param cardPos The position of the card in the pile to flip
+	 * @param rank The rank of the card that is to be moved
+	 * @param suit The suit of the card that is to be moved
 	 */
-	public void flip(int pilePos, int cardPos) {
-		// gc.flip(pilePos, cardPos);
-		sendUpdate(Op.flip, pilePos, null, cardPos, null);
+	public void flip(int pilePos, Rank rank, Suit suit) {
+		sendUpdate(new Operation(Op.flip, pilePos, rank, suit));
 	}
 
 	/**
 	 * Moves a card from one pile to another
 	 * 
 	 * @param pileId The id of the pile to move from
-	 * @param cardPos The position of the card to move
 	 * @param destPileId The id of the pile to move to
+	 * @param rank The rank of the card that is to be moved
+	 * @param suit The suit of the card that is to be moved
 	 */
-	public void moveCard(int pileId, int cardPos, int destPileId) {
+	public void moveCard(int pileId, int destPileId, Rank rank, Suit suit) {
 		// gc.moveCard(pileId, cardPos, destPileId);
-		sendUpdate(Op.move, pileId, destPileId, cardPos, null);
+		sendUpdate(new Operation(Op.move, pileId, destPileId, rank, suit));
 	}
 
 	/**
@@ -275,12 +273,12 @@ public class GuiController implements Observer {
 	 * @param gs The gameState
 	 */
 	public void updateGameState(GameState gs) {
-		mGs = gs;
+		mGameState = gs;
 	}
 
 	public void setIP(String ipAddr) {
-		// TODO Auto-generated method stub
-		this.ipAddr = ipAddr;
+		// TODO Inte nödvändig om Connection omstruktureras
+		this.mIpAddr = ipAddr;
 
 		new Updater(this);
 		Thread th = new Thread(new Connection());
