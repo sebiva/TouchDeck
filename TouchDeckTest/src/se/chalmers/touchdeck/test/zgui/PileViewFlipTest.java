@@ -1,20 +1,18 @@
-package se.chalmers.touchdeck.test.gui;
+package se.chalmers.touchdeck.test.zgui;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gui.GuiController;
 import se.chalmers.touchdeck.gui.PileView;
 import se.chalmers.touchdeck.gui.StartScreen;
 import se.chalmers.touchdeck.gui.TableView;
-import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.jayway.android.robotium.solo.Condition;
 import com.jayway.android.robotium.solo.Solo;
 
-public class PileViewTest extends ActivityInstrumentationTestCase2<StartScreen> {
+public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScreen> {
 
 	private static final String	FLIP_CARD_OPTION	= "Flip card";
 	private static final String	MOVE_CARD_OPTION	= "Move card";
@@ -30,7 +28,7 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<StartScreen> 
 	private String				secondPileName;
 	private int					secondPilePos;
 
-	public PileViewTest() {
+	public PileViewFlipTest() {
 		super(StartScreen.class);
 	}
 
@@ -65,11 +63,13 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<StartScreen> 
 
 		gc = GuiController.getInstance();
 		pilePos = tableView.getResources().getInteger(R.integer.initial_pile_id);
+
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		new Solo(getInstrumentation()).finishOpenedActivities();
 		setActivityInitialTouchMode(true); // Turn on touch mode in the emulator.
 	}
 
@@ -115,52 +115,6 @@ public class PileViewTest extends ActivityInstrumentationTestCase2<StartScreen> 
 		String firstImageCard2 = deck.getCard(1).getImageName();
 		assertNotSame(firstImageCard2, startImageCard2);
 		assertNotSame(firstImage, firstImageCard2);
-
-		clickBack(solo);
-
-	}
-
-	public void testMoveCard() {
-		Log.e("aue", "hejjejejeo");
-		solo.clickOnButton(DECK);
-
-		Pile deck = gc.getPile(pilePos);
-		Card cardToBeMoved = deck.getCard(3);
-
-		// Send the fourth card to the new pile
-		solo.clickOnButton(3);
-		solo.clickOnText(MOVE_CARD_OPTION);
-		solo.clickOnText(secondPileName);
-
-		clickBack(solo);
-		solo.clickOnButton(secondPilePos);
-
-		Pile secondPile = gc.getPile(secondPilePos);
-		assertTrue(secondPile.getSize() == 1);
-		Card movedCard = secondPile.getCard(0);
-
-		assertEquals(movedCard, cardToBeMoved);
-
-		clickBack(solo);
-		solo.clickOnButton(DECK);
-
-		Card secondCardToBeMoved = deck.getCard(2);
-
-		// Flips the third card
-		solo.clickOnView(pileView.findViewById(2));
-		solo.clickOnText(FLIP_CARD_OPTION);
-
-		// Send it to the new pile
-		solo.clickOnView(pileView.findViewById(2));
-		solo.clickOnText(MOVE_CARD_OPTION);
-		solo.clickOnText(secondPileName);
-		clickBack(solo);
-
-		solo.clickOnButton(secondPilePos);
-		Card secondMovedCard = secondPile.getCard(0);
-		assertEquals(secondMovedCard, secondCardToBeMoved);
-
-		clickBack(solo);
 
 	}
 

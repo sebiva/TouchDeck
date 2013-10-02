@@ -1,4 +1,4 @@
-package se.chalmers.touchdeck.test.gui;
+package se.chalmers.touchdeck.test.zgui;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gui.StartScreen;
@@ -55,7 +55,6 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<StartScreen>
 
 		solo.clickOnButton("MyCoolPile");
 		clickBack(solo);
-
 	}
 
 	private void clickBack(Solo solo) {
