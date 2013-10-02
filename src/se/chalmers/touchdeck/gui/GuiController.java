@@ -148,9 +148,7 @@ public class GuiController implements Observer {
 	 */
 	public void shufflePile(int pileId) {	
 		sendUpdate(Op.shuffle, pileId, null, null, null);
-		Toast.makeText(mTableView, "Pile shuffled!", Toast.LENGTH_SHORT).show();
-		updatePileView();
-		updateTableView();
+		Toast.makeText(mTableView, mGs.getPiles().get(pileId).getName() + " shuffled!", Toast.LENGTH_SHORT).show();		
 	}		
 	
 	//	public void deletePile(int pileId) {
@@ -242,8 +240,6 @@ public class GuiController implements Observer {
 	public void flip(int pilePos, int cardPos) {
 		// gc.flip(pilePos, cardPos);
 		sendUpdate(Op.flip, pilePos, null, cardPos, null);
-		updatePileView();
-		updateTableView();
 	}
 
 	/**
@@ -256,8 +252,6 @@ public class GuiController implements Observer {
 	public void moveCard(int pileId, int cardPos, int destPileId) {
 		// gc.moveCard(pileId, cardPos, destPileId);
 		sendUpdate(Op.move, pileId, destPileId, cardPos, null);
-		updatePileView();
-		updateTableView();
 	}
 
 	/**
