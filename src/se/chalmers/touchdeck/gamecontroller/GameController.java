@@ -22,10 +22,10 @@ import android.util.Log;
 public class GameController {
 
 	// Public constants
-	public static final int				MAX_NUMBER_OF_PILES	= 21;
-	public static final int				MID_OF_TABLE		= 10;
 	public static final int				NUM_ROWS			= 3;
-	public static final int				NUM_COLUMNS			= 7;
+	public static final int				NUM_COLUMNS			= 8;
+	public static final int				MAX_NUMBER_OF_PILES	= NUM_ROWS * NUM_COLUMNS;
+	public static final int				MID_OF_TABLE		= MAX_NUMBER_OF_PILES / 2;
 
 	private final ArrayList<Pile>		mTable				= new ArrayList<Pile>();
 	private final HashSet<String>		mPileNames			= new HashSet<String>();

@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -31,15 +33,16 @@ import android.widget.Toast;
 public class GuiController implements Observer {
 
 	private GameState				mGameState;
-	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
+	private ArrayList<LinearLayout>	mTableViewPileLayouts	= new ArrayList<LinearLayout>();
+
 	private TableView				mTableView;
 
 	private PileView				mPileView;
 
-	private static GuiController	sInstance			= null;
+	private static GuiController	sInstance				= null;
 
 	private Socket					mSocket;
-	private final int				mPort				= 4242;
+	private final int				mPort					= 4242;
 	private String					mIpAddr;
 
 	public static GuiController getInstance() {
@@ -93,13 +96,24 @@ public class GuiController implements Observer {
 	 */
 	public void updateTableView() {
 		int i = 0;
+
 		for (Pile p : mGameState.getPiles()) {
-			Button b = mTableViewButtons.get(i);
+			LinearLayout ll = mTableViewPileLayouts.get(i);
+			Button b = (Button) ll.getChildAt(0);
+			TextView tv = (TextView) ll.getChildAt(1);
+
 			if (p == null) {
 				b.setBackgroundResource(0);
-				b.setText("");
+				b.setBackgroundColor(0);
+				tv.setText("");
 			} else {
-				b.setText(p.getName());
+
+				String name = p.getName();
+				if (name.length() > 6) {
+					name = name.substring(0, 6);
+				}
+				tv.setText("[" + p.getSize() + "]" + name);
+
 				if (p.getSize() > 0) {
 					// Set the picture of the pile to be the picture of the card on top.
 					String imgName = p.getCard(0).getImageName();
@@ -108,6 +122,7 @@ public class GuiController implements Observer {
 				} else {
 					b.setBackgroundColor(0xff00dd00);
 				}
+
 			}
 			i++;
 		}
@@ -148,6 +163,7 @@ public class GuiController implements Observer {
 	public void shufflePile(int pileId) {
 		sendUpdate(new Operation(Op.shuffle, pileId));
 		Toast.makeText(mTableView, mGameState.getPiles().get(pileId).getName() + " shuffled!", Toast.LENGTH_SHORT).show();
+
 	}
 
 	/**
@@ -176,11 +192,11 @@ public class GuiController implements Observer {
 	 * Updates the GuiController with the TableView activity and its buttons
 	 * 
 	 * @param table The TableView activity
-	 * @param buttons Tables buttons
+	 * @param layouts Tables buttons
 	 */
-	public void updateTableViewReferences(TableView table, ArrayList<Button> buttons) {
+	public void updateTableViewReferences(TableView table, ArrayList<LinearLayout> layouts) {
 		mTableView = table;
-		mTableViewButtons = buttons;
+		mTableViewPileLayouts = layouts;
 		updateTableView();
 	}
 
@@ -201,6 +217,13 @@ public class GuiController implements Observer {
 				String msg = "Please enter a unique name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, mGameState.getDefaultPileName());
 				dialog.show(mTableView);
+			}
+			if (dt.getString().length() > 20) {
+				// Prompt the user to try again
+				String msg = "Please enter a shorter name: ";
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, mGameState.getDefaultPileName());
+				dialog.show(mTableView);
+
 			} else {
 				// Create the pile
 				sendUpdate(new Operation(Op.create, dt.getId(), dt.getString()));

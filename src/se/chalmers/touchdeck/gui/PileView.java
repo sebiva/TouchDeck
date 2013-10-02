@@ -113,40 +113,45 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
 		// Get the pile id
+
 		Pile pile = mGuiController.getPile(mPileId);
-		LinkedList<Card> cards = pile.getCards();
-		for (int i = 0; i < pile.getSize(); i++) {
 
-			Button b = new Button(this);
-			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
-			bp.setMargins(3, 0, 3, 0);
+		if (pile != null) {
 
-			b.setId(i);
-			b.setTag("Card " + i);
+			LinkedList<Card> cards = pile.getCards();
+			for (int i = 0; i < pile.getSize(); i++) {
 
-			Card card = cards.get(i);
+				Button b = new Button(this);
+				LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
+				bp.setMargins(3, 0, 3, 0);
 
-			int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
-			b.setBackgroundResource(image);
+				b.setId(i);
+				b.setTag("Card " + i);
 
-			// Calculate the size of the button
-			Display display = getWindowManager().getDefaultDisplay();
-			Point size = new Point();
-			display.getSize(size);
+				Card card = cards.get(i);
 
-			int y = size.y / 2;
-			int x = (int) (y * 0.73);
+				int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
+				b.setBackgroundResource(image);
 
-			b.setHeight(y);
-			b.setWidth(x);
+				// Calculate the size of the button
+				Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
 
-			layout.addView(b);
-			mButtons.add(b);
-			b.setOnClickListener(this);
-			b.setOnLongClickListener(this);
-			registerForContextMenu(b);
+				int y = size.y / 2;
+				int x = (int) (y * 0.73);
 
-			b.setLayoutParams(bp);
+				b.setHeight(y);
+				b.setWidth(x);
+
+				layout.addView(b);
+				mButtons.add(b);
+				b.setOnClickListener(this);
+				b.setOnLongClickListener(this);
+				registerForContextMenu(b);
+
+				b.setLayoutParams(bp);
+			}
 		}
 	}
 

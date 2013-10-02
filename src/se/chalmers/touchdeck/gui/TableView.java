@@ -10,16 +10,18 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -29,13 +31,13 @@ import android.widget.Toast;
  */
 public class TableView extends Activity implements OnClickListener {
 
-	private TableLayout				mTableLayout;
+	private TableLayout						mTableLayout;
 
-	private final ArrayList<Button>	mButtons	= new ArrayList<Button>();
-	private GuiController			mGuiController;
-	
-	private int						mPileId;
-	private boolean					mIsBackPressedBefore;
+	private final ArrayList<LinearLayout>	mLayouts	= new ArrayList<LinearLayout>();
+	private GuiController					mGuiController;
+
+	private int								mPileId;
+	private boolean							mIsBackPressedBefore;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +48,11 @@ public class TableView extends Activity implements OnClickListener {
 		Serializable s = getIntent().getExtras().getSerializable("state");
 		String ipAddr = getIntent().getExtras().getString("IPaddr");
 		GameState gs = (GameState) s;
+
 		mGuiController = GuiController.getInstance();
 		mGuiController.setIP(ipAddr);
 		mGuiController.updateGameState(gs);
-		mGuiController.updateTableViewReferences(this, mButtons);
+		mGuiController.updateTableViewReferences(this, mLayouts);
 	}
 
 	@Override
@@ -58,7 +61,7 @@ public class TableView extends Activity implements OnClickListener {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	/**
 	 * Create the context menus that appear when long-pressing a pile.
 	 */
@@ -67,30 +70,29 @@ public class TableView extends Activity implements OnClickListener {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		mPileId = v.getId();
 		MenuInflater inflater = getMenuInflater();
-		if(mGuiController.getPile(mPileId) != null) {			
-			if(mGuiController.getPile(mPileId).getSize() > 0) {
+		if (mGuiController.getPile(mPileId) != null) {
+			if (mGuiController.getPile(mPileId).getSize() > 0) {
 				inflater.inflate(R.menu.pile_menu, menu);
-			}
-			else {
+			} else {
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 			}
 		}
 	}
-	
+
 	/**
 	 * Called when an option in the context menu is chosen.
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_item_shuffle:
-				mGuiController.shufflePile(mPileId);
-				break;
-			case R.id.menu_item_delete:
-				mGuiController.deletePile(mPileId);
-				break;
-			default:
-				//
+		case R.id.menu_item_shuffle:
+			mGuiController.shufflePile(mPileId);
+			break;
+		case R.id.menu_item_delete:
+			mGuiController.deletePile(mPileId);
+			break;
+		default:
+			//
 		}
 		return true;
 	}
@@ -108,20 +110,45 @@ public class TableView extends Activity implements OnClickListener {
 			// Create the layout parameters for the table row, all rows should be the same size
 			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
 			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
+
+				LinearLayout ll = new LinearLayout(this);
+				ll.setOrientation(LinearLayout.VERTICAL);
+				ll.setPadding(5, 5, 5, 5);
+				LayoutParams lp = new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
+
 				Button b = new Button(this);
 				// Create the layout parameters for the button, all buttons should be the same size
-				LayoutParams bp = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT, 1.0f);
+				LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
+
 				b.setId(GameController.NUM_COLUMNS * i + j);
 				b.setTag("Pile " + (GameController.NUM_COLUMNS * i + j));
 				// b.setText("Pile " + (num_columns*i + j));
-				b.setPadding(5, 5, 5, 5);
-				tr.addView(b);
-				mButtons.add(b);
+
 				// Set this interface as the listener to the button
-				b.setOnClickListener(this);				
+				b.setOnClickListener(this);
 				registerForContextMenu(b);
-				// Apply the layout parameters
+
+				TextView tv = new TextView(this);
+				tv.setTextSize(12);
+
+				// Set this interface as the listener to the text view
+				tv.setOnClickListener(this);
+				registerForContextMenu(tv);
+				LayoutParams ba = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
+
+				tv.setId(GameController.NUM_COLUMNS * i + j);
+				tv.setTag("Pile " + (GameController.NUM_COLUMNS * i + j));
+
+				ll.addView(b);
 				b.setLayoutParams(bp);
+
+				ll.addView(tv);
+				tv.setLayoutParams(ba);
+
+				tr.addView(ll);
+				ll.setLayoutParams(lp);
+
+				mLayouts.add(ll);
 			}
 			// Add the row to the table and apply the layout
 			mTableLayout.addView(tr);
