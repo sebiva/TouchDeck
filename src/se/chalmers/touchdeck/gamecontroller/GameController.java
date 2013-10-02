@@ -22,10 +22,10 @@ import android.util.Log;
 public class GameController {
 
 	// Public constants
-	public static final int				MAX_NUMBER_OF_PILES	= 21;
-	public static final int				MID_OF_TABLE		= 10;
 	public static final int				NUM_ROWS			= 3;
-	public static final int				NUM_COLUMNS			= 7;
+	public static final int				NUM_COLUMNS			= 8;
+	public static final int				MAX_NUMBER_OF_PILES	= NUM_ROWS * NUM_COLUMNS;
+	public static final int				MID_OF_TABLE		= MAX_NUMBER_OF_PILES / 2;
 
 	private final ArrayList<Pile>		mTable				= new ArrayList<Pile>();
 	private final HashSet<String>		pileNames			= new HashSet<String>();
@@ -168,7 +168,7 @@ public class GameController {
 			sendUpdatedState();
 		}
 	}
-	
+
 	/**
 	 * Shuffle the specified pile
 	 * 
@@ -179,13 +179,13 @@ public class GameController {
 		p.shuffle();
 		sendUpdatedState();
 	}
-	
+
 	/**
 	 * Delete the specified pile
 	 * 
 	 * @param pileId The pile to delete
 	 */
-	public void deletePile(int pileId) {		
+	public void deletePile(int pileId) {
 		pileNames.remove(mTable.get(pileId).getName());
 		mTable.set(pileId, null);
 		sendUpdatedState();

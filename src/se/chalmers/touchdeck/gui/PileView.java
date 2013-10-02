@@ -1,6 +1,7 @@
 package se.chalmers.touchdeck.gui;
 
 import java.util.LinkedList;
+
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.models.Card;
@@ -30,12 +31,12 @@ import android.widget.LinearLayout;
 public class PileView extends Activity implements OnClickListener, OnLongClickListener {
 
 	private GuiController				gc;
-	private final LinkedList<Button>	buttons	= new LinkedList<Button>();
+	private final LinkedList<Button>	buttons			= new LinkedList<Button>();
 
 	private int							pileId;
 	private int							cardId;
 
-	private static final int 			INDEX_OF_MOVE = 1;
+	private static final int			INDEX_OF_MOVE	= 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +59,8 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		return true;
 	}
 
-
 	/**
-	 * Create the context menus that appear when clicking a card. 
-	 * 
+	 * Create the context menus that appear when clicking a card.
 	 */
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -69,24 +68,23 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		cardId = v.getId();
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
-		
+
 		// Get the position of the move button and its submenu
 		MenuItem item = menu.getItem(INDEX_OF_MOVE);
 		SubMenu subMenu = item.getSubMenu();
 
 		// Create a submenu entry for each pile on the table
-		for (int i = 0; i<GameController.MAX_NUMBER_OF_PILES; i++){
+		for (int i = 0; i < GameController.MAX_NUMBER_OF_PILES; i++) {
 			Pile p = gc.getPile(i);
-			if (p!=null) {
+			if (p != null) {
 				subMenu.add(Menu.NONE, i, Menu.NONE, p.getName());
 			}
 		}
-		
+
 	}
 
 	/**
 	 * Called when an option in the context menu is chosen
-	 * 
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -111,39 +109,43 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		layout.invalidate();
 		// Get the pile id
 		Pile pile = gc.getPile(pileId);
-		LinkedList<Card> cards = pile.getCards();
-		for (int i = 0; i < pile.getSize(); i++) {
 
-			Button b = new Button(this);
-			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
-			bp.setMargins(3, 0, 3, 0);
+		if (pile != null) {
 
-			b.setId(i);
-			b.setTag("Card " + i);
+			LinkedList<Card> cards = pile.getCards();
+			for (int i = 0; i < pile.getSize(); i++) {
 
-			Card card = cards.get(i);
+				Button b = new Button(this);
+				LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
+				bp.setMargins(3, 0, 3, 0);
 
-			int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
-			b.setBackgroundResource(image);
+				b.setId(i);
+				b.setTag("Card " + i);
 
-			// Calculate the size of the button
-			Display display = getWindowManager().getDefaultDisplay();
-			Point size = new Point();
-			display.getSize(size);
+				Card card = cards.get(i);
 
-			int y = size.y / 2;
-			int x = (int) (y * 0.73);
+				int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
+				b.setBackgroundResource(image);
 
-			b.setHeight(y);
-			b.setWidth(x);
+				// Calculate the size of the button
+				Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
 
-			layout.addView(b);
-			buttons.add(b);
-			b.setOnClickListener(this);
-			b.setOnLongClickListener(this);
-			registerForContextMenu(b);
+				int y = size.y / 2;
+				int x = (int) (y * 0.73);
 
-			b.setLayoutParams(bp);
+				b.setHeight(y);
+				b.setWidth(x);
+
+				layout.addView(b);
+				buttons.add(b);
+				b.setOnClickListener(this);
+				b.setOnLongClickListener(this);
+				registerForContextMenu(b);
+
+				b.setLayoutParams(bp);
+			}
 		}
 	}
 
