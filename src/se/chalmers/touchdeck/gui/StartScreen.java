@@ -95,7 +95,7 @@ public class StartScreen extends Activity implements Observer {
 				for (int i = 0; i < numButtons; i++) {
 					emptyPiles.add(null);
 				}
-				launchGui.putExtra("state", new GameState(emptyPiles, new HashSet<String>(), 1));
+				launchGui.putExtra("state", new GameState(emptyPiles, new HashSet<String>()));
 				launchGui.putExtra("IPaddr", dt.getString()); // TODO
 				startActivity(launchGui);
 			}

@@ -74,7 +74,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 	}
 
 	public void testFlipCard() {
-		Pile deck = gc.getPile(pilePos);
+		Pile deck = gc.getGameState().getPiles().get(pilePos);
 		// Must be here for some reason
 		solo = new Solo(getInstrumentation(), pileView);
 		String startImage = deck.getCard(0).getImageName();
@@ -85,7 +85,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 
 		waitTime(100);
 		// Get the updated pile
-		deck = gc.getPile(pilePos);
+		deck = gc.getGameState().getPiles().get(pilePos);
 		String firstImage = deck.getCard(0).getImageName();
 
 		assertNotSame(startImage, firstImage);
@@ -96,7 +96,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 
 		waitTime(100);
 		// Get the updated pile
-		deck = gc.getPile(pilePos);
+		deck = gc.getGameState().getPiles().get(pilePos);
 
 		String secondImage = deck.getCard(0).getImageName();
 		assertEquals(startImage, secondImage);
@@ -110,7 +110,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 
 		waitTime(100);
 		// Get the updated pile
-		deck = gc.getPile(pilePos);
+		deck = gc.getGameState().getPiles().get(pilePos);
 
 		String firstImageCard2 = deck.getCard(1).getImageName();
 		assertNotSame(firstImageCard2, startImageCard2);

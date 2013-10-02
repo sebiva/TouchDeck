@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
+import se.chalmers.touchdeck.gamecontroller.Operation;
+import se.chalmers.touchdeck.gamecontroller.Operation.Op;
+import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,7 +35,6 @@ import android.widget.Toast;
 public class TableView extends Activity implements OnClickListener {
 
 	private TableLayout						mTableLayout;
-
 	private final ArrayList<LinearLayout>	mLayouts	= new ArrayList<LinearLayout>();
 	private GuiController					mGuiController;
 
@@ -50,9 +52,9 @@ public class TableView extends Activity implements OnClickListener {
 		GameState gs = (GameState) s;
 
 		mGuiController = GuiController.getInstance();
-		mGuiController.setIP(ipAddr);
-		mGuiController.updateGameState(gs);
-		mGuiController.updateTableViewReferences(this, mLayouts);
+		mGuiController.setupSockets(ipAddr);
+		mGuiController.setGameState(gs);
+		mGuiController.setTableViewReferences(this, mLayouts);
 	}
 
 	@Override
@@ -70,8 +72,9 @@ public class TableView extends Activity implements OnClickListener {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		mPileId = v.getId();
 		MenuInflater inflater = getMenuInflater();
-		if (mGuiController.getPile(mPileId) != null) {
-			if (mGuiController.getPile(mPileId).getSize() > 0) {
+		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
+		if (currentPile != null) {
+			if (currentPile.getSize() > 0) {
 				inflater.inflate(R.menu.pile_menu, menu);
 			} else {
 				inflater.inflate(R.menu.empty_pile_menu, menu);
@@ -86,10 +89,13 @@ public class TableView extends Activity implements OnClickListener {
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_item_shuffle:
-			mGuiController.shufflePile(mPileId);
+			mGuiController.sendOperation(new Operation(Op.shuffle, mPileId));
+			Toast.makeText(this, mGuiController.getGameState().getPiles().get(mPileId).getName() + " shuffled!", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.menu_item_delete:
-			mGuiController.deletePile(mPileId);
+			String pileName = mGuiController.getGameState().getPiles().get(mPileId).getName();
+			mGuiController.sendOperation(new Operation(Op.delete, mPileId));
+			Toast.makeText(this, pileName + " deleted!", Toast.LENGTH_SHORT).show();
 			break;
 		default:
 			//

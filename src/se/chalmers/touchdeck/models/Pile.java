@@ -16,8 +16,8 @@ public class Pile implements Serializable {
 	 * Serializable
 	 */
 	private static final long		serialVersionUID	= -3056217673776714467L;
-	private final LinkedList<Card>	cards				= new LinkedList<Card>();
-	private String					name;
+	private final LinkedList<Card>	mCards				= new LinkedList<Card>();
+	private String					mName;
 
 	/**
 	 * Constructor
@@ -27,7 +27,7 @@ public class Pile implements Serializable {
 	}
 
 	public Pile(String name) {
-		this.name = name;
+		this.mName = name;
 	}
 
 	/**
@@ -36,7 +36,7 @@ public class Pile implements Serializable {
 	 * @param card The card to add
 	 */
 	public void addCard(Card card) {
-		cards.addFirst(card);
+		mCards.addFirst(card);
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class Pile implements Serializable {
 	 */
 	public Card takeCard(int pos) {
 		try {
-			Card card = cards.remove(pos);
+			Card card = mCards.remove(pos);
 			return card;
 		} catch (IndexOutOfBoundsException e) {
 			return null;
@@ -61,7 +61,7 @@ public class Pile implements Serializable {
 	 * @return The number of cars in the pile
 	 */
 	public int getSize() {
-		return cards.size();
+		return mCards.size();
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class Pile implements Serializable {
 	 * @return The cards in the piles
 	 */
 	public LinkedList<Card> getCards() {
-		return cards;
+		return mCards;
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class Pile implements Serializable {
 	 * @return The name
 	 */
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class Pile implements Serializable {
 	 */
 	public Card getCard(int cardPos) {
 		try {
-			Card card = cards.get(cardPos);
+			Card card = mCards.get(cardPos);
 			return card;
 		} catch (IndexOutOfBoundsException e) {
 			return null;
@@ -101,6 +101,6 @@ public class Pile implements Serializable {
 	 * Randomly rearranges the order of cards in the pile, effectively shuffling it
 	 */
 	public void shuffle() {
-		Collections.shuffle(cards);
+		Collections.shuffle(mCards);
 	}
 }

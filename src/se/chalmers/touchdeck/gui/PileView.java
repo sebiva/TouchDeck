@@ -67,7 +67,8 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		mCard = mGuiController.getPile(mPileId).getCard(v.getId());
+		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
+		mCard = currentPile.getCard(v.getId());
 		Log.d("kort", mCard.toString());
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
@@ -78,9 +79,9 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 		// Create a submenu entry for each pile on the table
 		for (int i = 0; i < GameController.MAX_NUMBER_OF_PILES; i++) {
-			Pile p = mGuiController.getPile(i);
-			if (p != null) {
-				subMenu.add(Menu.NONE, i, Menu.NONE, p.getName());
+			Pile destPile = mGuiController.getGameState().getPiles().get(i);
+			if (destPile != null) {
+				subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
 			}
 		}
 
@@ -93,14 +94,14 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_item_flip:
-			mGuiController.sendUpdate(new Operation(Op.flip, mPileId, mCard.getRank(), mCard.getSuit()));
+			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard.getRank(), mCard.getSuit()));
 			break;
 		case R.id.menu_item_move:
 			break;
 		// Move destination
 		default:
 			Log.d("aou", mPileId + "");
-			mGuiController.sendUpdate(new Operation(Op.move, mPileId, item.getItemId(), mCard.getRank(), mCard.getSuit()));
+			mGuiController.sendOperation(new Operation(Op.move, mPileId, item.getItemId(), mCard.getRank(), mCard.getSuit()));
 		}
 		return true;
 	}
@@ -114,12 +115,12 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		layout.invalidate();
 		// Get the pile id
 
-		Pile pile = mGuiController.getPile(mPileId);
+		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
-		if (pile != null) {
+		if (currentPile != null) {
 
-			LinkedList<Card> cards = pile.getCards();
-			for (int i = 0; i < pile.getSize(); i++) {
+			LinkedList<Card> cards = currentPile.getCards();
+			for (int i = 0; i < currentPile.getSize(); i++) {
 
 				Button b = new Button(this);
 				LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);

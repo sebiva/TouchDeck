@@ -73,7 +73,7 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 	public void testMoveCard() {
 		Log.e("aue", "hejjejejeo");
 
-		Pile deck = gc.getPile(deckPos);
+		Pile deck = gc.getGameState().getPiles().get(deckPos);
 		// Must be here for some reason
 		soloPile = new Solo(getInstrumentation(), pileView);
 
@@ -88,7 +88,7 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 		soloTable.clickOnView(tableView.findViewById(secondPilePos));
 
 		// Update
-		Pile secondPile = gc.getPile(secondPilePos);
+		Pile secondPile = gc.getGameState().getPiles().get(secondPilePos);
 		assertTrue(secondPile.getSize() == 1);
 		Card movedCard = secondPile.getCard(0);
 
@@ -99,8 +99,8 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 		soloTable.clickOnView(tableView.findViewById(deckPos));
 
 		// Update
-		secondPile = gc.getPile(secondPilePos);
-		deck = gc.getPile(deckPos);
+		secondPile = gc.getGameState().getPiles().get(secondPilePos);
+		deck = gc.getGameState().getPiles().get(deckPos);
 		Card secondCardToBeMoved = deck.getCard(2);
 
 		soloTable.waitForActivity(PileView.class);
@@ -119,7 +119,7 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 		clickBack(soloTable);
 
 		// Update the pile
-		secondPile = gc.getPile(secondPilePos);
+		secondPile = gc.getGameState().getPiles().get(secondPilePos);
 
 		soloTable.clickOnView(tableView.findViewById(secondPilePos));
 		Card secondMovedCard = secondPile.getCard(0);
