@@ -57,7 +57,7 @@ public class GameController {
 	 */
 	private Pile createDeck() {
 		Pile deck = new Pile("deck"); // TODO Refactor, no hardcoded string
-
+		pileNames.add("deck");
 		for (Suit suit : Suit.values()) {
 			for (Rank rank : Rank.values()) {
 				deck.addCard(new Card(suit, rank));
@@ -134,11 +134,17 @@ public class GameController {
 	 * @param id The table position identifier
 	 */
 	public void createPile(int id, String name) {
-		// Make a new Pile object and set() it in the list
-		if (name.equals("Pile " + pileNo)) {
+		if (mTable.get(id) != null) {
+			return; // There was already a pile there
+		}
+		// Check that the name is unique and that it
+		if (pileNames.contains(name)) {
+			return;
+		} else if (name.equals("Pile " + pileNo)) {
 			pileNo++;
 			gs.setDefaultPileNo(pileNo);
 		}
+		// Make a new Pile object and set() it in the list
 		mTable.set(id, new Pile(name));
 		pileNames.add(name);
 		sendUpdatedState();
@@ -169,7 +175,7 @@ public class GameController {
 			sendUpdatedState();
 		}
 	}
-	
+
 	/**
 	 * Shuffle the specified pile
 	 * 
@@ -180,13 +186,13 @@ public class GameController {
 		p.shuffle();
 		sendUpdatedState();
 	}
-	
+
 	/**
 	 * Delete the specified pile
 	 * 
 	 * @param pileId The pile to delete
 	 */
-	public void deletePile(int pileId) {		
+	public void deletePile(int pileId) {
 		pileNames.remove(mTable.get(pileId).getName());
 		mTable.set(pileId, null);
 		sendUpdatedState();
