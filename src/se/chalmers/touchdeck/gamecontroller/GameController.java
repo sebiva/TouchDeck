@@ -179,6 +179,17 @@ public class GameController {
 		p.shuffle();
 		sendUpdatedState();
 	}
+	
+	/**
+	 * Delete the specified pile
+	 * 
+	 * @param pileId The pile to delete
+	 */
+	public void deletePile(int pileId) {		
+		pileNames.remove(mTable.get(pileId).getName());
+		mTable.set(pileId, null);
+		sendUpdatedState();
+	}
 
 	/**
 	 * @return the gamestate

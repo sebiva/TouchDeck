@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -28,7 +27,7 @@ import android.widget.Toast;
  * 
  * @author group17
  */
-public class TableView extends Activity implements OnClickListener, OnLongClickListener {
+public class TableView extends Activity implements OnClickListener {
 
 	private TableLayout				tl;
 
@@ -68,7 +67,14 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 		super.onCreateContextMenu(menu, v, menuInfo);
 		pileId = v.getId();
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.pile_menu, menu);	
+		if(gc.getPile(pileId) != null) {			
+			if(gc.getPile(pileId).getSize() > 0) {
+				inflater.inflate(R.menu.pile_menu, menu);
+			}
+			else {
+				inflater.inflate(R.menu.empty_pile_menu, menu);
+			}
+		}
 	}
 	
 	/**
@@ -81,7 +87,7 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 				gc.shufflePile(pileId);
 				break;
 			case R.id.menu_item_delete:
-				// gc.deletePile(pileId);
+				gc.deletePile(pileId);
 				break;
 			default:
 				//
@@ -112,8 +118,7 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 				tr.addView(b);
 				buttons.add(b);
 				// Set this interface as the listener to the button
-				b.setOnClickListener(this);
-				b.setOnLongClickListener(this);
+				b.setOnClickListener(this);				
 				registerForContextMenu(b);
 				// Apply the layout parameters
 				b.setLayoutParams(bp);
@@ -132,20 +137,6 @@ public class TableView extends Activity implements OnClickListener, OnLongClickL
 	@Override
 	public void onClick(View v) {
 		gc.tableButtonPressed(v);
-	}
-	
-	/**
-	 * Called when one of the buttons is held down
-	 * 
-	 * @param v The view (button) that has been held down
-	 */
-	@Override
-	public boolean onLongClick(View v) {		
-		if( gc.getPile( v.getId() ) != null ) {
-			openContextMenu(v);		
-			return true;
-		}
-		else return false;
 	}
 
 	@Override
