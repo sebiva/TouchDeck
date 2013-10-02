@@ -46,6 +46,7 @@ public class StartScreen extends Activity implements Observer {
 	 */
 	public void createGame(View v) {
 		Intent launchGui = new Intent(this, TableView.class);
+
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
 		launchGui.putExtra("IPaddr", "127.0.0.1");

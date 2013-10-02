@@ -29,12 +29,12 @@ public class GameController {
 
 	private final ArrayList<Pile>		mTable				= new ArrayList<Pile>();
 	private final HashSet<String>		pileNames			= new HashSet<String>();
-	private final String				DECK_NAME			= "deck";
 
 	private final GameState				gs;
 	private final int					port				= 4243;
 	private final LinkedList<Socket>	sockets				= new LinkedList<Socket>();
 	private final LinkedList<Thread>	threads				= new LinkedList<Thread>();
+
 	private static int					pileNo				= 1;
 
 	/**
@@ -56,7 +56,8 @@ public class GameController {
 	 * @return A pile containing the deck
 	 */
 	private Pile createDeck() {
-		Pile deck = new Pile(DECK_NAME);
+		Pile deck = new Pile("deck"); // TODO Refactor, no hardcoded string
+
 		for (Suit suit : Suit.values()) {
 			for (Rank rank : Rank.values()) {
 				deck.addCard(new Card(suit, rank));
