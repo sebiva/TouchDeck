@@ -5,6 +5,9 @@ import java.io.Serializable;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gui.GuiController;
 
+/**
+ * @author group17
+ */
 public class GuiUpdater extends ListenerInterface {
 
 	public GuiUpdater(GuiController guiController, int port) {

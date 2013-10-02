@@ -27,6 +27,7 @@ public class GameController {
 	public static final int				NUM_COLUMNS				= 8;
 	public static final int				MAX_NUMBER_OF_PILES		= NUM_ROWS * NUM_COLUMNS;
 	public static final int				MID_OF_TABLE			= MAX_NUMBER_OF_PILES / 2 - 1;
+	public static final String			MAIN_DECK_NAME			= "deck";
 
 	private final ArrayList<Pile>		mTable					= new ArrayList<Pile>();
 	private final HashSet<String>		mPileNames				= new HashSet<String>();
@@ -35,12 +36,12 @@ public class GameController {
 	private final int					mPort					= 4243;
 	private final LinkedList<Thread>	mGameToGuiThreads		= new LinkedList<Thread>();
 	private final LinkedList<Socket>	mAllGameToGuiSockets	= new LinkedList<Socket>();
-	private final Thread				mGameListener;
+	private final GameListener			mGameListener;
 
 	private static int					mDefaultPileNameNo		= 1;
 
 	/**
-	 * Creates a new gamecontroller and sets up a deck.
+	 * Creates a new gameController and sets up a deck.
 	 */
 	public GameController() {
 		// Fill the table empty positions.
@@ -50,23 +51,21 @@ public class GameController {
 		createDeck();
 		mGameState = new GameState(mTable, mPileNames);
 
-		// Start the listener for incomming connections
-		mGameListener = new Thread(new GameListener(this, 4242));
-		mGameListener.start();
+		// Start the listener for incoming connections
+		mGameListener = new GameListener(this, 4242);
+		new Thread(mGameListener).start();
 	}
 
 	/**
-	 * Starts the thread for connecting back to the gui
+	 * @param socket The socket to add as the connection to the guiController
 	 */
-	public void startConnectThread(Operation op) {
-	}
-
 	public void addSocket(Socket socket) {
+		Log.d("network GaC", "socket added to list " + socket.getRemoteSocketAddress().toString());
 		mAllGameToGuiSockets.add(socket);
 	}
 
 	/**
-	 * Sends the gamestate to gui
+	 * Sends the gameState to all the guis
 	 */
 	public void sendUpdatedState() {
 		ObjectOutputStream out = null;
@@ -74,7 +73,7 @@ public class GameController {
 			for (Socket socket : mAllGameToGuiSockets) {
 				out = new ObjectOutputStream(socket.getOutputStream());
 				out.writeObject(mGameState);
-				Log.d("network GaC", "State written into socket");
+				Log.d("sendUpdated GaC", "State written into socket " + socket.getRemoteSocketAddress().toString());
 				out.flush();
 			}
 		} catch (IOException e) {
@@ -88,8 +87,8 @@ public class GameController {
 	 * @return A pile containing the deck
 	 */
 	private Pile createDeck() {
-		Pile deck = new Pile("deck"); // TODO Refactor, no hardcoded string
-		mPileNames.add("deck");
+		Pile deck = new Pile(MAIN_DECK_NAME);
+		mPileNames.add(MAIN_DECK_NAME);
 		for (Suit suit : Suit.values()) {
 			for (Rank rank : Rank.values()) {
 				deck.addCard(new Card(suit, rank));
@@ -100,13 +99,18 @@ public class GameController {
 		return deck;
 	}
 
+	/**
+	 * Performs the given operation and sends out the updated state to all guis
+	 * 
+	 * @param op
+	 */
 	public synchronized void performOperation(Operation op) {
 
 		switch (op.getOp()) {
 
 		case move:
 			Pile pile = mTable.get(op.getPile1());
-			Card cardToMove = new Card(op.getSuit(), op.getRank());
+			Card cardToMove = op.getCard();
 			for (int i = 0; i < pile.getSize(); i++) {
 				Card card = pile.getCard(i);
 				if (card.equals(cardToMove)) {
@@ -116,11 +120,11 @@ public class GameController {
 					return;
 				}
 			}
-			Log.d("handle", "move");
+			Log.d("handle GaC", "move");
 			break;
 
 		case flip:
-			Card cardToFlip = new Card(op.getSuit(), op.getRank());
+			Card cardToFlip = op.getCard();
 			Pile currentPile = mTable.get(op.getPile1());
 			for (int i = 0; i < currentPile.getSize(); i++) {
 				Card c = currentPile.getCard(i);
@@ -130,7 +134,7 @@ public class GameController {
 					return;
 				}
 			}
-			Log.d("handle", "flip");
+			Log.d("handle GaC", "flip");
 			break;
 
 		case create:
@@ -148,14 +152,14 @@ public class GameController {
 			mTable.set(pilePos, new Pile(name));
 			mPileNames.add(name);
 			sendUpdatedState();
-			Log.d("handle", "create");
+			Log.d("handle GaC", "create");
 			break;
 
 		case connect:
 			Thread thread = new Thread(new GameToGuiConnection(op.getIpAddr(), mPort, this));
 			thread.start();
 			mGameToGuiThreads.add(thread);
-			Log.d("handle", "connected");
+			Log.d("handle GaC", "connected : " + op.getIpAddr());
 			break;
 
 		case shuffle:
@@ -164,7 +168,7 @@ public class GameController {
 				pileToShuffle.shuffle();
 				sendUpdatedState();
 			}
-			Log.d("handle", "shuffle");
+			Log.d("handle GaC", "shuffle");
 			break;
 
 		case delete:

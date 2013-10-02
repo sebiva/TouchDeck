@@ -16,10 +16,10 @@ import android.widget.EditText;
  * @author group17
  */
 public class PileNameDialog extends Observable {
-	private EditText			input;
-	private final DialogText	dt;
-	private final String		msg;
-	private final String		defaultName;
+	private EditText			mInput;
+	private final DialogText	mDialogText;
+	private final String		mMessage;
+	private final String		mDefaultName;
 
 	/**
 	 * Creates a new Dialog object
@@ -29,9 +29,9 @@ public class PileNameDialog extends Observable {
 	 * @param msg The message that will be shown to the user
 	 */
 	public PileNameDialog(Observer o, int id, String msg, String defaultName) {
-		dt = new DialogText(o, id);
-		this.msg = msg;
-		this.defaultName = defaultName;
+		mDialogText = new DialogText(o, id);
+		this.mMessage = msg;
+		this.mDefaultName = defaultName;
 	}
 
 	/**
@@ -42,28 +42,28 @@ public class PileNameDialog extends Observable {
 	 */
 	public void show(Activity act) {
 		// A text input for the user to enter the name in
-		input = new EditText(act);
+		mInput = new EditText(act);
 		AlertDialog.Builder alert = new AlertDialog.Builder(act);
 
 		alert.setTitle("Create pile");
-		alert.setMessage(msg);
+		alert.setMessage(mMessage);
 
 		// Set an EditText view to get user input
-		alert.setView(input);
+		alert.setView(mInput);
 		// What to do if the ok-button is pressed
 		alert.setPositiveButton(string.ok, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				// OK
 				// Check if a name was entered
-				if (input.getText().toString().trim().equals("")) {
+				if (mInput.getText().toString().trim().equals("")) {
 					// Set the name to a unique default value
-					dt.setText(defaultName);
-					Log.d("dialog", "Name is (default) " + defaultName);
+					mDialogText.setText(mDefaultName);
+					Log.d("joinDialog", "Name is (default) " + mDefaultName);
 				} else {
 					// Set the name to the entered value
-					dt.setText(input.getText().toString());
-					Log.d("dialog", "Name is " + input.getText().toString());
+					mDialogText.setText(mInput.getText().toString());
+					Log.d("joinDialog", "Name is " + mInput.getText().toString());
 				}
 
 			}
@@ -73,7 +73,7 @@ public class PileNameDialog extends Observable {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				// Cancelled
-				Log.d("dialog", "You cancelled!");
+				Log.d("joinDialog", "You cancelled!");
 			}
 		});
 		// Show the dialog

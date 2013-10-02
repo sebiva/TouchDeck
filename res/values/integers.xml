@@ -2,5 +2,5 @@
 <resources>
     <integer name="initial_pile_id">10</integer>
     <integer name="table_RowC_ount">3</integer>
-    <integer name="table_Col_Count">7</integer>
+    <integer name="table_Col_Count">8</integer>
 </resources>

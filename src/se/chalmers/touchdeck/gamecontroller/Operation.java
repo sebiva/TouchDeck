@@ -2,8 +2,7 @@ package se.chalmers.touchdeck.gamecontroller;
 
 import java.io.Serializable;
 
-import se.chalmers.touchdeck.enums.Rank;
-import se.chalmers.touchdeck.enums.Suit;
+import se.chalmers.touchdeck.models.Card;
 
 /**
  * Class representing the operations that can be made on cards and piles
@@ -23,58 +22,41 @@ public class Operation implements Serializable {
 	private Op		mOp;
 	private Integer	mPile1;
 	private Integer	mPile2;
-	private Suit	mSuit;
-	private Rank	mRank;
+	private Card	mCard;
 	private String	mName;
 	private String	mIpAddr;
 
 	// connect / disconnect
 	public Operation(Op op) {
-		this.mOp = op;
+		mOp = op;
 	}
 
 	// shuffle / delete
 	public Operation(Op op, Integer pile1) {
-		this.mOp = op;
-		this.mPile1 = pile1;
+		mOp = op;
+		mPile1 = pile1;
 	}
 
 	// create
 	public Operation(Op op, Integer pile1, String name) {
-		this.mOp = op;
-		this.mPile1 = pile1;
-		this.mName = name;
+		mOp = op;
+		mPile1 = pile1;
+		mName = name;
 	}
 
 	// flip
-	public Operation(Op op, Integer pile1, Rank rank, Suit suit) {
-		this.mOp = op;
-		this.mPile1 = pile1;
-		this.setRank(rank);
-		this.setSuit(suit);
+	public Operation(Op op, Integer pile1, Card card) {
+		mOp = op;
+		mPile1 = pile1;
+		mCard = card;
 	}
 
 	// move
-	public Operation(Op op, Integer pile1, Integer pile2, Rank rank, Suit suit) {
-		this.mOp = op;
-		this.mPile1 = pile1;
-		this.mPile2 = pile2;
-		this.setRank(rank);
-		this.setSuit(suit);
-	}
-
-	/**
-	 * @return the pile2
-	 */
-	public Integer getPile2() {
-		return mPile2;
-	}
-
-	/**
-	 * @param pile2 the pile2 to set
-	 */
-	public void setPile2(Integer pile2) {
-		this.mPile2 = pile2;
+	public Operation(Op op, Integer pile1, Integer pile2, Card card) {
+		mOp = op;
+		mPile1 = pile1;
+		mPile2 = pile2;
+		mCard = card;
 	}
 
 	/**
@@ -92,31 +74,31 @@ public class Operation implements Serializable {
 	}
 
 	/**
-	 * @return the rank
+	 * @return the pile2
 	 */
-	public Rank getRank() {
-		return mRank;
+	public Integer getPile2() {
+		return mPile2;
 	}
 
 	/**
-	 * @param rank the rank to set
+	 * @param pile2 the pile2 to set
 	 */
-	public void setRank(Rank rank) {
-		this.mRank = rank;
+	public void setPile2(Integer pile2) {
+		this.mPile2 = pile2;
 	}
 
 	/**
-	 * @return the suit
+	 * @return the mCard
 	 */
-	public Suit getSuit() {
-		return mSuit;
+	public Card getCard() {
+		return mCard;
 	}
 
 	/**
-	 * @param suit the suit to set
+	 * @param mCard the mCard to set
 	 */
-	public void setSuit(Suit suit) {
-		this.mSuit = suit;
+	public void setCard(Card mCard) {
+		this.mCard = mCard;
 	}
 
 	/**

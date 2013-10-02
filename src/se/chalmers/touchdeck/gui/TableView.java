@@ -2,14 +2,18 @@ package se.chalmers.touchdeck.gui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
+import se.chalmers.touchdeck.gui.dialogs.DialogText;
+import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
@@ -32,7 +36,7 @@ import android.widget.Toast;
  * 
  * @author group17
  */
-public class TableView extends Activity implements OnClickListener {
+public class TableView extends Activity implements OnClickListener, Observer {
 
 	private TableLayout						mTableLayout;
 	private final ArrayList<LinearLayout>	mLayouts	= new ArrayList<LinearLayout>();
@@ -52,9 +56,9 @@ public class TableView extends Activity implements OnClickListener {
 		GameState gs = (GameState) s;
 
 		mGuiController = GuiController.getInstance();
-		mGuiController.setupSockets(ipAddr);
+		mGuiController.setupConnections(ipAddr);
 		mGuiController.setGameState(gs);
-		mGuiController.setTableViewReferences(this, mLayouts);
+		mGuiController.setTableView(this);
 	}
 
 	@Override
@@ -110,12 +114,12 @@ public class TableView extends Activity implements OnClickListener {
 	public void setupButtons() {
 		mTableLayout = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
-		for (int i = 0; i < GameController.NUM_ROWS; i++) {
+		for (int i = 0; i < 3; i++) {
 			TableRow tr = new TableRow(this);
 			tr.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should be the same size
 			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
-			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
+			for (int j = 0; j < 8; j++) {
 
 				LinearLayout ll = new LinearLayout(this);
 				ll.setOrientation(LinearLayout.VERTICAL);
@@ -126,8 +130,8 @@ public class TableView extends Activity implements OnClickListener {
 				// Create the layout parameters for the button, all buttons should be the same size
 				LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
 
-				b.setId(GameController.NUM_COLUMNS * i + j);
-				b.setTag("Pile " + (GameController.NUM_COLUMNS * i + j));
+				b.setId(8 * i + j);
+				b.setTag("Pile " + (8 * i + j));
 				// b.setText("Pile " + (num_columns*i + j));
 
 				// Set this interface as the listener to the button
@@ -142,8 +146,8 @@ public class TableView extends Activity implements OnClickListener {
 				registerForContextMenu(tv);
 				LayoutParams ba = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
 
-				tv.setId(GameController.NUM_COLUMNS * i + j);
-				tv.setTag("Pile " + (GameController.NUM_COLUMNS * i + j));
+				tv.setId(8 * i + j);
+				tv.setTag("Pile " + (8 * i + j));
 
 				ll.addView(b);
 				b.setLayoutParams(bp);
@@ -169,7 +173,24 @@ public class TableView extends Activity implements OnClickListener {
 	 */
 	@Override
 	public void onClick(View v) {
-		mGuiController.tableButtonPressed(v);
+
+		// Get which button has been pressed
+		int id = v.getId();
+		Pile p = mGuiController.getGameState().getPiles().get(id);
+
+		// Check if there is a pile on this position
+		if (p != null) {
+			// Open the pile in the pileview
+			Intent pileView = new Intent(this, PileView.class);
+			pileView.putExtra("pileId", id);
+			this.startActivity(pileView);
+		} else {
+			// Prompt the user to create a new pile
+			String msg = "Please enter a name for the pile: ";
+			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGuiController.getGameState().getDefaultPileName());
+			dialog.show(this);
+		}
+
 	}
 
 	@Override
@@ -185,7 +206,6 @@ public class TableView extends Activity implements OnClickListener {
 	public void onBackPressed() {
 		if (mIsBackPressedBefore) {
 			super.onBackPressed();
-			// System.exit(0); // Ajajaj
 			finish();
 			return;
 		}
@@ -199,5 +219,74 @@ public class TableView extends Activity implements OnClickListener {
 
 			}
 		}, 2000);
+	}
+
+	public void updateTableView() {
+		int i = 0;
+
+		for (Pile p : mGuiController.getGameState().getPiles()) {
+			LinearLayout ll = mLayouts.get(i);
+			Button b = (Button) ll.getChildAt(0);
+			TextView tv = (TextView) ll.getChildAt(1);
+
+			if (p == null) {
+				b.setBackgroundResource(0);
+				b.setBackgroundColor(0);
+				tv.setText("");
+			} else {
+
+				String name = p.getName();
+				if (name.length() > 6) {
+					name = name.substring(0, 6);
+				}
+				tv.setText("[" + p.getSize() + "]" + name);
+
+				if (p.getSize() > 0) {
+					// Set the picture of the pile to be the picture of the card on top.
+					String imgName = p.getCard(0).getImageName();
+					int imgRes = this.getResources().getIdentifier(imgName, "drawable", this.getPackageName());
+					b.setBackgroundResource(imgRes);
+				} else {
+					b.setBackgroundColor(0xff00dd00);
+				}
+
+			}
+			i++;
+		}
+
+	}
+
+	/**
+	 * Called when a dialog gets text input. Creates a new pile with the name given in the dialog
+	 * 
+	 * @param obs The object (Dialogtext) that has been updated
+	 * @param param The parameter that is passed along (in the case of the Dialogtext, it's the same object)
+	 */
+	@Override
+	public void update(Observable obs, Object param) {
+		if (obs instanceof DialogText) {
+			GameState gameState = mGuiController.getGameState();
+			DialogText dt = (DialogText) param;
+			// See if the name provided is unique
+			if (gameState.getPileNames().contains(dt.getString())) {
+				// Prompt the user to try again
+				String msg = "Please enter a unique name: ";
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				dialog.show(this);
+			}
+			if (dt.getString().length() > 20) {
+				// Prompt the user to try again
+				String msg = "Please enter a shorter name: ";
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				dialog.show(this);
+
+			} else {
+				// Create the pile
+				mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
+				updateTableView();
+			}
+
+		}
+
 	}
 }

@@ -39,11 +39,11 @@ public class GameControllerTest extends TestCase {
 	public void testFlip() {
 		Card c1 = gs.getPiles().get(MID_OF_TABLE).getCard(42);
 		Face f1 = c1.getFaceState();
-		gc.performOperation(new Operation(Op.flip, MID_OF_TABLE, c1.getRank(), c1.getSuit()));
+		gc.performOperation(new Operation(Op.flip, MID_OF_TABLE, c1));
 		Card c2 = gs.getPiles().get(MID_OF_TABLE).getCard(42);
 		Face f2 = c2.getFaceState();
 		assertEquals(false, f1.equals(f2));
-		gc.performOperation(new Operation(Op.flip, MID_OF_TABLE, c1.getRank(), c1.getSuit()));
+		gc.performOperation(new Operation(Op.flip, MID_OF_TABLE, c1));
 		Face f3 = gs.getPiles().get(MID_OF_TABLE).getCard(42).getFaceState();
 		assertEquals(true, f1.equals(f3));
 	}
@@ -57,13 +57,13 @@ public class GameControllerTest extends TestCase {
 		assertEquals(0, gs.getPiles().get(15).getSize());
 		Card c1 = gs.getPiles().get(MID_OF_TABLE).getCard(27);
 
-		gc.performOperation(new Operation(Op.move, MID_OF_TABLE, 15, c1.getRank(), c1.getSuit()));
+		gc.performOperation(new Operation(Op.move, MID_OF_TABLE, 15, c1));
 
 		assertEquals(1, gs.getPiles().get(15).getSize());
-		gc.performOperation(new Operation(Op.move, 15, 15, c1.getRank(), c1.getSuit()));
+		gc.performOperation(new Operation(Op.move, 15, 15, c1));
 		assertEquals(1, gs.getPiles().get(15).getSize());
 
-		gc.performOperation(new Operation(Op.move, 15, 5, c1.getRank(), c1.getSuit()));
+		gc.performOperation(new Operation(Op.move, 15, 5, c1));
 		assertEquals(0, gs.getPiles().get(15).getSize());
 		assertEquals(1, gs.getPiles().get(5).getSize());
 

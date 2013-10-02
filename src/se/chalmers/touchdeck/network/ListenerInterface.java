@@ -26,9 +26,9 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 		// Create the "welcome" socket
 		try {
 			mServerSocket = new ServerSocket(mPort);
-			Log.d("network L", "Server socket set up on port " + mPort);
+			Log.d("ListenerInt", "Server socket set up on port " + mPort);
 		} catch (IOException e1) {
-			Log.d("network L", "Server socket could not be set up on port " + mPort);
+			Log.d("ListenerInt", "Server socket could not be set up on port " + mPort);
 			return;
 		}
 		// Accept all incomming requests to this socket and assign them a connection handler
@@ -36,9 +36,9 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 			try {
 				Socket clientSocket = mServerSocket.accept();
 				new Thread(new ConnectionHandler(clientSocket)).start();
-				Log.d("network L", "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
+				Log.d("ListenerInt", "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
 			} catch (IOException e) {
-				Log.d("network L", "Could not create client socket");
+				Log.d("ListenerInt", "Could not create client socket");
 				return;
 			}
 		} while (mLoopForever);
@@ -56,13 +56,13 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 		public void run() {
 			// Keep reading the input
 			while (true) {
-				Log.d("network L", "In loop");
+				Log.d("ListenerInt", "In loop");
 				ObjectInputStream ois = null;
 				try {
 					ois = (new ObjectInputStream(clientSocket.getInputStream()));
-					Log.d("network L", "InputStream created");
+					Log.d("ListenerInt", "InputStream created");
 				} catch (IOException e) {
-					Log.d("network L", "Exiting ConnectionHandler");
+					Log.d("ListenerInt", "Exiting ConnectionHandler");
 					e.printStackTrace();
 					break;// Should be return
 				}
@@ -73,12 +73,12 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 					String ipAddr = clientSocket.getRemoteSocketAddress().toString();
 					ipAddr = ipAddr.substring(1, ipAddr.indexOf(":"));
 					handle(op, ipAddr);
-					Log.d("network L" + clientSocket.getLocalPort(), "Operation completed");
+					Log.d("ListenerInt" + clientSocket.getLocalPort(), "Operation completed");
 				} catch (IOException e) {
-					Log.d("network L", "Reading went wrong, IO");
+					Log.d("ListenerInt", "Reading went wrong, IO");
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
-					Log.d("network L", "Reading went wrong, ClassNotFound");
+					Log.d("ListenerInt", "Reading went wrong, ClassNotFound");
 					e.printStackTrace();
 				}
 			}

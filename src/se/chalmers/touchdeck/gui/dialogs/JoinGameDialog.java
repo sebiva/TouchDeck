@@ -55,7 +55,7 @@ public class JoinGameDialog extends Observable {
 
 				// Set the IP to the entered value
 				dt.setText(input.getText().toString());
-				Log.d("dialog", "IP is " + input.getText().toString());
+				Log.d("joinDialog", "IP is " + input.getText().toString());
 
 			}
 		});
@@ -64,7 +64,7 @@ public class JoinGameDialog extends Observable {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				// Cancelled
-				Log.d("dialog", "You cancelled!");
+				Log.d("joinDialog", "You cancelled!");
 			}
 		});
 		// Show the dialog

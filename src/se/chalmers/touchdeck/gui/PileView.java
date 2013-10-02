@@ -3,7 +3,6 @@ package se.chalmers.touchdeck.gui;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
@@ -50,7 +49,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 		setupButtons();
 
-		mGuiController.updatePileViewReferences(this, mButtons);
+		mGuiController.setPileView(this);
 
 	}
 
@@ -69,7 +68,6 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		super.onCreateContextMenu(menu, v, menuInfo);
 		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 		mCard = currentPile.getCard(v.getId());
-		Log.d("kort", mCard.toString());
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
 
@@ -78,7 +76,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		SubMenu subMenu = item.getSubMenu();
 
 		// Create a submenu entry for each pile on the table
-		for (int i = 0; i < GameController.MAX_NUMBER_OF_PILES; i++) {
+		for (int i = 0; i < 24; i++) {
 			Pile destPile = mGuiController.getGameState().getPiles().get(i);
 			if (destPile != null) {
 				subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
@@ -94,14 +92,14 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_item_flip:
-			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard.getRank(), mCard.getSuit()));
+			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard));
 			break;
 		case R.id.menu_item_move:
 			break;
 		// Move destination
 		default:
-			Log.d("aou", mPileId + "");
-			mGuiController.sendOperation(new Operation(Op.move, mPileId, item.getItemId(), mCard.getRank(), mCard.getSuit()));
+			Log.d("Move Destination", "PileId:" + mPileId);
+			mGuiController.sendOperation(new Operation(Op.move, mPileId, item.getItemId(), mCard));
 		}
 		return true;
 	}
@@ -164,7 +162,6 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	@Override
 	public void onClick(View v) {
 		openContextMenu(v);
-
 	}
 
 	/**
@@ -176,8 +173,4 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		return true;
 	}
 
-	public LinkedList<Button> getButtons() {
-		return mButtons;
-
-	}
 }
