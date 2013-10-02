@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * Controls the gui of the game. Singleton class
@@ -99,6 +100,7 @@ public class GuiController implements Observer {
 			Button b = mTableViewButtons.get(i);
 			if (p == null) {
 				b.setBackgroundResource(0);
+				b.setText("");
 			} else {
 				b.setText(p.getName());
 				if (p.getSize() > 0) {
@@ -138,6 +140,27 @@ public class GuiController implements Observer {
 			dialog.show(mTableView);
 		}
 
+	}	
+
+	/**
+	 * Shuffle the specified pile
+	 * 
+	 * @param pileId The id of the pile to shuffled
+	 */
+	public void shufflePile(int pileId) {	
+		sendUpdate(Op.shuffle, pileId, null, null, null);
+		Toast.makeText(mTableView, mGs.getPiles().get(pileId).getName() + " shuffled!", Toast.LENGTH_SHORT).show();		
+	}		
+	
+	/**
+	 * Delete the specified pile
+	 * 
+	 * @param pileId The id of the pile to deleted
+	 */
+	public void deletePile(int pileId) {
+		String pileName = mGs.getPiles().get(pileId).getName();
+		sendUpdate(Op.delete, pileId, null, null, null);
+		Toast.makeText(mTableView, pileName + " deleted!", Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -225,8 +248,6 @@ public class GuiController implements Observer {
 	public void flip(int pilePos, int cardPos) {
 		// gc.flip(pilePos, cardPos);
 		sendUpdate(Op.flip, pilePos, null, cardPos, null);
-		updatePileView();
-		updateTableView();
 	}
 
 	/**
@@ -239,8 +260,6 @@ public class GuiController implements Observer {
 	public void moveCard(int pileId, int cardPos, int destPileId) {
 		// gc.moveCard(pileId, cardPos, destPileId);
 		sendUpdate(Op.move, pileId, destPileId, cardPos, null);
-		updatePileView();
-		updateTableView();
 	}
 
 	/**

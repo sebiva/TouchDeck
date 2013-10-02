@@ -52,6 +52,13 @@ public class Listener {
 			gc.startConnectThread(op.getIpAddr());
 			Log.d("handle", "connected");
 			break;
+		case shuffle:
+			gc.shufflePile(op.getPile1());
+			Log.d("handle", "shuffle");
+			break;
+		case delete:
+			gc.deletePile(op.getPile1());
+			break;
 		default:
 		}
 	}

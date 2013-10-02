@@ -56,7 +56,7 @@ public class PileNameDialog extends Observable {
 			public void onClick(DialogInterface dialog, int id) {
 				// OK
 				// Check if a name was entered
-				if (input.getText().toString().equals("")) {
+				if (input.getText().toString().trim().equals("")) {
 					// Set the name to a unique default value
 					dt.setText(defaultName);
 					Log.d("dialog", "Name is (default) " + defaultName);

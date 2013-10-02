@@ -1,6 +1,7 @@
 package se.chalmers.touchdeck.models;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.exceptions.CardNotFoundException;
@@ -94,5 +95,12 @@ public class Pile implements Serializable {
 			return null;
 		}
 
+	}
+	
+	/**
+	 * Randomly rearranges the order of cards in the pile, effectively shuffling it
+	 */
+	public void shuffle() {
+		Collections.shuffle(cards);
 	}
 }
