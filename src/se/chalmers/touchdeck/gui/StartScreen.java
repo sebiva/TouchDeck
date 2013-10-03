@@ -24,6 +24,7 @@ import android.view.View;
  * @author group17
  */
 public class StartScreen extends Activity implements Observer {
+	private final String	LOCAL_IP	= "127.0.0.1";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class StartScreen extends Activity implements Observer {
 
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
-		launchGui.putExtra("IPaddr", "127.0.0.1");
+		launchGui.putExtra("IPaddr", LOCAL_IP);
 		startActivity(launchGui);
 	}
 

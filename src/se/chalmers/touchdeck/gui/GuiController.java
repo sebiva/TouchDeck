@@ -79,6 +79,12 @@ public class GuiController implements Observer {
 		}
 	}
 
+	/**
+	 * Called when the GuiUpdater gets an update from the gameController
+	 * 
+	 * @param obs The GuiUpdater that sent the update
+	 * @param param The updated gameState
+	 */
 	@Override
 	public void update(Observable obs, Object param) {
 		if (obs instanceof GuiUpdater) {

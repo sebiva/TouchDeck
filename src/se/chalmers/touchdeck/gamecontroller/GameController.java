@@ -109,17 +109,21 @@ public class GameController {
 		switch (op.getOp()) {
 
 		case move:
-			Pile pile = mTable.get(op.getPile1());
-			Card cardToMove = op.getCard();
-			for (int i = 0; i < pile.getSize(); i++) {
-				Card card = pile.getCard(i);
-				if (card.equals(cardToMove)) {
-					pile.takeCard(i);
-					mTable.get(op.getPile2()).addCard(card);
-					sendUpdatedState();
-					return;
+			Pile srcPile = mTable.get(op.getPile1());
+			Pile destPile = mTable.get(op.getPile2());
+			if (destPile != null && srcPile != null) {
+				Card cardToMove = op.getCard();
+				for (int i = 0; i < srcPile.getSize(); i++) {
+					Card card = srcPile.getCard(i);
+					if (card.equals(cardToMove)) {
+						srcPile.takeCard(i);
+						destPile.addCard(card);
+						sendUpdatedState();
+						return;
+					}
 				}
 			}
+
 			Log.d("handle GaC", "move");
 			break;
 

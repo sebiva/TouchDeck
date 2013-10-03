@@ -6,6 +6,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
@@ -38,8 +39,11 @@ import android.widget.Toast;
  */
 public class TableView extends Activity implements OnClickListener, Observer {
 
+	private static final int				MAX_PILE_NAME_LENGTH	= 20;
+	private static final int				MAX_PILE_NAME_DISPLAYED	= 6;
+	private static final int				PADDING					= 5;
 	private TableLayout						mTableLayout;
-	private final ArrayList<LinearLayout>	mLayouts	= new ArrayList<LinearLayout>();
+	private final ArrayList<LinearLayout>	mLayouts				= new ArrayList<LinearLayout>();
 	private GuiController					mGuiController;
 
 	private int								mPileId;
@@ -114,24 +118,24 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public void setupButtons() {
 		mTableLayout = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < GameController.NUM_ROWS; i++) {
 			TableRow tr = new TableRow(this);
 			tr.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should be the same size
 			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
 
 				LinearLayout ll = new LinearLayout(this);
 				ll.setOrientation(LinearLayout.VERTICAL);
-				ll.setPadding(5, 5, 5, 5);
+				ll.setPadding(PADDING, PADDING, PADDING, PADDING);
 				LayoutParams lp = new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
 
 				Button b = new Button(this);
 				// Create the layout parameters for the button, all buttons should be the same size
 				LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
 
-				b.setId(8 * i + j);
-				b.setTag("Pile " + (8 * i + j));
+				b.setId(GameController.NUM_COLUMNS * i + j);
+				b.setTag("Pile " + (GameController.NUM_ROWS * i + j));
 				// b.setText("Pile " + (num_columns*i + j));
 
 				// Set this interface as the listener to the button
@@ -146,8 +150,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				registerForContextMenu(tv);
 				LayoutParams ba = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
 
-				tv.setId(8 * i + j);
-				tv.setTag("Pile " + (8 * i + j));
+				tv.setId(GameController.NUM_COLUMNS * i + j);
+				tv.setTag("Pile " + (GameController.NUM_ROWS * i + j));
 
 				ll.addView(b);
 				b.setLayoutParams(bp);
@@ -236,8 +240,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			} else {
 
 				String name = p.getName();
-				if (name.length() > 6) {
-					name = name.substring(0, 6);
+				if (name.length() > MAX_PILE_NAME_DISPLAYED) {
+					name = name.substring(0, MAX_PILE_NAME_DISPLAYED);
 				}
 				tv.setText("[" + p.getSize() + "]" + name);
 
@@ -274,7 +278,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
 				dialog.show(this);
 			}
-			if (dt.getString().length() > 20) {
+			if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
 				// Prompt the user to try again
 				String msg = "Please enter a shorter name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
