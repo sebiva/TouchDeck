@@ -183,6 +183,15 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+			
+		case rename:
+			Pile pileToRename = mTable.get(op.getPile1());
+			String oldName = pileToRename.getName();
+			pileToRename.setName(op.getName());
+			mPileNames.add(op.getName());
+			mPileNames.remove(oldName);
+			sendUpdatedState();
+			break;
 		default:
 		}
 	}

@@ -105,6 +105,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.delete, mPileId));
 			Toast.makeText(this, pileName + " deleted!", Toast.LENGTH_SHORT).show();
 			break;
+		case R.id.menu_item_rename:
+			String msg = "Please enter a new name for the pile: ";
+			PileNameDialog dialog = new PileNameDialog(this, item.getItemId(), msg, mGuiController.getGameState().getDefaultPileName());
+			dialog.show(this);
 		default:
 			//
 		}
@@ -289,7 +293,9 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
 				updateTableView();
 			}
-
+			//TODO
+			//	How to handle a namechange and not setting a name for the forst time?
+			//	mGuiController.sendOperation(new Operation(Op.rename, mPileId, newName));
 		}
 
 	}

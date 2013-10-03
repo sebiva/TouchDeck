@@ -83,6 +83,14 @@ public class Pile implements Serializable {
 	}
 
 	/**
+	 * Sets the name of pile
+	 * 
+	 */
+	public void setName(String name) {
+		mName = name;
+	}
+	
+	/**
 	 * Returns the card at a certain index
 	 * 
 	 * @return The requested card, or null if pos was out of range
