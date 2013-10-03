@@ -1,5 +1,7 @@
 package se.chalmers.touchdeck.models;
 
+import java.io.Serializable;
+
 import se.chalmers.touchdeck.enums.Face;
 import se.chalmers.touchdeck.enums.Rank;
 import se.chalmers.touchdeck.enums.Suit;
@@ -9,10 +11,14 @@ import se.chalmers.touchdeck.enums.Suit;
  * 
  * @author group17
  */
-public class Card {
-	private final Suit	mSuit;
-	private final Rank	mRank;
-	private boolean		mFaceUp;
+public class Card implements Serializable {
+	/**
+	 * Serializable
+	 */
+	private static final long	serialVersionUID	= -2103195711850738986L;
+	private final Suit			mSuit;
+	private final Rank			mRank;
+	private boolean				mFaceUp;
 
 	/**
 	 * Constructor for creating a card with face status down
