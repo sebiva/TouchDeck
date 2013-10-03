@@ -16,7 +16,7 @@ public class Operation implements Serializable {
 	private static final long	serialVersionUID	= -2413214187514892785L;
 
 	public enum Op {
-		move, flip, create, connect, disconnect, shuffle, delete, faceUp, faceDown
+		move, flip, create, connect, disconnect, shuffle, delete, faceUp, faceDown, moveAll
 	}
 
 	private Op		mOp;

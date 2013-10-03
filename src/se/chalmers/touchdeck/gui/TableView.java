@@ -22,6 +22,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -84,6 +85,18 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (currentPile != null) {
 			if (currentPile.getSize() > 0) {
 				inflater.inflate(R.menu.pile_menu, menu);
+				
+				// Get the position of the move button and its submenu
+				MenuItem item = menu.getItem(3);
+				SubMenu subMenu = item.getSubMenu();
+
+				// Create a submenu entry for each pile on the table
+				for (int i = 0; i < 24; i++) {
+					Pile destPile = mGuiController.getGameState().getPiles().get(i);
+					if (destPile != null) {
+						subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
+					}
+				}
 			} else {
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 			}
@@ -111,8 +124,11 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		case R.id.menu_item_face_down:
 			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
 			break;
+		case R.id.menu_item_move_all:
+			// mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, item.getItemId(), null));
+			break;
 		default:
-			//
+			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, item.getItemId(), null));
 		}
 		return true;
 	}
