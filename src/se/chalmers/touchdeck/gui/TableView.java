@@ -105,6 +105,12 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.delete, mPileId));
 			Toast.makeText(this, pileName + " deleted!", Toast.LENGTH_SHORT).show();
 			break;
+		case R.id.menu_item_face_up:
+			mGuiController.sendOperation(new Operation(Op.faceUp, mPileId));
+			break;
+		case R.id.menu_item_face_down:
+			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
+			break;
 		default:
 			//
 		}
