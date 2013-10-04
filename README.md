@@ -1,6 +1,4 @@
 TouchDeck
 ==
 
-Hello
-
-Alex testing commit
+*"Developers, developers, developers, developers, developers, developers!"* - Steve Ballmer
