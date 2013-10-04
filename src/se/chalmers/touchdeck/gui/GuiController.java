@@ -1,17 +1,37 @@
+/**
+ Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ */
+
+/**
+ This file is part of TouchDeck.
+
+ TouchDeck is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ TouchDeck is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.chalmers.touchdeck.gui;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 
-import se.chalmers.touchdeck.gamecontroller.GameController;
-import se.chalmers.touchdeck.gui.dialogs.DialogText;
-import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
-import se.chalmers.touchdeck.models.Pile;
-import android.content.Intent;
-import android.view.View;
-import android.widget.Button;
+import se.chalmers.touchdeck.gamecontroller.GameState;
+import se.chalmers.touchdeck.gamecontroller.Operation;
+import se.chalmers.touchdeck.network.GuiToGameConnection;
+import se.chalmers.touchdeck.network.GuiUpdater;
+import android.util.Log;
 
 /**
  * Controls the gui of the game. Singleton class
@@ -20,165 +40,126 @@ import android.widget.Button;
  */
 public class GuiController implements Observer {
 
-	private final GameController	gc;
-	private ArrayList<Pile>			piles;
-	private ArrayList<Button>		mTableViewButtons	= new ArrayList<Button>();
+	private GameState				mGameState;
 	private TableView				mTableView;
-
 	private PileView				mPileView;
 
-	private static GuiController	instance			= null;
+	private static GuiController	sInstance	= null;
+
+	private final int				mPort		= 4242;
+	private String					mIpAddr;
+	private Thread					mGuiUpdater;
+	private Socket					mGuiToGameSocket;
 
 	public static GuiController getInstance() {
-		if (instance == null) {
-			instance = new GuiController();
+		if (sInstance == null) {
+			sInstance = new GuiController();
 		}
-		return instance;
+		return sInstance;
 	}
 
 	private GuiController() {
-		gc = new GameController();
 	}
 
 	/**
-	 * Updates the tableview based on the current state of the piles
+	 * Sets the GuiToGame Socket
+	 * 
+	 * @param socket The socket to set
 	 */
-	public void updateTableView() {
-		piles = gc.getPiles();
-		int i = 0;
-		for (Pile p : piles) {
-			Button b = mTableViewButtons.get(i);
-			if (p == null) {
-				b.setBackgroundResource(0);
-			} else {
-				b.setText(p.getName());
-				if (p.getSize() > 0) {
-					// Set the picture of the pile to be the picture of the card on top. 
-					String imgName = p.getCard(0).getImageName();
-					int imgRes = mTableView.getResources().getIdentifier(imgName, "drawable", mTableView.getPackageName());
-					b.setBackgroundResource(imgRes);
-				} else {
-					b.setBackgroundColor(0xff00dd00);
-				}
+	public void setSocket(Socket socket) {
+		mGuiToGameSocket = socket;
+	}
 
-			}
-			i++;
+	/**
+	 * Sets up the connections for network play
+	 * 
+	 * @param ipAddr The ip address of the host.
+	 */
+	public void setupConnections(String ipAddr) {
+		this.mIpAddr = ipAddr;
+		mGuiUpdater = new Thread(new GuiUpdater(this, 4243));
+		mGuiUpdater.start();
+		Thread th = new Thread(new GuiToGameConnection(mIpAddr, mPort, this));
+		th.start();
+	}
+
+	/**
+	 * Sends an operation to the gameController that represents what the user has done
+	 * 
+	 * @param op The operation that has been made
+	 */
+	public void sendOperation(Operation op) {
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(mGuiToGameSocket.getOutputStream());
+			out.writeObject(op);
+			Log.d("SendOp GuC", "Operation written into socket");
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
 	}
 
 	/**
-	 * Called when a button is pressed in the tableview
+	 * Called when the GuiUpdater gets an update from the gameController
 	 * 
-	 * @param v The view (button) that has been pressed
-	 */
-	public void tableButtonPressed(View v) {
-		// Get which button has been pressed
-		int id = v.getId();
-		Pile p = getPile(id);
-
-		// Check if there is a pile on this position
-		if (p != null) {
-			// Open the pile in the pileview
-			Intent pileView = new Intent(mTableView, PileView.class);
-			pileView.putExtra("pileId", id);
-			mTableView.startActivity(pileView);
-		} else {
-			// Prompt the user to create a new pile
-			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, id, msg);
-			dialog.show(mTableView);
-		}
-
-	}
-
-	/**
-	 * Get a pile from an id
-	 * 
-	 * @param id The id of the pile you want to retrieve
-	 * @return The requested pile
-	 */
-	public Pile getPile(int id) {
-		Pile p = piles.get(id);
-		return p;
-	}
-
-	/**
-	 * Updates the GuiController with the TableView activity and its buttons
-	 * 
-	 * @param table The TableView activity
-	 * @param buttons Tables buttons
-	 */
-	public void updateTableViewReferences(TableView table, ArrayList<Button> buttons) {
-		mTableView = table;
-		mTableViewButtons = buttons;
-		updateTableView();
-	}
-
-	/**
-	 * Called when a dialog gets text input. Creates a new pile with the name given in the dialog
-	 * 
-	 * @param obs The object (Dialogtext) that has been updated
-	 * @param param The parameter that is passed along (in the case of the Dialogtext, it's the same object)
+	 * @param obs The GuiUpdater that sent the update
+	 * @param param The updated gameState
 	 */
 	@Override
 	public void update(Observable obs, Object param) {
-		if (obs instanceof DialogText) {
-			DialogText dt = (DialogText) param;
-			// See if the name provided is unique
-			if (gc.checkIfNameExists(dt.getString())) {
-				// Prompt the user to try again
-				String msg = "Please enter a unique name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg);
-				dialog.show(mTableView);
-			} else {
-				// Create the pile
-				gc.createPile(dt.getId(), dt.getString());
-				updateTableView();
-			}
-
+		if (obs instanceof GuiUpdater) {
+			Log.d("network GuC", "in observer - update");
+			// Update the state of the game
+			GameState gs = (GameState) param;
+			setGameState(gs);
+			Log.d("network GuC", "New state Received");
+			// Force it to run on the UI-thread
+			mTableView.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					mTableView.updateTableView();
+					if (mPileView != null) {
+						mPileView.setupButtons();
+					}
+				}
+			});
 		}
-
 	}
 
 	/**
-	 * Updates the GuiController with the PileView activity and its buttons
+	 * Updates the GuiController with the TableView activity
+	 * 
+	 * @param table The TableView activity
+	 */
+	public void setTableView(TableView table) {
+		mTableView = table;
+		mTableView.updateTableView();
+	}
+
+	/**
+	 * Sets the pileView of the GuiController
 	 * 
 	 * @param pile The pile view
-	 * @param buttons The pile views buttons
 	 */
-	public void updatePileViewReferences(PileView pile, LinkedList<Button> buttons) {
+	public void setPileView(PileView pile) {
 		mPileView = pile;
 	}
 
 	/**
-	 * Flips a card
+	 * Sets the gameState
 	 * 
-	 * @param pilePos The pile to where the card is located
-	 * @param cardPos The position of the card in the pile to flip
+	 * @param gs The gameState
 	 */
-	public void flip(int pilePos, int cardPos) {
-		gc.flip(pilePos, cardPos);
-		updatePileView();
-		updateTableView();
-	}
-	/**
-	 * Moves a card from one pile to another
-	 * 
-	 * @param pileId		The id of the pile to move from
-	 * @param cardPos		The position of the card to move
-	 * @param destPileId	The id of the pile to move to
-	 */
-	public void moveCard(int pileId, int cardPos, int destPileId ) {
-		gc.moveCard(pileId, cardPos, destPileId);
-		updatePileView();
-		updateTableView();
+	public void setGameState(GameState gs) {
+		mGameState = gs;
 	}
 
 	/**
-	 * Updates the pile view
+	 * @return The GameState
 	 */
-	private void updatePileView() {
-		mPileView.setupButtons();
+	public GameState getGameState() {
+		return mGameState;
 	}
+
 }

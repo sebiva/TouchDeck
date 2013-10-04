@@ -19,21 +19,32 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.exceptions;
+package se.chalmers.touchdeck.network;
+
+import java.net.Socket;
+
+import se.chalmers.touchdeck.gamecontroller.GameController;
 
 /**
- * Exception thrown when a card is not found
+ * Sets up a single connection from the GameController to the GuiController
  * 
  * @author group17
  */
-public class CardNotFoundException extends Exception {
-	private static final long	serialVersionUID	= 6883143284907049675L;
+public class GameToGuiConnection extends ConnectionInterface {
+	private final GameController	mGameController;
 
-	public CardNotFoundException(String msg) {
-		super(msg);
+	public GameToGuiConnection(String ipAddr, int port, GameController gameController) {
+		super(ipAddr, port);
+		mGameController = gameController;
 	}
 
-	public CardNotFoundException(String msg, Exception cause) {
-		super(msg, cause);
+	/**
+	 * Add the socket to the gameController
+	 */
+	@Override
+	public void send(Socket socket) {
+		mGameController.addSocket(socket);
+		mGameController.sendUpdatedState();
 	}
+
 }

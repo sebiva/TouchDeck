@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="se.chalmers.touchdeck"
-    android:versionCode="2"
-    android:versionName="0.2" >
+    android:versionCode="3"
+    android:versionName="0.3" >
 
     <uses-sdk
         android:minSdkVersion="15"
         android:targetSdkVersion="15" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -31,9 +32,7 @@
         android:label="@string/app_name" 
         android:screenOrientation="sensorLandscape"
         android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">   
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value="se.chalmers.touchdeck.gui.StartScreen" />
+
     </activity>
         
     <activity
