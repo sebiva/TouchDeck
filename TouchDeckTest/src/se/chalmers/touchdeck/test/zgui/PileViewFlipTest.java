@@ -1,6 +1,31 @@
+/**
+ Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ */
+
+/**
+ This file is part of TouchDeck.
+
+ TouchDeck is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ TouchDeck is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.chalmers.touchdeck.test.zgui;
 
+import java.util.ArrayList;
+
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gui.GuiController;
 import se.chalmers.touchdeck.gui.PileView;
 import se.chalmers.touchdeck.gui.StartScreen;
@@ -23,7 +48,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 	private Solo				solo;
 
 	private GuiController		gc;
-	private int					pilePos;
+	private int					pilePos				= GameController.MID_OF_TABLE;
 	private PileView			pileView;
 	private String				secondPileName;
 	private int					secondPilePos;
@@ -55,7 +80,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 		solo.enterText(0, secondPileName);
 		solo.clickOnButton("OK");
 
-		solo.clickOnButton(tableView.getResources().getString(R.string.main_deck_name));
+		solo.clickOnButton(pilePos);
 
 		// Prepare for testing the pileview
 		solo.waitForActivity(PileView.class);
@@ -69,12 +94,14 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		new Solo(getInstrumentation()).finishOpenedActivities();
+
 		setActivityInitialTouchMode(true); // Turn on touch mode in the emulator.
 	}
 
 	public void testFlipCard() {
-		Pile deck = gc.getGameState().getPiles().get(pilePos);
+		GameState gs = gc.getGameState();
+		ArrayList<Pile> list = gs.getPiles();
+		Pile deck = list.get(pilePos + 1);
 		// Must be here for some reason
 		solo = new Solo(getInstrumentation(), pileView);
 		String startImage = deck.getCard(0).getImageName();
@@ -85,7 +112,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 
 		waitTime(100);
 		// Get the updated pile
-		deck = gc.getGameState().getPiles().get(pilePos);
+		deck = gc.getGameState().getPiles().get(pilePos + 1);
 		String firstImage = deck.getCard(0).getImageName();
 
 		assertNotSame(startImage, firstImage);
@@ -96,7 +123,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 
 		waitTime(100);
 		// Get the updated pile
-		deck = gc.getGameState().getPiles().get(pilePos);
+		deck = gc.getGameState().getPiles().get(pilePos + 1);
 
 		String secondImage = deck.getCard(0).getImageName();
 		assertEquals(startImage, secondImage);
@@ -110,7 +137,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 
 		waitTime(100);
 		// Get the updated pile
-		deck = gc.getGameState().getPiles().get(pilePos);
+		deck = gc.getGameState().getPiles().get(pilePos + 1);
 
 		String firstImageCard2 = deck.getCard(1).getImageName();
 		assertNotSame(firstImageCard2, startImageCard2);
