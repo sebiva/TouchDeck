@@ -3,6 +3,18 @@
     
     <item
         android:id="@+id/menu_item_shuffle"
-        android:title="@string/menu_item_shuffle"/>      
+        android:title="@string/menu_item_shuffle"/>
+    <item
+        android:id="@+id/menu_item_face_up"
+        android:title="@string/menu_item_face_up"/>   
+    <item
+        android:id="@+id/menu_item_face_down"
+        android:title="@string/menu_item_face_down"/>
+    <item
+        android:id="@+id/menu_item_move_all"
+        android:title="@string/menu_item_move_all">
+        <menu android:id="@+id/move_all_sub" >
+        </menu>
+     </item>
 
 </menu>

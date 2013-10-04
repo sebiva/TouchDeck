@@ -183,6 +183,36 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+		case faceUp:
+			Pile pileToFaceUp = mTable.get(op.getPile1());
+			if(pileToFaceUp != null) {
+				for(Card p : pileToFaceUp.getCards()) {
+					p.setFaceUp();
+				}
+				sendUpdatedState();
+			}
+			break;
+		case faceDown:
+			Pile pileToFaceDown = mTable.get(op.getPile1());
+			if(pileToFaceDown != null) {
+				for(Card p : pileToFaceDown.getCards()) {
+					p.setFaceDown();
+				}
+				sendUpdatedState();
+			}
+			break;
+		case moveAll:
+			Pile fromPile = mTable.get(op.getPile1());
+			Pile toPile = mTable.get(op.getPile2());
+			if(fromPile != null && toPile != null) {			
+				int totalCards = fromPile.getSize();
+				for (int i = 0; i < totalCards; i++) {
+					Card card = fromPile.takeCard(0);
+					toPile.addCard(card);
+				}
+				sendUpdatedState();
+			}
+			break;
 		default:
 		}
 	}
