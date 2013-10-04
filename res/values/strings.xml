@@ -10,5 +10,8 @@
     <string name="menu_item_move">Move card</string>
     <string name="menu_item_shuffle">Shuffle pile</string>
     <string name="menu_item_delete">Delete pile</string>
+    <string name="menu_item_face_up">Face all cards up</string>
+    <string name="menu_item_face_down">Face all cards down</string>
+    <string name="menu_item_move_all">Move all cards</string>
     
 </resources>
