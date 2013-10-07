@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -27,6 +27,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.enums.TableState;
 import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
@@ -43,7 +44,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -70,6 +70,9 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 	private int								mPileId;
 	private boolean							mIsBackPressedBefore;
+	private TableState						mTableState				= TableState.normal;
+	private Operation						mMoveOp;
+	private Toast							mMoveToast;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,24 +103,15 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		if (!mTableState.equals(TableState.normal)) {
+			return;
+		}
 		mPileId = v.getId();
 		MenuInflater inflater = getMenuInflater();
 		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 		if (currentPile != null) {
 			if (currentPile.getSize() > 0) {
 				inflater.inflate(R.menu.pile_menu, menu);
-
-				// Get the position of the move button and its submenu
-				MenuItem item = menu.getItem(3);
-				SubMenu subMenu = item.getSubMenu();
-
-				// Create a submenu entry for each pile on the table
-				for (int i = 0; i < 24; i++) {
-					Pile destPile = mGuiController.getGameState().getPiles().get(i);
-					if (destPile != null) {
-						subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
-					}
-				}
 			} else {
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 			}
@@ -146,10 +140,11 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
 			break;
 		case R.id.menu_item_move_all:
-			// mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, item.getItemId(), null));
+			mMoveToast = Toast.makeText(this, "Select pile to move cards", Toast.LENGTH_LONG);
+			mTableState = TableState.moveAll;
+			mMoveToast.show();
 			break;
 		default:
-			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, item.getItemId(), null));
 		}
 		return true;
 	}
@@ -220,6 +215,21 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 */
 	@Override
 	public void onClick(View v) {
+		if (mTableState.equals(TableState.move)) {
+			Intent pileView = new Intent(this, PileView.class);
+			pileView.putExtra("pileId", mMoveOp.getPile1());
+			mMoveOp.setPile2(v.getId());
+			mGuiController.sendOperation(mMoveOp);
+			mTableState = TableState.normal;
+			startActivity(pileView);
+			mMoveToast.cancel();
+			return;
+		} else if (mTableState.equals(TableState.moveAll)) {
+			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, v.getId(), null));
+			mMoveToast.cancel();
+			mTableState = TableState.normal;
+			return;
+		}
 
 		// Get which button has been pressed
 		int id = v.getId();
@@ -237,7 +247,27 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGuiController.getGameState().getDefaultPileName());
 			dialog.show(this);
 		}
+	}
 
+	/**
+	 * Sets the state of the tableView
+	 * 
+	 * @param tableState The state to set
+	 */
+	public void setTableState(TableState tableState) {
+		mTableState = tableState;
+	}
+
+	/**
+	 * Starts a toast to display to the user that they are in move mode
+	 */
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (mTableState == TableState.move) {
+			mMoveToast = Toast.makeText(this, "Select pile to move card", Toast.LENGTH_LONG);
+			mMoveToast.show();
+		}
 	}
 
 	@Override
@@ -251,6 +281,21 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 */
 	@Override
 	public void onBackPressed() {
+		if (mTableState.equals(TableState.move)) {
+			// Abort the move and go back to the pileView
+			Intent i = new Intent(this, PileView.class);
+			i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			mTableState = TableState.normal;
+			mMoveToast.cancel();
+			startActivity(i);
+			return;
+		} else if (mTableState.equals(TableState.moveAll)) {
+			// Abort move
+			mTableState = TableState.normal;
+			mMoveToast.cancel();
+			return;
+		}
+
 		if (mIsBackPressedBefore) {
 			super.onBackPressed();
 			finish();
@@ -268,6 +313,9 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		}, 2000);
 	}
 
+	/**
+	 * Updates the tableView to show the current state of all piles
+	 */
 	public void updateTableView() {
 		int i = 0;
 
@@ -332,8 +380,13 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
 				updateTableView();
 			}
-
 		}
+	}
 
+	/**
+	 * @param mMoveOp the mMoveOp to set
+	 */
+	public void setmMoveOp(Operation mMoveOp) {
+		this.mMoveOp = mMoveOp;
 	}
 }

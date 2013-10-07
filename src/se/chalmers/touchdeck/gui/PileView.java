@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -24,21 +24,21 @@ package se.chalmers.touchdeck.gui;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.enums.TableState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -54,24 +54,19 @@ import android.widget.LinearLayout;
 public class PileView extends Activity implements OnClickListener, OnLongClickListener {
 
 	private GuiController				mGuiController;
-	private final LinkedList<Button>	mButtons		= new LinkedList<Button>();
+	private final LinkedList<Button>	mButtons	= new LinkedList<Button>();
 
 	private int							mPileId;
 	private Card						mCard;
-	private static final int			INDEX_OF_MOVE	= 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pile_view);
 		mGuiController = GuiController.getInstance();
-
 		mPileId = getIntent().getExtras().getInt("pileId");
-
 		setupButtons();
-
 		mGuiController.setPileView(this);
-
 	}
 
 	@Override
@@ -91,19 +86,6 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		mCard = currentPile.getCard(v.getId());
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
-
-		// Get the position of the move button and its submenu
-		MenuItem item = menu.getItem(INDEX_OF_MOVE);
-		SubMenu subMenu = item.getSubMenu();
-
-		// Create a submenu entry for each pile on the table
-		for (int i = 0; i < 24; i++) {
-			Pile destPile = mGuiController.getGameState().getPiles().get(i);
-			if (destPile != null) {
-				subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
-			}
-		}
-
 	}
 
 	/**
@@ -116,11 +98,15 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard));
 			break;
 		case R.id.menu_item_move:
+			// Launch the TableView in move state
+			mGuiController.setTableState(TableState.move);
+			mGuiController.setMoveOp(new Operation(Op.move, mPileId, -1, mCard));
+			Intent table = new Intent(this, TableView.class);
+			// Don't start a new tableView, use the one already running.
+			table.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			startActivity(table);
 			break;
-		// Move destination
 		default:
-			Log.d("Move Destination", "PileId:" + mPileId);
-			mGuiController.sendOperation(new Operation(Op.move, mPileId, item.getItemId(), mCard));
 		}
 		return true;
 	}
@@ -132,8 +118,6 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
-		// Get the pile id
-
 		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
 		if (currentPile != null) {
@@ -193,5 +177,4 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		this.closeContextMenu();
 		return true;
 	}
-
 }

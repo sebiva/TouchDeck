@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 
+import se.chalmers.touchdeck.enums.TableState;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.network.GuiToGameConnection;
@@ -160,6 +161,20 @@ public class GuiController implements Observer {
 	 */
 	public GameState getGameState() {
 		return mGameState;
+	}
+
+	/**
+	 * @param state The state to set for the TableView
+	 */
+	public void setTableState(TableState state) {
+		mTableView.setTableState(state);
+	}
+
+	/**
+	 * @param state The operation to set for the TableView
+	 */
+	public void setMoveOp(Operation op) {
+		mTableView.setmMoveOp(op);
 	}
 
 }

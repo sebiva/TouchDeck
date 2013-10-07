@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -68,7 +68,6 @@ public class StartScreen extends Activity implements Observer {
 	 */
 	public void createGame(View v) {
 		Intent launchGui = new Intent(this, TableView.class);
-
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
 		launchGui.putExtra("IPaddr", LOCAL_IP);
@@ -98,6 +97,9 @@ public class StartScreen extends Activity implements Observer {
 		finish();
 	}
 
+	/**
+	 * Listens to the dialog for the ip to be entered
+	 */
 	@Override
 	public void update(Observable obs, Object param) {
 

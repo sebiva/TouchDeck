@@ -13,5 +13,6 @@
     <string name="menu_item_face_up">Face all cards up</string>
     <string name="menu_item_face_down">Face all cards down</string>
     <string name="menu_item_move_all">Move all cards</string>
+    <string name="move_dest_tag">moveDestTag</string>
     
 </resources>

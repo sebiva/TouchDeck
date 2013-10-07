@@ -12,9 +12,6 @@
         android:title="@string/menu_item_face_down"/>
     <item
         android:id="@+id/menu_item_move_all"
-        android:title="@string/menu_item_move_all">
-        <menu android:id="@+id/move_all_sub" >
-        </menu>
-     </item>
+        android:title="@string/menu_item_move_all"/>
 
 </menu>
