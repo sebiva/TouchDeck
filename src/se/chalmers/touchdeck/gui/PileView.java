@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -24,6 +24,7 @@ package se.chalmers.touchdeck.gui;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
@@ -31,7 +32,6 @@ import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -97,13 +97,12 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		SubMenu subMenu = item.getSubMenu();
 
 		// Create a submenu entry for each pile on the table
-		for (int i = 0; i < 24; i++) {
+		for (int i = 0; i < GameController.MAX_NUMBER_OF_PILES; i++) {
 			Pile destPile = mGuiController.getGameState().getPiles().get(i);
 			if (destPile != null) {
-				subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
+				subMenu.add(R.integer.menu_move_subID, i, Menu.NONE, destPile.getName());
 			}
 		}
-
 	}
 
 	/**
@@ -116,11 +115,12 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard));
 			break;
 		case R.id.menu_item_move:
+			// Move destination
 			break;
-		// Move destination
 		default:
-			Log.d("Move Destination", "PileId:" + mPileId);
-			mGuiController.sendOperation(new Operation(Op.move, mPileId, item.getItemId(), mCard));
+			if (item.getGroupId() == R.integer.menu_move_subID) {
+				mGuiController.sendOperation(new Operation(Op.move, mPileId, item.getItemId(), mCard));
+			}
 		}
 		return true;
 	}

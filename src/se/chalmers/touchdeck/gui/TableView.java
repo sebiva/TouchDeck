@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -70,6 +70,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 	private int								mPileId;
 	private boolean							mIsBackPressedBefore;
+	private static final int				INDEX_OF_MOVE			= 3;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -108,19 +109,22 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				inflater.inflate(R.menu.pile_menu, menu);
 
 				// Get the position of the move button and its submenu
-				MenuItem item = menu.getItem(3);
+				MenuItem item = menu.getItem(INDEX_OF_MOVE);
 				SubMenu subMenu = item.getSubMenu();
 
 				// Create a submenu entry for each pile on the table
-				for (int i = 0; i < 24; i++) {
+				for (int i = 0; i < GameController.MAX_NUMBER_OF_PILES; i++) {
 					Pile destPile = mGuiController.getGameState().getPiles().get(i);
 					if (destPile != null) {
-						subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
+						subMenu.add(R.integer.menu_move_all_subID, i, Menu.NONE, destPile.getName());
 					}
 				}
 			} else {
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 			}
+
+			// Protect and unprotect
+			menu.add(R.integer.menu_protectID, 42, Menu.NONE, "Protect");
 		}
 	}
 
@@ -146,10 +150,13 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
 			break;
 		case R.id.menu_item_move_all:
-			// mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, item.getItemId(), null));
+			// Move Destination
 			break;
 		default:
-			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, item.getItemId(), null));
+			if (item.getGroupId() == R.integer.menu_move_all_subID) {
+				mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, item.getItemId(), null));
+			}
+
 		}
 		return true;
 	}

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -231,6 +231,19 @@ public class GameController {
 					Card card = fromPile.takeCard(0);
 					toPile.addCard(card);
 				}
+				sendUpdatedState();
+			}
+			break;
+
+		case protect:
+			mTable.get(op.getPile1()).setOwner(op.getName());
+			sendUpdatedState();
+			break;
+
+		case unprotect:
+			Pile protectedPile = mTable.get(op.getPile1());
+			if (protectedPile.getOwner().equals(op.getName())) {
+				protectedPile.setOwner(null);
 				sendUpdatedState();
 			}
 			break;

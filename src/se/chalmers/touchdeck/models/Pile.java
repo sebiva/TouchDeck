@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -39,6 +39,7 @@ public class Pile implements Serializable {
 	private static final long		serialVersionUID	= -3056217673776714467L;
 	private final LinkedList<Card>	mCards				= new LinkedList<Card>();
 	private String					mName;
+	private String					mOwner				= null;
 
 	/**
 	 * Constructor
@@ -125,5 +126,19 @@ public class Pile implements Serializable {
 		for (int i = 0; i < 10; i++) {
 			Collections.shuffle(mCards);
 		}
+	}
+
+	/**
+	 * @return the Owner
+	 */
+	public String getOwner() {
+		return mOwner;
+	}
+
+	/**
+	 * @param Owner the Owner to set
+	 */
+	public void setOwner(String owner) {
+		this.mOwner = owner;
 	}
 }
