@@ -13,5 +13,9 @@
     <string name="menu_item_face_up">Face all cards up</string>
     <string name="menu_item_face_down">Face all cards down</string>
     <string name="menu_item_move_all">Move all cards</string>
-    
+    <string name="menu_item_protect_pile">Protect pile</string>
+    <string name="menu_item_unprotect_pile">Unprotect pile</string>
+    <string name="menu_item_protect_empty_pile">Protect pile</string>
+    <string name="menu_item_unprotect_empty_pile">Unprotect pile</string>
+    <string name="back_of_card">b2fv</string>
 </resources>

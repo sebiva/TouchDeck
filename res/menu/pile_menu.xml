@@ -15,6 +15,13 @@
         android:title="@string/menu_item_move_all">
         <menu android:id="@+id/move_all_sub" >
         </menu>
-     </item>
+    </item>
+    
+    <item 
+        android:id="@+id/menu_item_protect_pile"
+        android:title="@string/menu_item_protect_pile"/>
+    <item 
+        android:id="@+id/menu_item_unprotect_pile"
+        android:title="@string/menu_item_unprotect_pile"/>
 
 </menu>
