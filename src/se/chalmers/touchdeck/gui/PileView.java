@@ -51,14 +51,14 @@ import android.widget.LinearLayout;
  * 
  * @author Group 17
  */
-public class PileView extends Activity implements OnClickListener,
-		OnLongClickListener {
+public class PileView extends Activity implements OnClickListener, OnLongClickListener {
 
-	private GuiController mGuiController;
-	private final LinkedList<Button> mButtons = new LinkedList<Button>();
+	private GuiController				mGuiController;
+	private final LinkedList<Button>	mButtons	= new LinkedList<Button>();
 
-	private int mPileId;
-	private Card mCard;
+	private int							mPileId;
+	private Card						mCard;
+	private String						mIpAddr;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +66,7 @@ public class PileView extends Activity implements OnClickListener,
 		setContentView(R.layout.pile_view);
 		mGuiController = GuiController.getInstance();
 		mPileId = getIntent().getExtras().getInt("pileId");
+		mIpAddr = getIntent().getExtras().getString("ipAddr");
 		setupButtons();
 		mGuiController.setPileView(this);
 	}
@@ -81,11 +82,9 @@ public class PileView extends Activity implements OnClickListener,
 	 * Create the context menus that appear when clicking a card.
 	 */
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		Pile currentPile = mGuiController.getGameState().getPiles()
-				.get(mPileId);
+		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 		mCard = currentPile.getCard(v.getId());
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
@@ -98,14 +97,12 @@ public class PileView extends Activity implements OnClickListener,
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_item_flip:
-			mGuiController
-					.sendOperation(new Operation(Op.flip, mPileId, mCard));
+			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard));
 			break;
 		case R.id.menu_item_move:
 			// Launch the TableView in move state
 			mGuiController.setTableState(TableState.move);
-			mGuiController
-					.setMoveOp(new Operation(Op.move, mPileId, -1, mCard));
+			mGuiController.setMoveOp(new Operation(Op.move, mPileId, -1, mCard));
 			Intent table = new Intent(this, TableView.class);
 			// Don't start a new tableView, use the one already running.
 			table.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -124,56 +121,53 @@ public class PileView extends Activity implements OnClickListener,
 		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
-		Pile currentPile = mGuiController.getGameState().getPiles()
-				.get(mPileId);
+		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
-		if (currentPile != null) {
+		if (currentPile == null || (!currentPile.getOwner().equals("noOwner") && !mIpAddr.equals(currentPile.getOwner()))) {
+			// If the pile is deleted or protected, the user shouldn't see any cards
+			// TODO Fix something nicer
+			return;
+		}
+		LinkedList<Card> cards = currentPile.getCards();
+		for (int i = 0; i < currentPile.getSize(); i++) {
 
-			LinkedList<Card> cards = currentPile.getCards();
-			for (int i = 0; i < currentPile.getSize(); i++) {
+			Button b = new Button(this);
+			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
+			bp.setMargins(3, 0, 3, 0);
 
-				Button b = new Button(this);
-				LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(
-						LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,
-						1.0f);
-				bp.setMargins(3, 0, 3, 0);
+			b.setId(i);
+			b.setTag("Card " + i);
 
-				b.setId(i);
-				b.setTag("Card " + i);
+			Card card = cards.get(i);
 
-				Card card = cards.get(i);
+			int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
+			b.setBackgroundResource(image);
 
-				int image = getResources().getIdentifier(card.getImageName(),
-						"drawable", getPackageName());
-				b.setBackgroundResource(image);
+			// Calculate the size of the button
+			Display display = getWindowManager().getDefaultDisplay();
+			Point size = new Point();
+			display.getSize(size);
 
-				// Calculate the size of the button
-				Display display = getWindowManager().getDefaultDisplay();
-				Point size = new Point();
-				display.getSize(size);
+			int y = size.y / 2;
+			int x = (int) (y * 0.73);
 
-				int y = size.y / 2;
-				int x = (int) (y * 0.73);
+			b.setHeight(y);
+			b.setWidth(x);
 
-				b.setHeight(y);
-				b.setWidth(x);
+			layout.addView(b);
+			mButtons.add(b);
+			b.setOnClickListener(this);
+			b.setOnLongClickListener(this);
+			registerForContextMenu(b);
 
-				layout.addView(b);
-				mButtons.add(b);
-				b.setOnClickListener(this);
-				b.setOnLongClickListener(this);
-				registerForContextMenu(b);
-
-				b.setLayoutParams(bp);
-			}
+			b.setLayoutParams(bp);
 		}
 	}
 
 	/**
 	 * Called when one of the buttons is clicked
 	 * 
-	 * @param The
-	 *            view(in this case, button) that was clicked
+	 * @param The view(in this case, button) that was clicked
 	 */
 	@Override
 	public void onClick(View v) {

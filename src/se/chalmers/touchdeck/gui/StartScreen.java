@@ -70,7 +70,7 @@ public class StartScreen extends Activity implements Observer {
 		Intent launchGui = new Intent(this, TableView.class);
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
-		launchGui.putExtra("IPaddr", LOCAL_IP);
+		launchGui.putExtra("ipAddr", LOCAL_IP);
 		startActivity(launchGui);
 	}
 
@@ -120,7 +120,7 @@ public class StartScreen extends Activity implements Observer {
 					emptyPiles.add(null);
 				}
 				launchGui.putExtra("state", new GameState(emptyPiles, new HashSet<String>()));
-				launchGui.putExtra("IPaddr", dt.getString()); // TODO
+				launchGui.putExtra("ipAddr", dt.getString());
 				startActivity(launchGui);
 			}
 
