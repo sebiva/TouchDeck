@@ -19,5 +19,8 @@
     <item 
         android:id="@+id/menu_item_unprotect_pile"
         android:title="@string/menu_item_unprotect_pile"/>
+    <item 
+        android:id="@+id/menu_item_deal_cards" 
+        android:title="@string/menu_item_deal_cards"/>
 
 </menu>
