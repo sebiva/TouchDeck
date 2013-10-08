@@ -229,6 +229,13 @@ public class TableView extends Activity implements OnClickListener, Observer {
 					ipAddr));
 			Toast.makeText(this, pileName + " unprotected!", Toast.LENGTH_SHORT)
 					.show();
+			break;
+		case R.id.menu_item_deal_cards:
+			mToast = Toast.makeText(this, "Tap piles you want to send the top card to. Press BACK to exit.",
+					Toast.LENGTH_LONG);
+			mTableState = TableState.deal;
+			mToast.show();
+			break;
 		default:
 
 		}
@@ -323,6 +330,20 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mToast.cancel();
 			mTableState = TableState.normal;
 			return;
+		} else if (mTableState.equals(TableState.deal)) {
+			mToast.cancel();
+			Pile currentPile = mGuiController.getGameState().getPiles()
+					.get(mPileId);
+			if(currentPile.getSize() == 1) {
+				// Exit deal mode if there are no more cards in the pile after this move
+				mTableState = TableState.normal;
+				mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
+				mToast.show();
+			}
+			
+			mGuiController.sendOperation(new Operation(Op.move, mPileId, v
+					.getId(), currentPile.getCard(0)));	
+			return;
 		}
 
 		// Get which button has been pressed
@@ -407,6 +428,13 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mTableState = TableState.normal;
 			mToast.cancel();
 			mToast = Toast.makeText(this, "Move Canceled", Toast.LENGTH_SHORT);
+			mToast.show();
+			return;
+		} else if (mTableState.equals(TableState.deal)) {
+			// Exit deal mode
+			mTableState = TableState.normal;
+			mToast.cancel();
+			mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
 			mToast.show();
 			return;
 		}
