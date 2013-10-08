@@ -37,7 +37,7 @@ public class Operation implements Serializable {
 	private static final long	serialVersionUID	= -2413214187514892785L;
 
 	public enum Op {
-		move, flip, create, connect, disconnect, shuffle, delete, faceUp, faceDown, moveAll
+		move, flip, create, connect, shuffle, delete, faceUp, faceDown, moveAll, protect, unprotect
 	}
 
 	private Op		mOp;
@@ -47,7 +47,7 @@ public class Operation implements Serializable {
 	private String	mName;
 	private String	mIpAddr;
 
-	// connect / disconnect
+	// connect
 	public Operation(Op op) {
 		mOp = op;
 	}
@@ -58,7 +58,7 @@ public class Operation implements Serializable {
 		mPile1 = pile1;
 	}
 
-	// create
+	// create / protect / unprotect
 	public Operation(Op op, Integer pile1, String name) {
 		mOp = op;
 		mPile1 = pile1;
