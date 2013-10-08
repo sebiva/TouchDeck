@@ -140,7 +140,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
 			break;
 		case R.id.menu_item_move_all:
-			mMoveToast = Toast.makeText(this, "Select pile to move cards", Toast.LENGTH_LONG);
+			mMoveToast = Toast.makeText(this, "Select pile to move cards to", Toast.LENGTH_LONG);
 			mTableState = TableState.moveAll;
 			mMoveToast.show();
 			break;
@@ -232,19 +232,19 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		}
 
 		// Get which button has been pressed
-		int id = v.getId();
-		Pile p = mGuiController.getGameState().getPiles().get(id);
+		mPileId = v.getId();
+		Pile p = mGuiController.getGameState().getPiles().get(mPileId);
 
 		// Check if there is a pile on this position
 		if (p != null) {
 			// Open the pile in the pileview
 			Intent pileView = new Intent(this, PileView.class);
-			pileView.putExtra("pileId", id);
+			pileView.putExtra("pileId", mPileId);
 			this.startActivity(pileView);
 		} else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGuiController.getGameState().getDefaultPileName());
+			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg, mGuiController.getGameState().getDefaultPileName());
 			dialog.show(this);
 		}
 	}
@@ -265,7 +265,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public void onResume() {
 		super.onResume();
 		if (mTableState == TableState.move) {
-			mMoveToast = Toast.makeText(this, "Select pile to move card", Toast.LENGTH_LONG);
+			mMoveToast = Toast.makeText(this, "Select pile to move card to", Toast.LENGTH_LONG);
 			mMoveToast.show();
 		}
 	}
@@ -284,7 +284,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (mTableState.equals(TableState.move)) {
 			// Abort the move and go back to the pileView
 			Intent i = new Intent(this, PileView.class);
-			i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			i.putExtra("pileId", mPileId);
 			mTableState = TableState.normal;
 			mMoveToast.cancel();
 			startActivity(i);

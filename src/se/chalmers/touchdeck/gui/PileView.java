@@ -105,6 +105,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			// Don't start a new tableView, use the one already running.
 			table.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			startActivity(table);
+			finish();
 			break;
 		default:
 		}
@@ -176,5 +177,11 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	public boolean onLongClick(View v) {
 		this.closeContextMenu();
 		return true;
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
 	}
 }
