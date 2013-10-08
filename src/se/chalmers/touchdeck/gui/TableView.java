@@ -70,7 +70,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	private GuiController mGuiController;
 
 	private int mPileId;
-	private String ipAddr;
 	private boolean mIsBackPressedBefore;
 	private static final int INDEX_OF_MOVE = 3;
 
@@ -81,7 +80,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		// Create Buttons in the tableview
 		setupButtons();
 		Serializable s = getIntent().getExtras().getSerializable("state");
-		this.ipAddr = getIntent().getExtras().getString("IPaddr");
+		String ipAddr = getIntent().getExtras().getString("IPaddr");
 		GameState gs = (GameState) s;
 
 		mGuiController = GuiController.getInstance();
@@ -108,15 +107,15 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		MenuInflater inflater = getMenuInflater();
 		Pile currentPile = mGuiController.getGameState().getPiles()
 				.get(mPileId);
-		String pileOwner = currentPile.getOwner();
 
 		if (currentPile != null) {
-			String userIp = getIntent().getExtras().getString("IPaddr");
+			String ipAddr = getIntent().getExtras().getString("IPaddr");
+			String pileOwner = currentPile.getOwner();
 
 			// Stops the context menu from inflating if the user should not have
 			// access to the pile.
 			if (currentPile.getSize() > 0
-					&& (pileOwner.equals(userIp) || pileOwner.equals("noOwner"))) {
+					&& (pileOwner.equals(ipAddr) || pileOwner.equals("noOwner"))) {
 				inflater.inflate(R.menu.pile_menu, menu);
 
 				// Checks whether the pile is protected or not and sets which
@@ -131,7 +130,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
-				} else if (pileOwner.equals(userIp)) {
+				} else if (pileOwner.equals(ipAddr)) {
 					unprotectPile.setVisible(true);
 					protectPile.setVisible(false);
 				} else {
@@ -152,7 +151,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 								Menu.NONE, destPile.getName());
 					}
 				}
-			} else if (pileOwner.equals(userIp) || pileOwner.equals("noOwner")) {
+			} else if (pileOwner.equals(ipAddr) || pileOwner.equals("noOwner")) {
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 
 				// Checks whether the pile is protected or not and sets which
@@ -167,7 +166,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
-				} else if (pileOwner.equals(userIp)) {
+				} else if (pileOwner.equals(ipAddr)) {
 					unprotectPile.setVisible(true);
 					protectPile.setVisible(false);
 				} else {
@@ -186,6 +185,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public boolean onContextItemSelected(MenuItem item) {
 		String pileName = mGuiController.getGameState().getPiles().get(mPileId)
 				.getName();
+		String ipAddr = getIntent().getExtras().getString("IPaddr");
+
 		switch (item.getItemId()) {
 		case R.id.menu_item_shuffle:
 			mGuiController.sendOperation(new Operation(Op.shuffle, mPileId));
@@ -319,7 +320,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		// Get which button has been pressed
 		int id = v.getId();
 		Pile p = mGuiController.getGameState().getPiles().get(id);
-		String userIp = getIntent().getExtras().getString("IPaddr");
+		String ipAddr = getIntent().getExtras().getString("IPaddr");
 
 		// Check if there is a pile on this position
 		if (p != null) {
@@ -328,7 +329,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// Checks whether the pile is protected by another user before
 			// allowing access to the pile view.
 
-			if ((p.getOwner().equals(userIp))
+			if ((p.getOwner().equals(ipAddr))
 					|| (p.getOwner().equals("noOwner"))) {
 				Intent pileView = new Intent(this, PileView.class);
 				pileView.putExtra("pileId", id);
