@@ -246,12 +246,14 @@ public class PileView extends Activity implements OnTouchListener {
 
 		int maxWidth = 60;
 		int minHeight = 20;
+		Card prevCard = mCard;
 
 		int action = event.getAction();
 		if (action == MotionEvent.ACTION_DOWN) {
 
 			mDownXPos = event.getX();
 			mDownYPos = event.getY();
+
 			return true;
 
 		} else if (action == MotionEvent.ACTION_UP
@@ -270,7 +272,6 @@ public class PileView extends Activity implements OnTouchListener {
 					+ minHeight + "maxX: " + maxWidth);
 			// What happens when swiping up or down
 			if (Math.abs(deltaY) > 20 && Math.abs(deltaX) < maxWidth) {
-				Log.e("Swipe", "Swipe down!");
 				if (deltaY < 0) {
 					if (mPeekedCards.contains(mCard)) {
 						mPeekedCards.remove(mCard);
@@ -281,6 +282,7 @@ public class PileView extends Activity implements OnTouchListener {
 						return false;
 					}
 				}
+
 				if (deltaY > 0) {
 					Log.e("Swipe", "Swipe up!");
 					mGuiController.setTableState(TableState.move);
@@ -298,11 +300,12 @@ public class PileView extends Activity implements OnTouchListener {
 			// What happens on double tap.
 			if (Math.abs(deltaX) < 40) {
 				Log.e("Swipe", "Clicked!");
-				if (alreadyClicked) {
+				if (alreadyClicked && prevCard == mCard) {
 					mGuiController.sendOperation(new Operation(Op.flip,
 							mPileId, mCard));
 				}
 				alreadyClicked = true;
+				prevCard = mCard;
 				new Handler().postDelayed(new Runnable() {
 
 					@Override
