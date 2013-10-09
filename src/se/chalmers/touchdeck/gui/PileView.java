@@ -21,6 +21,7 @@
 
 package se.chalmers.touchdeck.gui;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.R;
@@ -32,12 +33,14 @@ import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -53,15 +56,16 @@ import android.widget.LinearLayout;
  */
 public class PileView extends Activity implements OnTouchListener {
 
+	private float mDownYPos;
+	private float mDownXPos;
+	private boolean alreadyClicked;
 	private GuiController mGuiController;
 	private final LinkedList<Button> mButtons = new LinkedList<Button>();
 
 	private int mPileId;
 	private Card mCard;
 	private String mIpAddr;
-	private float mDownYPos;
-	private float mDownXPos;
-	private boolean alreadyClicked;
+	private final HashSet<Card> mPeekedCards = new HashSet<Card>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,24 @@ public class PileView extends Activity implements OnTouchListener {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		Pile currentPile = mGuiController.getGameState().getPiles()
+				.get(mPileId);
+		mCard = currentPile.getCard(v.getId());
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.card_menu, menu);
+
+		// Peek options
+		if (mPeekedCards.contains(mCard)) {
+			menu.findItem(R.id.menu_item_peek).setVisible(false);
+		} else {
+			menu.findItem(R.id.menu_item_unpeek).setVisible(false);
+		}
+		if (mPeekedCards.size() == 0) {
+			menu.findItem(R.id.menu_item_unpeek_all).setVisible(false);
+		}
+		if (mPeekedCards.size() == currentPile.getSize()) {
+			menu.findItem(R.id.menu_item_peek_all).setVisible(false);
+		}
 
 	}
 
@@ -96,7 +118,45 @@ public class PileView extends Activity implements OnTouchListener {
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_item_flip:
+			mGuiController
+					.sendOperation(new Operation(Op.flip, mPileId, mCard));
+			break;
+		case R.id.menu_item_move:
+			// Launch the TableView in move state
+			mGuiController.setTableState(TableState.move);
+			mGuiController
+					.setMoveOp(new Operation(Op.move, mPileId, -1, mCard));
+			Intent table = new Intent(this, TableView.class);
+			// Don't start a new tableView, use the one already running.
+			table.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			startActivity(table);
+			finish();
+			break;
 
+		case R.id.menu_item_peek:
+			mPeekedCards.add(mCard);
+			setupButtons();
+			break;
+		case R.id.menu_item_unpeek:
+			mPeekedCards.remove(mCard);
+			setupButtons();
+			break;
+
+		case R.id.menu_item_peek_all:
+			Pile currentPile = mGuiController.getGameState().getPiles()
+					.get(mPileId);
+			mPeekedCards.addAll(currentPile.getCards());
+			setupButtons();
+			break;
+
+		case R.id.menu_item_unpeek_all:
+			mPeekedCards.clear();
+			setupButtons();
+			break;
+		default:
+		}
 		return true;
 	}
 
@@ -129,12 +189,6 @@ public class PileView extends Activity implements OnTouchListener {
 			b.setId(i);
 			b.setTag("Card " + i);
 
-			Card card = cards.get(i);
-
-			int image = getResources().getIdentifier(card.getImageName(),
-					"drawable", getPackageName());
-			b.setBackgroundResource(image);
-
 			// Calculate the size of the button
 			Display display = getWindowManager().getDefaultDisplay();
 			Point size = new Point();
@@ -142,6 +196,21 @@ public class PileView extends Activity implements OnTouchListener {
 
 			int y = size.y / 2;
 			int x = (int) (y * 0.73);
+			Card card = cards.get(i);
+
+			if (mPeekedCards.contains(card)) {
+				int faceUpImage = getResources()
+						.getIdentifier(card.getFaceUpImageName(), "drawable",
+								getPackageName());
+				Drawable peekedCard = getResources().getDrawable(faceUpImage);
+				peekedCard.setBounds(0, 0, (int) (x * 0.8), (int) (y * 0.8));
+				b.setCompoundDrawables(peekedCard, null, null, null);
+
+			}
+
+			int image = getResources().getIdentifier(card.getImageName(),
+					"drawable", getPackageName());
+			b.setBackgroundResource(image);
 
 			b.setHeight(y);
 			b.setWidth(x);
