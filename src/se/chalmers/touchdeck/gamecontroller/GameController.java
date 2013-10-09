@@ -44,22 +44,22 @@ import android.util.Log;
 public class GameController {
 
 	// Public constants
-	public static final int NUM_ROWS = 3;
-	public static final int NUM_COLUMNS = 8;
-	public static final int MAX_NUMBER_OF_PILES = NUM_ROWS * NUM_COLUMNS;
-	public static final int MID_OF_TABLE = MAX_NUMBER_OF_PILES / 2 - 1;
-	public static final String MAIN_DECK_NAME = "deck";
+	public static final int				NUM_ROWS				= 3;
+	public static final int				NUM_COLUMNS				= 8;
+	public static final int				MAX_NUMBER_OF_PILES		= NUM_ROWS * NUM_COLUMNS;
+	public static final int				MID_OF_TABLE			= MAX_NUMBER_OF_PILES / 2 - 1;
+	public static final String			MAIN_DECK_NAME			= "deck";
 
-	private final ArrayList<Pile> mTable = new ArrayList<Pile>();
-	private final HashSet<String> mPileNames = new HashSet<String>();
+	private final ArrayList<Pile>		mTable					= new ArrayList<Pile>();
+	private final HashSet<String>		mPileNames				= new HashSet<String>();
 
-	private final GameState mGameState;
-	private final int mPort = 4243;
-	private final LinkedList<Thread> mGameToGuiThreads = new LinkedList<Thread>();
-	private final LinkedList<Socket> mAllGameToGuiSockets = new LinkedList<Socket>();
-	private final GameListener mGameListener;
+	private final GameState				mGameState;
+	private final int					mPort					= 4243;
+	private final LinkedList<Thread>	mGameToGuiThreads		= new LinkedList<Thread>();
+	private final LinkedList<Socket>	mAllGameToGuiSockets	= new LinkedList<Socket>();
+	private final GameListener			mGameListener;
 
-	private static int mDefaultPileNameNo = 1;
+	private static int					mDefaultPileNameNo		= 1;
 
 	/**
 	 * Creates a new gameController and sets up a deck.
@@ -78,12 +78,10 @@ public class GameController {
 	}
 
 	/**
-	 * @param socket
-	 *            The socket to add as the connection to the guiController
+	 * @param socket The socket to add as the connection to the guiController
 	 */
 	public void addSocket(Socket socket) {
-		Log.d("network GaC", "socket added to list "
-				+ socket.getRemoteSocketAddress().toString());
+		Log.d("network GaC", "socket added to list " + socket.getRemoteSocketAddress().toString());
 		mAllGameToGuiSockets.add(socket);
 	}
 
@@ -96,8 +94,7 @@ public class GameController {
 			for (Socket socket : mAllGameToGuiSockets) {
 				out = new ObjectOutputStream(socket.getOutputStream());
 				out.writeObject(mGameState);
-				Log.d("sendUpdated GaC", "State written into socket "
-						+ socket.getRemoteSocketAddress().toString());
+				Log.d("sendUpdated GaC", "State written into socket " + socket.getRemoteSocketAddress().toString());
 				out.flush();
 			}
 		} catch (IOException e) {
@@ -184,8 +181,7 @@ public class GameController {
 			break;
 
 		case connect:
-			Thread thread = new Thread(new GameToGuiConnection(op.getIpAddr(),
-					mPort, this));
+			Thread thread = new Thread(new GameToGuiConnection(op.getIpAddr(), mPort, this));
 			thread.start();
 			mGameToGuiThreads.add(thread);
 			Log.d("handle GaC", "connected : " + op.getIpAddr());
@@ -202,8 +198,7 @@ public class GameController {
 
 		case delete:
 			int pilePosToDelete = op.getPile1();
-			if (mTable.get(pilePosToDelete) != null
-					&& mTable.get(pilePosToDelete).getSize() == 0) {
+			if (mTable.get(pilePosToDelete) != null && mTable.get(pilePosToDelete).getSize() == 0) {
 				mPileNames.remove(mTable.get(pilePosToDelete).getName());
 				mTable.set(pilePosToDelete, null);
 				sendUpdatedState();
@@ -251,6 +246,16 @@ public class GameController {
 				protectedPile.setOwner("noOwner");
 				sendUpdatedState();
 			}
+			break;
+
+		case restart:
+			mTable.clear();
+			for (int i = 0; i < MAX_NUMBER_OF_PILES; i++) {
+				mTable.add(i, null);
+			}
+			mPileNames.clear();
+			createDeck();
+			sendUpdatedState();
 			break;
 		default:
 		}

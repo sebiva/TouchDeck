@@ -24,5 +24,7 @@
     <string name="menu_item_unprotect_empty_pile">Unprotect pile</string>
     <string name="menu_item_deal_cards">Deal cards from pile</string>
     <string name="back_of_card">b2fv</string>
+    <string name="menu_option_terminate">Terminate Session</string>
+    <string name="menu_option_restart">Restart game</string>
 
 </resources>
