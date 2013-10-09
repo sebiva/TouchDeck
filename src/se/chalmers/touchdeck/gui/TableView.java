@@ -39,11 +39,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.GestureDetectorCompat;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -55,30 +59,34 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * The Activity for the table view, contains a grid with pile positions represented as buttons.
+ * The Activity for the table view, contains a grid with pile positions
+ * represented as buttons.
  * 
  * @author group17
  */
 public class TableView extends Activity implements OnClickListener, Observer {
 
-	private static final int				MAX_PILE_NAME_LENGTH	= 20;
-	private static final int				MAX_PILE_NAME_DISPLAYED	= 6;
-	private static final int				PADDING					= 5;
-	private TableLayout						mTableLayout;
-	private final ArrayList<LinearLayout>	mLayouts				= new ArrayList<LinearLayout>();
-	private GuiController					mGuiController;
+	private static final int MAX_PILE_NAME_LENGTH = 20;
+	private static final int MAX_PILE_NAME_DISPLAYED = 6;
+	private static final int PADDING = 5;
+	private TableLayout mTableLayout;
+	private final ArrayList<LinearLayout> mLayouts = new ArrayList<LinearLayout>();
+	private GuiController mGuiController;
 
-	private int								mPileId;
-	private boolean							mIsBackPressedBefore;
-	private TableState						mTableState				= TableState.normal;
-	private Operation						mMoveOp;
-	private Toast							mToast;
-	private String							mIpAddr;
+	private int mPileId;
+	private boolean mIsBackPressedBefore;
+	private TableState mTableState = TableState.normal;
+	private Operation mMoveOp;
+	private Toast mToast;
+	private String mIpAddr;
+	private GestureDetectorCompat mDetector;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.table_view);
+		mDetector = new GestureDetectorCompat(this, new GestureListener());
+
 		// Create Buttons in the tableview
 		setupButtons();
 		Serializable s = getIntent().getExtras().getSerializable("state");
@@ -92,6 +100,30 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	}
 
 	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		this.mDetector.onTouchEvent(event);
+		return super.onTouchEvent(event);
+	}
+
+	class GestureListener extends GestureDetector.SimpleOnGestureListener {
+		private static final String DEBUG_TAG = "Gestures";
+
+		@Override
+		public boolean onDown(MotionEvent event) {
+			Log.d(DEBUG_TAG, "onDown: " + event.toString());
+			return true;
+		}
+
+		@Override
+		public boolean onFling(MotionEvent event1, MotionEvent event2,
+				float velocityX, float velocityY) {
+			Log.d(DEBUG_TAG,
+					"onFling: " + event1.toString() + event2.toString());
+			return true;
+		}
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -102,29 +134,35 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 * Create the context menus that appear when long-pressing a pile.
 	 */
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		if (!mTableState.equals(TableState.normal)) {
 			return;
 		}
 		mPileId = v.getId();
 		MenuInflater inflater = getMenuInflater();
-		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
+		Pile currentPile = mGuiController.getGameState().getPiles()
+				.get(mPileId);
 
 		if (currentPile != null) {
 			String pileOwner = currentPile.getOwner();
 
 			// Stops the context menu from inflating if the user should not have
 			// access to the pile.
-			if (currentPile.getSize() > 0 && (pileOwner.equals(mIpAddr) || pileOwner.equals("noOwner"))) {
+			if (currentPile.getSize() > 0
+					&& (pileOwner.equals(mIpAddr) || pileOwner
+							.equals("noOwner"))) {
 				inflater.inflate(R.menu.pile_menu, menu);
 
 				// Checks whether the pile is protected or not and sets which
 				// 'protect' option should be available in the pile context
 				// menu.
 
-				MenuItem protectPile = menu.findItem(R.id.menu_item_protect_pile);
-				MenuItem unprotectPile = menu.findItem(R.id.menu_item_unprotect_pile);
+				MenuItem protectPile = menu
+						.findItem(R.id.menu_item_protect_pile);
+				MenuItem unprotectPile = menu
+						.findItem(R.id.menu_item_unprotect_pile);
 
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
@@ -145,8 +183,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				// 'protect' option should be available in the pile context
 				// menu.
 
-				MenuItem protectPile = menu.findItem(R.id.menu_item_protect_empty_pile);
-				MenuItem unprotectPile = menu.findItem(R.id.menu_item_unprotect_empty_pile);
+				MenuItem protectPile = menu
+						.findItem(R.id.menu_item_protect_empty_pile);
+				MenuItem unprotectPile = menu
+						.findItem(R.id.menu_item_unprotect_empty_pile);
 
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
@@ -168,17 +208,20 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		String pileName = mGuiController.getGameState().getPiles().get(mPileId).getName();
+		String pileName = mGuiController.getGameState().getPiles().get(mPileId)
+				.getName();
 		switch (item.getItemId()) {
 		case R.id.menu_item_shuffle:
 			mGuiController.sendOperation(new Operation(Op.shuffle, mPileId));
-			mToast = Toast.makeText(this, mGuiController.getGameState().getPiles().get(mPileId).getName() + " shuffled!",
-					Toast.LENGTH_SHORT);
+			mToast = Toast.makeText(this, mGuiController.getGameState()
+					.getPiles().get(mPileId).getName()
+					+ " shuffled!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_delete:
 			mGuiController.sendOperation(new Operation(Op.delete, mPileId));
-			mToast = Toast.makeText(this, pileName + " deleted!", Toast.LENGTH_SHORT);
+			mToast = Toast.makeText(this, pileName + " deleted!",
+					Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_face_up:
@@ -188,33 +231,46 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
 			break;
 		case R.id.menu_item_move_all:
-			mToast = Toast.makeText(this, "Select pile to move cards to", Toast.LENGTH_LONG);
+			mToast = Toast.makeText(this, "Select pile to move cards to",
+					Toast.LENGTH_LONG);
 			mTableState = TableState.moveAll;
 			mToast.show();
 			break;
 		case R.id.menu_item_protect_pile:
-			mGuiController.sendOperation(new Operation(Op.protect, mPileId, mIpAddr));
-			mToast = Toast.makeText(this, pileName + " protected!", Toast.LENGTH_SHORT);
+			mGuiController.sendOperation(new Operation(Op.protect, mPileId,
+					mIpAddr));
+			mToast = Toast.makeText(this, pileName + " protected!",
+					Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_protect_empty_pile:
-			mGuiController.sendOperation(new Operation(Op.protect, mPileId, mIpAddr));
-			mToast = Toast.makeText(this, pileName + " protected!", Toast.LENGTH_SHORT);
+			mGuiController.sendOperation(new Operation(Op.protect, mPileId,
+					mIpAddr));
+			mToast = Toast.makeText(this, pileName + " protected!",
+					Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_unprotect_pile:
-			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, mIpAddr));
-			mToast = Toast.makeText(this, pileName + " unprotected!", Toast.LENGTH_SHORT);
+			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId,
+					mIpAddr));
+			mToast = Toast.makeText(this, pileName + " unprotected!",
+					Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_unprotect_empty_pile:
-			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, mIpAddr));
-			mToast = Toast.makeText(this, pileName + " unprotected!", Toast.LENGTH_SHORT);
+			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId,
+					mIpAddr));
+			mToast = Toast.makeText(this, pileName + " unprotected!",
+					Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_deal_cards:
 			mTableState = TableState.deal;
-			mToast = Toast.makeText(this, "Tap piles you want to send the top card to. Press BACK to exit.", Toast.LENGTH_LONG);
+			mToast = Toast
+					.makeText(
+							this,
+							"Tap piles you want to send the top card to. Press BACK to exit.",
+							Toast.LENGTH_LONG);
 			mToast.show();
 			break;
 		default:
@@ -224,8 +280,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	}
 
 	/**
-	 * Creates the buttons in a grid on the "table". The number of rows and columns are specified by NUM_ROWS and
-	 * NUM_COLUMNS.
+	 * Creates the buttons in a grid on the "table". The number of rows and
+	 * columns are specified by NUM_ROWS and NUM_COLUMNS.
 	 */
 	public void setupButtons() {
 		mTableLayout = (TableLayout) findViewById(R.id.tableTable);
@@ -235,18 +291,21 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			tr.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should
 			// be the same size
-			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
+			LayoutParams tp = new TableLayout.LayoutParams(
+					LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
 			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
 
 				LinearLayout ll = new LinearLayout(this);
 				ll.setOrientation(LinearLayout.VERTICAL);
 				ll.setPadding(PADDING, PADDING, PADDING, PADDING);
-				LayoutParams lp = new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
+				LayoutParams lp = new TableRow.LayoutParams(
+						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
 
 				Button b = new Button(this);
 				// Create the layout parameters for the button, all buttons
 				// should be the same size
-				LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
+				LayoutParams bp = new LinearLayout.LayoutParams(
+						LayoutParams.MATCH_PARENT, 0, 9);
 
 				b.setId(GameController.NUM_COLUMNS * i + j);
 				b.setTag("Pile " + (GameController.NUM_ROWS * i + j));
@@ -262,7 +321,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				// Set this interface as the listener to the text view
 				tv.setOnClickListener(this);
 				registerForContextMenu(tv);
-				LayoutParams ba = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
+				LayoutParams ba = new LinearLayout.LayoutParams(
+						LayoutParams.MATCH_PARENT, 0, 2);
 
 				tv.setId(GameController.NUM_COLUMNS * i + j);
 				tv.setTag("Pile " + (GameController.NUM_ROWS * i + j));
@@ -287,7 +347,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	/**
 	 * Called when one of the buttons is clicked
 	 * 
-	 * @param The view(in this case, button) that was clicked
+	 * @param The
+	 *            view(in this case, button) that was clicked
 	 */
 	@Override
 	public void onClick(View v) {
@@ -302,27 +363,36 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mToast.cancel();
 			return;
 		} else if (mTableState.equals(TableState.moveAll)) {
-			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, v.getId(), null));
+			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, v
+					.getId(), null));
 			mToast.cancel();
 			mTableState = TableState.normal;
 			return;
 		} else if (mTableState.equals(TableState.deal)) {
 			mToast.cancel();
-			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
+			Pile currentPile = mGuiController.getGameState().getPiles()
+					.get(mPileId);
 			if (currentPile.getSize() == 1) {
-				// Exit deal mode if there are no more cards in the pile after this move
+				// Exit deal mode if there are no more cards in the pile after
+				// this move
 				mTableState = TableState.normal;
-				mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
+				mToast = Toast.makeText(this, "Exited deal mode",
+						Toast.LENGTH_SHORT);
 				mToast.show();
-			} else if (!(currentPile.getOwner().equals("noOwner") || mIpAddr.equals(currentPile.getOwner()))) {
-				// Exit deal mode if the pile dealing from has been protected by another user
+			} else if (!(currentPile.getOwner().equals("noOwner") || mIpAddr
+					.equals(currentPile.getOwner()))) {
+				// Exit deal mode if the pile dealing from has been protected by
+				// another user
 				mTableState = TableState.normal;
-				mToast = Toast.makeText(this, "The pile dealing from is now protected!", Toast.LENGTH_SHORT);
+				mToast = Toast.makeText(this,
+						"The pile dealing from is now protected!",
+						Toast.LENGTH_SHORT);
 				mToast.show();
 				return;
 			}
 
-			mGuiController.sendOperation(new Operation(Op.move, mPileId, v.getId(), currentPile.getCard(0)));
+			mGuiController.sendOperation(new Operation(Op.move, mPileId, v
+					.getId(), currentPile.getCard(0)));
 			return;
 		}
 
@@ -337,13 +407,16 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// Checks whether the pile is protected by another user before
 			// allowing access to the pile view.
 
-			if ((p.getOwner().equals(mIpAddr)) || (p.getOwner().equals("noOwner"))) {
+			if ((p.getOwner().equals(mIpAddr))
+					|| (p.getOwner().equals("noOwner"))) {
 				Intent pileView = new Intent(this, PileView.class);
 				pileView.putExtra("pileId", mPileId);
 				pileView.putExtra("ipAddr", mIpAddr);
 				startActivity(pileView);
 			} else {
-				mToast = Toast.makeText(this, "This pile is protected by another user!", Toast.LENGTH_SHORT);
+				mToast = Toast.makeText(this,
+						"This pile is protected by another user!",
+						Toast.LENGTH_SHORT);
 				mToast.show();
 			}
 		}
@@ -351,7 +424,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg, mGuiController.getGameState().getDefaultPileName());
+			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg,
+					mGuiController.getGameState().getDefaultPileName());
 
 			dialog.show(this);
 		}
@@ -360,7 +434,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	/**
 	 * Sets the state of the tableView
 	 * 
-	 * @param tableState The state to set
+	 * @param tableState
+	 *            The state to set
 	 */
 	public void setTableState(TableState tableState) {
 		mTableState = tableState;
@@ -373,7 +448,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public void onResume() {
 		super.onResume();
 		if (mTableState == TableState.move) {
-			mToast = Toast.makeText(this, "Select pile to move card to", Toast.LENGTH_LONG);
+			mToast = Toast.makeText(this, "Select pile to move card to",
+					Toast.LENGTH_LONG);
 			mToast.show();
 		}
 	}
@@ -411,7 +487,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// Exit deal mode
 			mTableState = TableState.normal;
 			mToast.cancel();
-			mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
+			mToast = Toast.makeText(this, "Exited deal mode",
+					Toast.LENGTH_SHORT);
 			mToast.show();
 			return;
 		}
@@ -425,7 +502,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (mToast != null) {
 			mToast.cancel();
 		}
-		mToast = Toast.makeText(this, "Click back again to exit", Toast.LENGTH_SHORT);
+		mToast = Toast.makeText(this, "Click back again to exit",
+				Toast.LENGTH_SHORT);
 		mToast.show();
 		new Handler().postDelayed(new Runnable() {
 
@@ -465,14 +543,17 @@ public class TableView extends Activity implements OnClickListener, Observer {
 					// if the pile is protected by a user.
 
 					if (!p.getOwner().equals("noOwner")) {
-						int back = this.getResources().getIdentifier(getString(R.string.back_of_card), "drawable", this.getPackageName());
+						int back = this.getResources().getIdentifier(
+								getString(R.string.back_of_card), "drawable",
+								this.getPackageName());
 						b.setBackgroundResource(back);
 					} else {
 
 						// Set the picture of the pile to be the picture of the
 						// card on top.
 						String imgName = p.getCard(0).getImageName();
-						int imgRes = this.getResources().getIdentifier(imgName, "drawable", this.getPackageName());
+						int imgRes = this.getResources().getIdentifier(imgName,
+								"drawable", this.getPackageName());
 						b.setBackgroundResource(imgRes);
 					}
 				} else {
@@ -486,10 +567,14 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	}
 
 	/**
-	 * Called when a dialog gets text input. Creates a new pile with the name given in the dialog
+	 * Called when a dialog gets text input. Creates a new pile with the name
+	 * given in the dialog
 	 * 
-	 * @param obs The object (Dialogtext) that has been updated
-	 * @param param The parameter that is passed along (in the case of the Dialogtext, it's the same object)
+	 * @param obs
+	 *            The object (Dialogtext) that has been updated
+	 * @param param
+	 *            The parameter that is passed along (in the case of the
+	 *            Dialogtext, it's the same object)
 	 */
 	@Override
 	public void update(Observable obs, Object param) {
@@ -500,25 +585,29 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			if (gameState.getPileNames().contains(dt.getString())) {
 				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(),
+						msg, gameState.getDefaultPileName());
 				dialog.show(this);
 			}
 			if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
 				// Prompt the user to try again
 				String msg = "Please enter a shorter name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(),
+						msg, gameState.getDefaultPileName());
 				dialog.show(this);
 
 			} else {
 				// Create the pile
-				mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
+				mGuiController.sendOperation(new Operation(Op.create, dt
+						.getId(), dt.getString()));
 				updateTableView();
 			}
 		}
 	}
 
 	/**
-	 * @param mMoveOp the mMoveOp to set
+	 * @param mMoveOp
+	 *            the mMoveOp to set
 	 */
 	public void setmMoveOp(Operation mMoveOp) {
 		this.mMoveOp = mMoveOp;
