@@ -19,6 +19,7 @@
     <string name="menu_item_protect_empty_pile">Protect pile</string>
     <string name="menu_item_unprotect_empty_pile">Unprotect pile</string>
     <string name="menu_item_deal_cards">Deal cards from pile</string>
+    <string name="menu_item_pile_move">Move this pile</string>
     <string name="back_of_card">b2fv</string>
 
 </resources>
