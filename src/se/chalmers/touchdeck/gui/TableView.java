@@ -120,7 +120,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.e("in onStop", "" + mTerminateMode);
 		if (mTerminateMode) {
 			finish();
 		}

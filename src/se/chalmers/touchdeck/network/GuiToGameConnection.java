@@ -57,7 +57,7 @@ public class GuiToGameConnection extends ConnectionInterface {
 
 	@Override
 	public void remove(Socket socket) {
-		mGuiController.removeSocket(socket);
+		mGuiController.removeSocket();
 
 	}
 

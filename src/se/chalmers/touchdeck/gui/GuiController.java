@@ -216,7 +216,10 @@ public class GuiController implements Observer {
 
 	}
 
-	public void removeSocket(Socket socket) {
+	/**
+	 * Remove the socket to the gameController
+	 */
+	public void removeSocket() {
 		mGuiToGameSocket = null;
 	}
 }
