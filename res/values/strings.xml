@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">TouchDeck</string>
     <string name="main_deck_name">deck</string>
     <string name="action_settings">Settings</string>
@@ -14,6 +13,7 @@
     <string name="menu_item_unpeek_all">Unpeek all cards</string>
     <string name="menu_item_shuffle">Shuffle pile</string>
     <string name="menu_item_delete">Delete pile</string>
+    <string name="menu_item_rename">Rename pile</string>
     <string name="menu_item_face_up">Face all cards up</string>
     <string name="menu_item_face_down">Face all cards down</string>
     <string name="menu_item_move_all">Move all cards</string>
@@ -26,6 +26,4 @@
     <string name="menu_item_pile_move">Move this pile</string>
     <string name="back_of_card">b2fv</string>
     <string name="menu_option_terminate">Terminate Session</string>
-    
-
 </resources>

@@ -5,6 +5,9 @@
         android:id="@+id/menu_item_delete"
         android:title="@string/menu_item_delete"/>  
     <item
+        android:id="@+id/menu_item_rename"
+        android:title="@string/menu_item_rename"/> 
+    <item
         android:id="@+id/menu_item_protect_empty_pile"
         android:title="@string/menu_item_protect_pile"/>
     <item
@@ -13,5 +16,4 @@
     <item 
         android:id="@+id/menu_item_pile_move"
         android:title="@string/menu_item_pile_move"/>            
-
 </menu>

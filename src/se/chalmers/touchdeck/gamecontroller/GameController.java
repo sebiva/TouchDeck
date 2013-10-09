@@ -184,6 +184,7 @@ public class GameController {
 				mDefaultPileNameNo++;
 				mGameState.setDefaultPileNo(mDefaultPileNameNo);
 			}
+
 			mTable.set(pilePos, new Pile(name));
 			mPileNames.add(name);
 			sendUpdatedState();
@@ -214,6 +215,23 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
+		case rename:
+			Pile pileToRename = mTable.get(op.getPile1());
+			String oldName = pileToRename.getName();
+			if (mPileNames.contains(op.getName())) {
+				return;
+			} else if (op.getName().equals("Pile " + mDefaultPileNameNo)) {
+				mDefaultPileNameNo++;
+				mGameState.setDefaultPileNo(mDefaultPileNameNo);
+			}
+
+			pileToRename.setName(op.getName());
+			mPileNames.add(op.getName());
+			mPileNames.remove(oldName);
+			sendUpdatedState();
+			break;
+
 		case faceUp:
 			Pile pileToFaceUp = mTable.get(op.getPile1());
 			if (pileToFaceUp != null) {
@@ -223,6 +241,7 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
 		case faceDown:
 			Pile pileToFaceDown = mTable.get(op.getPile1());
 			if (pileToFaceDown != null) {
@@ -232,6 +251,7 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
 		case moveAll:
 			Pile fromPile = mTable.get(op.getPile1());
 			Pile toPile = mTable.get(op.getPile2());
@@ -257,10 +277,11 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
 		case pileMove:
 			Pile pileToMove = mTable.get(op.getPile1());
 			Pile destination = mTable.get(op.getPile2());
-			if(pileToMove != null && destination == null) {				
+			if (pileToMove != null && destination == null) {
 				mTable.set(op.getPile2(), new Pile(pileToMove.getName()));
 				destination = mTable.get(op.getPile2());
 				int totalCards = pileToMove.getSize();
@@ -272,6 +293,7 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
 		case disconnect:
 			Log.e("in GaC Disconnect", "hello!");
 			String ipAddr = op.getIpAddr();
