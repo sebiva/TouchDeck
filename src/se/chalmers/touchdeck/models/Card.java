@@ -168,4 +168,13 @@ public class Card implements Serializable {
 			return mRank + "_of_" + mSuit;
 		}
 	}
+
+	/**
+	 * Returns the face up image name
+	 * 
+	 * @return The face up image name
+	 */
+	public String getFaceUpImageName() {
+		return mRank + "_of_" + mSuit;
+	}
 }

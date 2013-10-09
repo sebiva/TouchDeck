@@ -39,6 +39,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -74,6 +75,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	private Operation						mMoveOp;
 	private Toast							mToast;
 	private String							mIpAddr;
+	private boolean							mTerminateMode			= false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +96,33 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.table_options_menu, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_item_terminate:
+			mTerminateMode = true;
+			mGuiController.terminate();
+			Intent i = new Intent(this, StartScreen.class);
+			startActivity(i);
+			break;
+
+		default:
+			break;
+		}
+		return false;
+
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (mTerminateMode) {
+			finish();
+		}
 	}
 
 	/**
@@ -362,7 +389,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
 			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg, mGuiController.getGameState().getDefaultPileName());
-
+			Log.e("auohethutnaohuntaohuen", " " + mGuiController.getGameState().getDefaultPileName());
 			dialog.show(this);
 		}
 	}
@@ -391,7 +418,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		android.os.Process.killProcess(android.os.Process.myPid());
+		if (!mTerminateMode) {
+			mGuiController.terminate();
+			android.os.Process.killProcess(android.os.Process.myPid());
+		}
 	}
 
 	/**
@@ -532,5 +562,13 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 */
 	public void setmMoveOp(Operation mMoveOp) {
 		this.mMoveOp = mMoveOp;
+	}
+
+	/**
+	 * @b Set the terminateFlag, makes the tableView close politely
+	 */
+	public void setTerminate(boolean terminateMode) {
+		mTerminateMode = terminateMode;
+
 	}
 }
