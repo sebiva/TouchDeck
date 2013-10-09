@@ -92,6 +92,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
 
+		// Peek options
 		if (mPeekedCards.contains(mCard)) {
 			menu.findItem(R.id.menu_item_peek).setVisible(false);
 		} else {
@@ -189,6 +190,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 				b.setCompoundDrawables(peekedCard, null, null, null);
 
 			}
+
 			int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
 			b.setBackgroundResource(image);
 
