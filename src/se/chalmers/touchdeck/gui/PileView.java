@@ -36,6 +36,7 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -66,6 +67,8 @@ public class PileView extends Activity implements OnTouchListener {
 	private Card mCard;
 	private String mIpAddr;
 	private final HashSet<Card> mPeekedCards = new HashSet<Card>();
+	private int mHeight;
+	private int mWidth;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +182,15 @@ public class PileView extends Activity implements OnTouchListener {
 			return;
 		}
 		LinkedList<Card> cards = currentPile.getCards();
+
+		// Calculate the size of the button
+		Display display = getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+
+		mHeight = size.y / 2;
+		mWidth = (int) (mHeight * 0.73);
+
 		for (int i = 0; i < currentPile.getSize(); i++) {
 
 			Button b = new Button(this);
@@ -189,13 +201,6 @@ public class PileView extends Activity implements OnTouchListener {
 			b.setId(i);
 			b.setTag("Card " + i);
 
-			// Calculate the size of the button
-			Display display = getWindowManager().getDefaultDisplay();
-			Point size = new Point();
-			display.getSize(size);
-
-			int y = size.y / 2;
-			int x = (int) (y * 0.73);
 			Card card = cards.get(i);
 
 			if (mPeekedCards.contains(card)) {
@@ -203,7 +208,8 @@ public class PileView extends Activity implements OnTouchListener {
 						.getIdentifier(card.getFaceUpImageName(), "drawable",
 								getPackageName());
 				Drawable peekedCard = getResources().getDrawable(faceUpImage);
-				peekedCard.setBounds(0, 0, (int) (x * 0.8), (int) (y * 0.8));
+				peekedCard.setBounds(0, 0, (int) (mWidth * 0.8),
+						(int) (mHeight * 0.8));
 				b.setCompoundDrawables(peekedCard, null, null, null);
 
 			}
@@ -212,8 +218,8 @@ public class PileView extends Activity implements OnTouchListener {
 					"drawable", getPackageName());
 			b.setBackgroundResource(image);
 
-			b.setHeight(y);
-			b.setWidth(x);
+			b.setHeight(mHeight);
+			b.setWidth(mWidth);
 
 			layout.addView(b);
 			mButtons.add(b);
@@ -230,8 +236,16 @@ public class PileView extends Activity implements OnTouchListener {
 		finish();
 	}
 
+	/**
+	 * Catches what type of gesture that was performed on the card and performs
+	 * an operation on the card depending on which gesture was performed.
+	 */
+
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
+
+		int maxWidth = 60;
+		int minHeight = 20;
 
 		int action = event.getAction();
 		if (action == MotionEvent.ACTION_DOWN) {
@@ -245,20 +259,30 @@ public class PileView extends Activity implements OnTouchListener {
 			float upX = event.getX();
 			float upY = event.getY();
 
+			// Length of swipe in vertical and horizontal axises.
 			float deltaY = mDownYPos - upY;
 			float deltaX = mDownXPos - upX;
 
 			Pile currentPile = mGuiController.getGameState().getPiles()
 					.get(mPileId);
 			mCard = currentPile.getCard(v.getId());
-
-			if (Math.abs(deltaY) > 20 && Math.abs(deltaX) < 40) {
+			Log.e("Swipe", "dX: " + deltaX + "dY: " + deltaY + "minY: "
+					+ minHeight + "maxX: " + maxWidth);
+			// What happens when swiping up or down
+			if (Math.abs(deltaY) > 20 && Math.abs(deltaX) < maxWidth) {
+				Log.e("Swipe", "Swipe down!");
 				if (deltaY < 0) {
-					mGuiController.sendOperation(new Operation(Op.flip,
-							mPileId, mCard));
-					return false;
+					if (mPeekedCards.contains(mCard)) {
+						mPeekedCards.remove(mCard);
+						setupButtons();
+					} else {
+						mPeekedCards.add(mCard);
+						setupButtons();
+						return false;
+					}
 				}
 				if (deltaY > 0) {
+					Log.e("Swipe", "Swipe up!");
 					mGuiController.setTableState(TableState.move);
 					mGuiController.setMoveOp(new Operation(Op.move, mPileId,
 							-1, mCard));
@@ -270,7 +294,10 @@ public class PileView extends Activity implements OnTouchListener {
 					return false;
 				}
 			}
+
+			// What happens on double tap.
 			if (Math.abs(deltaX) < 40) {
+				Log.e("Swipe", "Clicked!");
 				if (alreadyClicked) {
 					mGuiController.sendOperation(new Operation(Op.flip,
 							mPileId, mCard));
