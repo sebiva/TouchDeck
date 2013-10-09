@@ -9,5 +9,25 @@
         android:id="@+id/menu_item_move"
         android:title="@string/menu_item_move">   
     </item>
+    
+     <item
+        android:id="@+id/menu_item_peek"
+        android:title="@string/menu_item_peek">   
+    </item>
+    
+      <item
+        android:id="@+id/menu_item_unpeek"
+        android:title="@string/menu_item_unpeek">   
+    </item>
+    
+    <item
+        android:id="@+id/menu_item_peek_all"
+        android:title="@string/menu_item_peek_all">   
+    </item>
 
+      <item
+        android:id="@+id/menu_item_unpeek_all"
+        android:title="@string/menu_item_unpeek_all">   
+    </item>
+    
 </menu>
