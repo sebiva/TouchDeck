@@ -32,7 +32,7 @@ import java.util.Observable;
 import android.util.Log;
 
 public abstract class ListenerInterface extends Observable implements Runnable {
-	private final boolean								mLoopForever;
+	private boolean										mLoopForever;
 	private ServerSocket								mServerSocket;
 	private final HashMap<String, ConnectionHandler>	mHandlers	= new HashMap<String, ListenerInterface.ConnectionHandler>();
 	private final int									mPort;
@@ -71,10 +71,12 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 	}
 
 	public void end(String ipAddr) {
-		Log.e("e", ipAddr);
+		Log.e("Listener" + mPort, ipAddr);
+		mLoopForever = false;
 		ConnectionHandler c = mHandlers.get(ipAddr);
 		mHandlers.remove(ipAddr);
 		if (c == null) {
+			Log.e("Listener" + mPort, "connection null, closing server");
 			return;
 		}
 		try {

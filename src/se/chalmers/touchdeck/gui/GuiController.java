@@ -54,6 +54,7 @@ public class GuiController implements Observer {
 	private GuiUpdater				mGuiUpdater;
 	private Socket					mGuiToGameSocket;
 	private GuiToGameConnection		mGuiToGameConnection;
+	private boolean					mTerminating;
 
 	public static GuiController getInstance() {
 		if (sInstance == null) {
@@ -118,10 +119,11 @@ public class GuiController implements Observer {
 			GameState gs = (GameState) param;
 			// If the host has left, close the session
 			if (!gs.getHostStillLeft()) {
-				Intent i = new Intent(mTableView, StartScreen.class);
-				mTableView.startActivity(i);
 				mTableView.setTerminate(true);
-				mTableView.finish();
+				terminate();
+				Intent i = new Intent(mTableView, StartScreen.class);
+				mTerminating = true;
+				mTableView.startActivity(i);
 				return;
 			}
 			setGameState(gs);
@@ -199,11 +201,12 @@ public class GuiController implements Observer {
 			mGuiUpdater = null;
 		}
 		Log.e("in GuC terminate", "GuiUpdater ended");
-
-		Operation op = new Operation(Op.disconnect);
-		op.setIpAddr(mIpAddr);
-		sendOperation(op);
-		Log.e("in GuC terminate", "Disconnect sent");
+		if (!mTerminating) {
+			Operation op = new Operation(Op.disconnect);
+			op.setIpAddr(mIpAddr);
+			sendOperation(op);
+			Log.e("in GuC terminate", "Disconnect sent");
+		}
 
 		mGuiToGameConnection.end();
 		mGuiToGameConnection = null;
