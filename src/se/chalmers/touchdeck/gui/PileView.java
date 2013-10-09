@@ -33,11 +33,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,7 +45,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 /**
  * Activity for inspecting a pile.
@@ -54,14 +53,15 @@ import android.widget.Toast;
  */
 public class PileView extends Activity implements OnTouchListener {
 
-	private GuiController				mGuiController;
-	private final LinkedList<Button>	mButtons	= new LinkedList<Button>();
+	private GuiController mGuiController;
+	private final LinkedList<Button> mButtons = new LinkedList<Button>();
 
-	private int							mPileId;
-	private Card						mCard;
-	private String						mIpAddr;
-	private float						mDownYPos;
-	private float						mDownXPos;
+	private int mPileId;
+	private Card mCard;
+	private String mIpAddr;
+	private float mDownYPos;
+	private float mDownXPos;
+	private boolean alreadyClicked;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +85,10 @@ public class PileView extends Activity implements OnTouchListener {
 	 * Create the context menus that appear when clicking a card.
 	 */
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
-		mCard = currentPile.getCard(v.getId());
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.card_menu, menu);
+
 	}
 
 	/**
@@ -98,22 +96,7 @@ public class PileView extends Activity implements OnTouchListener {
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_item_flip:
-			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard));
-			break;
-		case R.id.menu_item_move:
-			// Launch the TableView in move state
-			mGuiController.setTableState(TableState.move);
-			mGuiController.setMoveOp(new Operation(Op.move, mPileId, -1, mCard));
-			Intent table = new Intent(this, TableView.class);
-			// Don't start a new tableView, use the one already running.
-			table.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-			startActivity(table);
-			finish();
-			break;
-		default:
-		}
+
 		return true;
 	}
 
@@ -124,10 +107,14 @@ public class PileView extends Activity implements OnTouchListener {
 		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
-		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
+		Pile currentPile = mGuiController.getGameState().getPiles()
+				.get(mPileId);
 
-		if (currentPile == null || (!currentPile.getOwner().equals("noOwner") && !mIpAddr.equals(currentPile.getOwner()))) {
-			// If the pile is deleted or protected, the user shouldn't see any cards
+		if (currentPile == null
+				|| (!currentPile.getOwner().equals("noOwner") && !mIpAddr
+						.equals(currentPile.getOwner()))) {
+			// If the pile is deleted or protected, the user shouldn't see any
+			// cards
 			// TODO Fix something nicer
 			return;
 		}
@@ -135,7 +122,8 @@ public class PileView extends Activity implements OnTouchListener {
 		for (int i = 0; i < currentPile.getSize(); i++) {
 
 			Button b = new Button(this);
-			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
+			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
 			bp.setMargins(3, 0, 3, 0);
 
 			b.setId(i);
@@ -143,7 +131,8 @@ public class PileView extends Activity implements OnTouchListener {
 
 			Card card = cards.get(i);
 
-			int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
+			int image = getResources().getIdentifier(card.getImageName(),
+					"drawable", getPackageName());
 			b.setBackgroundResource(image);
 
 			// Calculate the size of the button
@@ -182,28 +171,50 @@ public class PileView extends Activity implements OnTouchListener {
 			mDownYPos = event.getY();
 			return true;
 
-		} else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+		} else if (action == MotionEvent.ACTION_UP
+				|| action == MotionEvent.ACTION_CANCEL) {
 			float upX = event.getX();
 			float upY = event.getY();
 
 			float deltaY = mDownYPos - upY;
 			float deltaX = mDownXPos - upX;
 
-			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
-			Card currentCard = currentPile.getCard(v.getId());
+			Pile currentPile = mGuiController.getGameState().getPiles()
+					.get(mPileId);
+			mCard = currentPile.getCard(v.getId());
 
 			if (Math.abs(deltaY) > 20 && Math.abs(deltaX) < 40) {
 				if (deltaY < 0) {
-					Toast.makeText(this, "Swiped top to bottom on card " + currentCard, Toast.LENGTH_SHORT).show();
+					mGuiController.sendOperation(new Operation(Op.flip,
+							mPileId, mCard));
 					return false;
 				}
 				if (deltaY > 0) {
-					Toast.makeText(this, "Swiped bottom to top on card " + currentCard, Toast.LENGTH_SHORT).show();
+					mGuiController.setTableState(TableState.move);
+					mGuiController.setMoveOp(new Operation(Op.move, mPileId,
+							-1, mCard));
+					Intent table = new Intent(this, TableView.class);
+					// Don't start a new tableView, use the one already running.
+					table.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+					startActivity(table);
+					finish();
 					return false;
 				}
 			}
 			if (Math.abs(deltaX) < 40) {
-				Toast.makeText(this, "Clicked on card " + currentCard, Toast.LENGTH_SHORT).show();
+				if (alreadyClicked) {
+					mGuiController.sendOperation(new Operation(Op.flip,
+							mPileId, mCard));
+				}
+				alreadyClicked = true;
+				new Handler().postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						alreadyClicked = false;
+					}
+				}, 500);
+
 			}
 			return false;
 		} else if (action == MotionEvent.ACTION_MOVE) {
