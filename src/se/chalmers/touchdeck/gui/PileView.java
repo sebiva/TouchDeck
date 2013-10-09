@@ -39,19 +39,20 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 /**
  * Activity for inspecting a pile.
  * 
  * @author Group 17
  */
-public class PileView extends Activity implements OnClickListener, OnLongClickListener {
+public class PileView extends Activity implements OnTouchListener {
 
 	private GuiController				mGuiController;
 	private final LinkedList<Button>	mButtons	= new LinkedList<Button>();
@@ -59,6 +60,8 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	private int							mPileId;
 	private Card						mCard;
 	private String						mIpAddr;
+	private float						mDownYPos;
+	private float						mDownXPos;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -156,36 +159,56 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 			layout.addView(b);
 			mButtons.add(b);
-			b.setOnClickListener(this);
-			b.setOnLongClickListener(this);
+			b.setOnTouchListener(this);
 			registerForContextMenu(b);
 
 			b.setLayoutParams(bp);
 		}
 	}
 
-	/**
-	 * Called when one of the buttons is clicked
-	 * 
-	 * @param The view(in this case, button) that was clicked
-	 */
-	@Override
-	public void onClick(View v) {
-		openContextMenu(v);
-	}
-
-	/**
-	 * Called when one of the buttons is long clicked
-	 */
-	@Override
-	public boolean onLongClick(View v) {
-		this.closeContextMenu();
-		return true;
-	}
-
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
 		finish();
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+
+		int action = event.getAction();
+		if (action == MotionEvent.ACTION_DOWN) {
+
+			mDownXPos = event.getX();
+			mDownYPos = event.getY();
+			return true;
+
+		} else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+			float upX = event.getX();
+			float upY = event.getY();
+
+			float deltaY = mDownYPos - upY;
+			float deltaX = mDownXPos - upX;
+
+			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
+			Card currentCard = currentPile.getCard(v.getId());
+
+			if (Math.abs(deltaY) > 20 && Math.abs(deltaX) < 40) {
+				if (deltaY < 0) {
+					Toast.makeText(this, "Swiped top to bottom on card " + currentCard, Toast.LENGTH_SHORT).show();
+					return false;
+				}
+				if (deltaY > 0) {
+					Toast.makeText(this, "Swiped bottom to top on card " + currentCard, Toast.LENGTH_SHORT).show();
+					return false;
+				}
+			}
+			if (Math.abs(deltaX) < 40) {
+				Toast.makeText(this, "Clicked on card " + currentCard, Toast.LENGTH_SHORT).show();
+			}
+			return false;
+		} else if (action == MotionEvent.ACTION_MOVE) {
+			return true;
+		}
+		return false;
 	}
 }
