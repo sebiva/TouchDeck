@@ -183,10 +183,16 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
-			
+
 		case rename:
 			Pile pileToRename = mTable.get(op.getPile1());
 			String oldName = pileToRename.getName();
+			if (mPileNames.contains(op.getName())) {
+				return;
+			} else if (op.getName().equals("Pile " + mDefaultPileNameNo)) {
+				mDefaultPileNameNo++;
+				mGameState.setDefaultPileNo(mDefaultPileNameNo);
+			}
 			pileToRename.setName(op.getName());
 			mPileNames.add(op.getName());
 			mPileNames.remove(oldName);

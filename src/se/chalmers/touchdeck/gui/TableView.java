@@ -40,7 +40,7 @@ import android.widget.Toast;
 public class TableView extends Activity implements OnClickListener, Observer {
 
 	private static final int				MAX_PILE_NAME_LENGTH	= 20;
-	private static final int				MAX_PILE_NAME_DISPLAYED	= 6;
+	private static final int				MAX_PILE_NAME_DISPLAYED	= 7;
 	private static final int				PADDING					= 5;
 	private TableLayout						mTableLayout;
 	private final ArrayList<LinearLayout>	mLayouts				= new ArrayList<LinearLayout>();
@@ -107,7 +107,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			break;
 		case R.id.menu_item_rename:
 			String msg = "Please enter a new name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, item.getItemId(), msg, mGuiController.getGameState().getDefaultPileName(), DialogText.Context.renamePile);
+			PileNameDialog dialog = new PileNameDialog(this, item.getItemId(), msg, mGuiController.getGameState().getDefaultPileName(),
+					DialogText.Context.renamePile);
 			dialog.show(this);
 		default:
 			//
@@ -195,7 +196,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		} else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGuiController.getGameState().getDefaultPileName(), DialogText.Context.namePile);
+			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGuiController.getGameState().getDefaultPileName(),
+					DialogText.Context.namePile);
 			dialog.show(this);
 		}
 
@@ -275,34 +277,32 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (obs instanceof DialogText) {
 			GameState gameState = mGuiController.getGameState();
 			DialogText dt = (DialogText) param;
-			
-			
+
 			// See if the name provided is unique
 			if (gameState.getPileNames().contains(dt.getString())) {
 				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
 				dialog.show(this);
-			}
-			else if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
+			} else if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
 				// Prompt the user to try again
 				String msg = "Please enter a shorter name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
 				dialog.show(this);
 
 			} else {
-				//Go ahead with creating or renaming
-				switch(dt.getContext()){
-					case namePile:
-						mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
-						updateTableView();
-						break;
-					
-					case renamePile:
-						mGuiController.sendOperation(new Operation(Op.rename, mPileId, dt.getString()));
-						break;
-					default:
-						break;
+				// Go ahead with creating or renaming
+				switch (dt.getContext()) {
+				case namePile:
+					mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
+					updateTableView();
+					break;
+
+				case renamePile:
+					mGuiController.sendOperation(new Operation(Op.rename, mPileId, dt.getString()));
+					break;
+				default:
+					break;
 				}
 			}
 		}
