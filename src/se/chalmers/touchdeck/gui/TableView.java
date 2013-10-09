@@ -107,7 +107,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			break;
 		case R.id.menu_item_rename:
 			String msg = "Please enter a new name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, item.getItemId(), msg, mGuiController.getGameState().getDefaultPileName());
+			PileNameDialog dialog = new PileNameDialog(this, item.getItemId(), msg, mGuiController.getGameState().getDefaultPileName(), DialogText.Context.renamePile);
 			dialog.show(this);
 		default:
 			//
@@ -195,7 +195,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		} else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGuiController.getGameState().getDefaultPileName());
+			PileNameDialog dialog = new PileNameDialog(this, id, msg, mGuiController.getGameState().getDefaultPileName(), DialogText.Context.namePile);
 			dialog.show(this);
 		}
 
@@ -275,28 +275,36 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (obs instanceof DialogText) {
 			GameState gameState = mGuiController.getGameState();
 			DialogText dt = (DialogText) param;
+			
+			
 			// See if the name provided is unique
 			if (gameState.getPileNames().contains(dt.getString())) {
 				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
 				dialog.show(this);
 			}
-			if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
+			else if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
 				// Prompt the user to try again
 				String msg = "Please enter a shorter name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
 				dialog.show(this);
 
 			} else {
-				// Create the pile
-				mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
-				updateTableView();
+				//Go ahead with creating or renaming
+				switch(dt.getContext()){
+					case namePile:
+						mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
+						updateTableView();
+						break;
+					
+					case renamePile:
+						mGuiController.sendOperation(new Operation(Op.rename, mPileId, dt.getString()));
+						break;
+					default:
+						break;
+				}
 			}
-			//TODO
-			//	How to handle a namechange and not setting a name for the forst time?
-			//	mGuiController.sendOperation(new Operation(Op.rename, mPileId, newName));
 		}
-
 	}
 }

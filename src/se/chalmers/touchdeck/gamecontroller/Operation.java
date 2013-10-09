@@ -123,13 +123,6 @@ public class Operation implements Serializable {
 	}
 
 	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.mName = name;
-	}
-
-	/**
 	 * @return the ipAddr
 	 */
 	public String getIpAddr() {
