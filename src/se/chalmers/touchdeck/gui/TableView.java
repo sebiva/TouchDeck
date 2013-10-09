@@ -62,7 +62,7 @@ import android.widget.Toast;
 public class TableView extends Activity implements OnClickListener, Observer {
 
 	private static final int				MAX_PILE_NAME_LENGTH	= 20;
-	private static final int				MAX_PILE_NAME_DISPLAYED	= 6;
+	private static final int				MAX_PILE_NAME_DISPLAYED	= 7;
 	private static final int				PADDING					= 5;
 	private TableLayout						mTableLayout;
 	private final ArrayList<LinearLayout>	mLayouts				= new ArrayList<LinearLayout>();
@@ -74,6 +74,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	private Operation						mMoveOp;
 	private Toast							mToast;
 	private String							mIpAddr;
+	private boolean							mTerminateMode			= false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -102,13 +103,30 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_item_terminate:
+			mTerminateMode = true;
+			mGuiController.terminate();
+			Intent i = new Intent(this, StartScreen.class);
+			startActivity(i);
+			break;
+			
 		case R.id.menu_item_restart:
 			mGuiController.sendOperation(new Operation(Op.restart));
+			break;
+
 		default:
 			break;
 		}
 		return false;
 
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (mTerminateMode) {
+			finish();
+		}
 	}
 
 	/**
@@ -230,6 +248,19 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mToast = Toast.makeText(this, "Tap piles you want to send the top card to. Press BACK to exit.", Toast.LENGTH_LONG);
 			mToast.show();
 			break;
+
+		case R.id.menu_item_pile_move:
+			mTableState = TableState.pileMove;
+			mToast = Toast.makeText(this, "Select where to move the pile", Toast.LENGTH_LONG);
+			mToast.show();
+			break;
+
+		case R.id.menu_item_rename:
+			String msg = "Please enter a new name for the pile: ";
+			PileNameDialog dialog = new PileNameDialog(this, item.getItemId(), msg, mGuiController.getGameState().getDefaultPileName(),
+					DialogText.Context.renamePile);
+			dialog.show(this);
+
 		default:
 
 		}
@@ -337,6 +368,11 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 			mGuiController.sendOperation(new Operation(Op.move, mPileId, v.getId(), currentPile.getCard(0)));
 			return;
+		} else if (mTableState.equals(TableState.pileMove)) {
+			mGuiController.sendOperation(new Operation(Op.pileMove, mPileId, v.getId(), null));
+			mToast.cancel();
+			mTableState = TableState.normal;
+			return;
 		}
 
 		// Get which button has been pressed
@@ -364,8 +400,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg, mGuiController.getGameState().getDefaultPileName());
-
+			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg, mGuiController.getGameState().getDefaultPileName(),
+					DialogText.Context.namePile);
 			dialog.show(this);
 		}
 	}
@@ -394,7 +430,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		android.os.Process.killProcess(android.os.Process.myPid());
+		if (!mTerminateMode) {
+			mGuiController.terminate();
+			android.os.Process.killProcess(android.os.Process.myPid());
+		}
 	}
 
 	/**
@@ -509,25 +548,36 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (obs instanceof DialogText) {
 			GameState gameState = mGuiController.getGameState();
 			DialogText dt = (DialogText) param;
+
 			// See if the name provided is unique
 			if (gameState.getPileNames().contains(dt.getString())) {
 				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
 				dialog.show(this);
-			}
-			if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
+			} else if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
 				// Prompt the user to try again
 				String msg = "Please enter a shorter name: ";
-				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName());
+				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
 				dialog.show(this);
 
 			} else {
-				// Create the pile
-				mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
-				updateTableView();
+				// Go ahead with creating or renaming
+				switch (dt.getContext()) {
+				case namePile:
+					mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
+					updateTableView();
+					break;
+
+				case renamePile:
+					mGuiController.sendOperation(new Operation(Op.rename, mPileId, dt.getString()));
+					break;
+				default:
+					break;
+				}
 			}
 		}
+
 	}
 
 	/**
@@ -535,5 +585,13 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 */
 	public void setmMoveOp(Operation mMoveOp) {
 		this.mMoveOp = mMoveOp;
+	}
+
+	/**
+	 * @b Set the terminateFlag, makes the tableView close politely
+	 */
+	public void setTerminate(boolean terminateMode) {
+		mTerminateMode = terminateMode;
+
 	}
 }

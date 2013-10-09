@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -26,15 +26,16 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Observable;
 
 import android.util.Log;
 
 public abstract class ListenerInterface extends Observable implements Runnable {
-	private final boolean	mLoopForever;
-	private ServerSocket	mServerSocket;
-
-	private final int		mPort;
+	private boolean										mLoopForever;
+	private ServerSocket								mServerSocket;
+	private final HashMap<String, ConnectionHandler>	mHandlers	= new HashMap<String, ListenerInterface.ConnectionHandler>();
+	private final int									mPort;
 
 	public ListenerInterface(boolean loopForever, int port) {
 		mLoopForever = loopForever;
@@ -47,26 +48,57 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 		// Create the "welcome" socket
 		try {
 			mServerSocket = new ServerSocket(mPort);
-			Log.d("ListenerInt", "Server socket set up on port " + mPort);
+			Log.d("ListenerInt" + mPort, "Server socket set up on port " + mPort);
 		} catch (IOException e1) {
-			Log.d("ListenerInt", "Server socket could not be set up on port " + mPort);
+			Log.d("ListenerInt" + mPort, "Server socket could not be set up on port " + mPort);
 			return;
 		}
 		// Accept all incomming requests to this socket and assign them a connection handler
 		do {
 			try {
 				Socket clientSocket = mServerSocket.accept();
-				new Thread(new ConnectionHandler(clientSocket)).start();
-				Log.d("ListenerInt", "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
+				ConnectionHandler handler = new ConnectionHandler(clientSocket);
+				String ipAddr = clientSocket.getInetAddress().toString().substring(1); // Remove a "/"
+				Log.e("in Listener" + mPort, "IP : " + ipAddr);
+				mHandlers.put(ipAddr, handler);
+				new Thread(handler).start();
+				Log.d("ListenerInt" + mPort, "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
 			} catch (IOException e) {
-				Log.d("ListenerInt", "Could not create client socket");
+				Log.d("ListenerInt" + mPort, "Could not create client socket");
 				return;
 			}
 		} while (mLoopForever);
 	}
 
-	private class ConnectionHandler implements Runnable {
-		private final Socket	clientSocket;
+	public void end(String ipAddr) {
+		Log.e("Listener" + mPort, ipAddr);
+		mLoopForever = false;
+		ConnectionHandler c = mHandlers.get(ipAddr);
+		mHandlers.remove(ipAddr);
+		if (c == null) {
+			Log.e("Listener" + mPort, "connection null, closing server");
+			return;
+		}
+		try {
+			c.interrupt();
+			c.isStopped = true;
+			c.clientSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (mHandlers.size() == 0 || ipAddr.equals("127.0.0.1")) {
+			try {
+				Log.e("in Listener" + mPort, "All handlers killed");
+				mServerSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class ConnectionHandler extends Thread {
+		private final Socket		clientSocket;
+		private volatile boolean	isStopped	= false;
 
 		public ConnectionHandler(Socket s) {
 			clientSocket = s;
@@ -76,16 +108,19 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 		@Override
 		public void run() {
 			// Keep reading the input
-			while (true) {
-				Log.d("ListenerInt", "In loop");
+			while (!isStopped) {
+				Log.d("ListenerInt" + mPort, "In loop");
 				ObjectInputStream ois = null;
 				try {
+					if (clientSocket == null) {
+						return;
+					}
 					ois = (new ObjectInputStream(clientSocket.getInputStream()));
-					Log.d("ListenerInt", "InputStream created");
+					Log.d("ListenerInt" + mPort, "InputStream created");
 				} catch (IOException e) {
-					Log.d("ListenerInt", "Exiting ConnectionHandler");
+					Log.d("ListenerInt" + mPort, "Exiting ConnectionHandler");
 					e.printStackTrace();
-					break;// Should be return
+					return; // break;
 				}
 				Serializable op;
 				try {
@@ -94,12 +129,12 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 					String ipAddr = clientSocket.getRemoteSocketAddress().toString();
 					ipAddr = ipAddr.substring(1, ipAddr.indexOf(":"));
 					handle(op, ipAddr);
-					Log.d("ListenerInt" + clientSocket.getLocalPort(), "Operation completed");
+					Log.d("ListenerInt" + mPort, "Operation completed, ip : " + ipAddr + ", op : " + op.toString());
 				} catch (IOException e) {
-					Log.d("ListenerInt", "Reading went wrong, IO");
+					Log.d("ListenerInt" + mPort, "Reading went wrong, IO");
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
-					Log.d("ListenerInt", "Reading went wrong, ClassNotFound");
+					Log.d("ListenerInt" + mPort, "Reading went wrong, ClassNotFound");
 					e.printStackTrace();
 				}
 			}

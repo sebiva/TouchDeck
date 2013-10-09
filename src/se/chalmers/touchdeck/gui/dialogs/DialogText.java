@@ -33,7 +33,14 @@ import java.util.Observer;
 public class DialogText extends Observable {
 	private String		str	= null;
 	private final int	buttonId;
-
+	private Context 	mContext = Context.namePile;
+	
+	
+	public enum Context {
+		namePile, renamePile
+	}
+	
+	
 	/**
 	 * Creates a new Object to handle the data from the dialog from a specific button
 	 * 
@@ -43,6 +50,11 @@ public class DialogText extends Observable {
 	public DialogText(Observer o, int id) {
 		addObserver(o);
 		buttonId = id;
+	}
+	
+	public DialogText(Observer o, int id, Context context) {
+		this(o, id);
+		mContext = context;
 	}
 
 	/**
@@ -72,5 +84,9 @@ public class DialogText extends Observable {
 	 */
 	public int getId() {
 		return buttonId;
+	}
+	
+	public Context getContext() {
+		return mContext;
 	}
 }

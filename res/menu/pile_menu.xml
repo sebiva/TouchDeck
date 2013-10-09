@@ -3,7 +3,10 @@
     
     <item
         android:id="@+id/menu_item_shuffle"
-        android:title="@string/menu_item_shuffle"/>
+        android:title="@string/menu_item_shuffle"/>      
+    <item
+        android:id="@+id/menu_item_rename"
+        android:title="@string/menu_item_rename"/>  
     <item
         android:id="@+id/menu_item_face_up"
         android:title="@string/menu_item_face_up"/>   
@@ -22,5 +25,8 @@
     <item 
         android:id="@+id/menu_item_deal_cards" 
         android:title="@string/menu_item_deal_cards"/>
+    <item 
+        android:id="@+id/menu_item_pile_move"
+        android:title="@string/menu_item_pile_move"/>
 
 </menu>

@@ -30,8 +30,10 @@ import java.util.Observer;
 import se.chalmers.touchdeck.enums.TableState;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
+import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.network.GuiToGameConnection;
 import se.chalmers.touchdeck.network.GuiUpdater;
+import android.content.Intent;
 import android.util.Log;
 
 /**
@@ -49,8 +51,10 @@ public class GuiController implements Observer {
 
 	private final int				mPort		= 4242;
 	private String					mIpAddr;
-	private Thread					mGuiUpdater;
+	private GuiUpdater				mGuiUpdater;
 	private Socket					mGuiToGameSocket;
+	private GuiToGameConnection		mGuiToGameConnection;
+	private boolean					mTerminating;
 
 	public static GuiController getInstance() {
 		if (sInstance == null) {
@@ -78,10 +82,10 @@ public class GuiController implements Observer {
 	 */
 	public void setupConnections(String ipAddr) {
 		this.mIpAddr = ipAddr;
-		mGuiUpdater = new Thread(new GuiUpdater(this, 4243));
-		mGuiUpdater.start();
-		Thread th = new Thread(new GuiToGameConnection(mIpAddr, mPort, this));
-		th.start();
+		mGuiUpdater = new GuiUpdater(this, 4243);
+		new Thread(mGuiUpdater).start();
+		mGuiToGameConnection = new GuiToGameConnection(mIpAddr, mPort, this);
+		new Thread(mGuiToGameConnection).start();
 	}
 
 	/**
@@ -94,7 +98,7 @@ public class GuiController implements Observer {
 		try {
 			out = new ObjectOutputStream(mGuiToGameSocket.getOutputStream());
 			out.writeObject(op);
-			Log.d("SendOp GuC", "Operation written into socket");
+			Log.d("SendOp GuC", "Operation written into socket" + op.getOp().toString());
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -113,7 +117,17 @@ public class GuiController implements Observer {
 			Log.d("network GuC", "in observer - update");
 			// Update the state of the game
 			GameState gs = (GameState) param;
+			// If the host has left, close the session
+			if (!gs.getHostStillLeft()) {
+				mTableView.setTerminate(true);
+				terminate();
+				Intent i = new Intent(mTableView, StartScreen.class);
+				mTerminating = true;
+				mTableView.startActivity(i);
+				return;
+			}
 			setGameState(gs);
+
 			Log.d("network GuC", "New state Received");
 			// Force it to run on the UI-thread
 			mTableView.runOnUiThread(new Runnable() {
@@ -177,4 +191,35 @@ public class GuiController implements Observer {
 		mTableView.setmMoveOp(op);
 	}
 
+	/**
+	 * Terminates the session
+	 */
+	public void terminate() {
+		Log.e("in GuC terminate", "ip : " + mIpAddr);
+		if (mGuiUpdater != null) {
+			mGuiUpdater.end(mIpAddr);
+			mGuiUpdater = null;
+		}
+		Log.e("in GuC terminate", "GuiUpdater ended");
+		if (!mTerminating) {
+			Operation op = new Operation(Op.disconnect);
+			op.setIpAddr(mIpAddr);
+			sendOperation(op);
+			Log.e("in GuC terminate", "Disconnect sent");
+		}
+
+		mGuiToGameConnection.end();
+		mGuiToGameConnection = null;
+		Log.e("in GuC terminate", "GuiToGame Ended");
+
+		sInstance = null;
+
+	}
+
+	/**
+	 * Remove the socket to the gameController
+	 */
+	public void removeSocket() {
+		mGuiToGameSocket = null;
+	}
 }

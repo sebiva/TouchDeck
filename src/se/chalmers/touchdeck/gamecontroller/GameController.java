@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -55,11 +56,11 @@ public class GameController {
 
 	private final GameState				mGameState;
 	private final int					mPort					= 4243;
-	private final LinkedList<Thread>	mGameToGuiThreads		= new LinkedList<Thread>();
+	private final HashMap<String, GameToGuiConnection>	mGameToGuiThreads		= new HashMap<String, GameToGuiConnection>();
 	private final LinkedList<Socket>	mAllGameToGuiSockets	= new LinkedList<Socket>();
 	private final GameListener			mGameListener;
 
-	private static int					mDefaultPileNameNo		= 1;
+	private int					mDefaultPileNameNo		= 1;
 
 	/**
 	 * Creates a new gameController and sets up a deck.
@@ -85,21 +86,30 @@ public class GameController {
 		mAllGameToGuiSockets.add(socket);
 	}
 
+	public void removeSocket(Socket socket) {
+		Log.e("In GaC", "Socket removed from list" + socket.getRemoteSocketAddress().toString());
+		mAllGameToGuiSockets.remove(socket);
+	}
+
 	/**
 	 * Sends the gameState to all the guis
 	 */
 	public void sendUpdatedState() {
 		ObjectOutputStream out = null;
-		try {
-			for (Socket socket : mAllGameToGuiSockets) {
+		Log.e("in GaC, sendUpdatedState ", "Sockets left: " + mAllGameToGuiSockets.size());
+
+		for (Socket socket : mAllGameToGuiSockets) {
+			try {
 				out = new ObjectOutputStream(socket.getOutputStream());
 				out.writeObject(mGameState);
-				Log.d("sendUpdated GaC", "State written into socket " + socket.getRemoteSocketAddress().toString());
+				Log.d("sendUpdated GaC", "State written into socket " + socket.getRemoteSocketAddress().toString() + "host still left: "
+						+ mGameState.getHostStillLeft());
 				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -174,6 +184,7 @@ public class GameController {
 				mDefaultPileNameNo++;
 				mGameState.setDefaultPileNo(mDefaultPileNameNo);
 			}
+
 			mTable.set(pilePos, new Pile(name));
 			mPileNames.add(name);
 			sendUpdatedState();
@@ -181,9 +192,9 @@ public class GameController {
 			break;
 
 		case connect:
-			Thread thread = new Thread(new GameToGuiConnection(op.getIpAddr(), mPort, this));
-			thread.start();
-			mGameToGuiThreads.add(thread);
+			GameToGuiConnection connection = new GameToGuiConnection(op.getIpAddr(), mPort, this);
+			new Thread(connection).start();
+			mGameToGuiThreads.put(op.getIpAddr(), connection);
 			Log.d("handle GaC", "connected : " + op.getIpAddr());
 			break;
 
@@ -204,6 +215,23 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
+		case rename:
+			Pile pileToRename = mTable.get(op.getPile1());
+			String oldName = pileToRename.getName();
+			if (mPileNames.contains(op.getName())) {
+				return;
+			} else if (op.getName().equals("Pile " + mDefaultPileNameNo)) {
+				mDefaultPileNameNo++;
+				mGameState.setDefaultPileNo(mDefaultPileNameNo);
+			}
+
+			pileToRename.setName(op.getName());
+			mPileNames.add(op.getName());
+			mPileNames.remove(oldName);
+			sendUpdatedState();
+			break;
+
 		case faceUp:
 			Pile pileToFaceUp = mTable.get(op.getPile1());
 			if (pileToFaceUp != null) {
@@ -213,6 +241,7 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
 		case faceDown:
 			Pile pileToFaceDown = mTable.get(op.getPile1());
 			if (pileToFaceDown != null) {
@@ -222,6 +251,7 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+
 		case moveAll:
 			Pile fromPile = mTable.get(op.getPile1());
 			Pile toPile = mTable.get(op.getPile2());
@@ -257,6 +287,41 @@ public class GameController {
 			createDeck();
 			sendUpdatedState();
 			break;
+
+		case pileMove:
+			Pile pileToMove = mTable.get(op.getPile1());
+			Pile destination = mTable.get(op.getPile2());
+			if (pileToMove != null && destination == null) {
+				mTable.set(op.getPile2(), new Pile(pileToMove.getName()));
+				destination = mTable.get(op.getPile2());
+				int totalCards = pileToMove.getSize();
+				for (int i = 0; i < totalCards; i++) {
+					Card card = pileToMove.takeCard(0);
+					destination.addCard(card);
+				}
+				mTable.set(op.getPile1(), null);
+				sendUpdatedState();
+			}
+			break;
+
+		case disconnect:
+			Log.e("in GaC Disconnect", "hello!");
+			String ipAddr = op.getIpAddr();
+
+			GameToGuiConnection conn = mGameToGuiThreads.get(ipAddr);
+			conn.end();
+			mGameToGuiThreads.remove(op.getIpAddr());
+			Log.e("in GaC Disconnect", "GameToGui removed, ip : " + ipAddr);
+
+			mGameListener.end(op.getIpAddr());
+			if (ipAddr.equals("127.0.0.1")) {
+				Log.e("host", "Leaving");
+				mGameState.setHostStillLeft(false);
+				sendUpdatedState();
+				mAllGameToGuiSockets.clear();
+			}
+			Log.e("in GaC Disconnect", "GameListener ended");
+			break;
 		default:
 		}
 	}
@@ -267,4 +332,5 @@ public class GameController {
 	public GameState getGameState() {
 		return mGameState;
 	}
+
 }
