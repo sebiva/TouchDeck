@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -44,22 +45,22 @@ import android.util.Log;
 public class GameController {
 
 	// Public constants
-	public static final int NUM_ROWS = 3;
-	public static final int NUM_COLUMNS = 8;
-	public static final int MAX_NUMBER_OF_PILES = NUM_ROWS * NUM_COLUMNS;
-	public static final int MID_OF_TABLE = MAX_NUMBER_OF_PILES / 2 - 1;
-	public static final String MAIN_DECK_NAME = "deck";
+	public static final int								NUM_ROWS				= 3;
+	public static final int								NUM_COLUMNS				= 8;
+	public static final int								MAX_NUMBER_OF_PILES		= NUM_ROWS * NUM_COLUMNS;
+	public static final int								MID_OF_TABLE			= MAX_NUMBER_OF_PILES / 2 - 1;
+	public static final String							MAIN_DECK_NAME			= "deck";
 
-	private final ArrayList<Pile> mTable = new ArrayList<Pile>();
-	private final HashSet<String> mPileNames = new HashSet<String>();
+	private final ArrayList<Pile>						mTable					= new ArrayList<Pile>();
+	private final HashSet<String>						mPileNames				= new HashSet<String>();
 
-	private final GameState mGameState;
-	private final int mPort = 4243;
-	private final LinkedList<Thread> mGameToGuiThreads = new LinkedList<Thread>();
-	private final LinkedList<Socket> mAllGameToGuiSockets = new LinkedList<Socket>();
-	private final GameListener mGameListener;
+	private final GameState								mGameState;
+	private final int									mPort					= 4243;
+	private final HashMap<String, GameToGuiConnection>	mGameToGuiThreads		= new HashMap<String, GameToGuiConnection>();
+	private final LinkedList<Socket>					mAllGameToGuiSockets	= new LinkedList<Socket>();
+	private final GameListener							mGameListener;
 
-	private static int mDefaultPileNameNo = 1;
+	private int											mDefaultPileNameNo		= 1;
 
 	/**
 	 * Creates a new gameController and sets up a deck.
@@ -78,13 +79,16 @@ public class GameController {
 	}
 
 	/**
-	 * @param socket
-	 *            The socket to add as the connection to the guiController
+	 * @param socket The socket to add as the connection to the guiController
 	 */
 	public void addSocket(Socket socket) {
-		Log.d("network GaC", "socket added to list "
-				+ socket.getRemoteSocketAddress().toString());
+		Log.d("network GaC", "socket added to list " + socket.getRemoteSocketAddress().toString());
 		mAllGameToGuiSockets.add(socket);
+	}
+
+	public void removeSocket(Socket socket) {
+		Log.e("In GaC", "Socket removed from list" + socket.getRemoteSocketAddress().toString());
+		mAllGameToGuiSockets.remove(socket);
 	}
 
 	/**
@@ -92,17 +96,20 @@ public class GameController {
 	 */
 	public void sendUpdatedState() {
 		ObjectOutputStream out = null;
-		try {
-			for (Socket socket : mAllGameToGuiSockets) {
+		Log.e("in GaC, sendUpdatedState ", "Sockets left: " + mAllGameToGuiSockets.size());
+
+		for (Socket socket : mAllGameToGuiSockets) {
+			try {
 				out = new ObjectOutputStream(socket.getOutputStream());
 				out.writeObject(mGameState);
-				Log.d("sendUpdated GaC", "State written into socket "
-						+ socket.getRemoteSocketAddress().toString());
+				Log.d("sendUpdated GaC", "State written into socket " + socket.getRemoteSocketAddress().toString() + "host still left: "
+						+ mGameState.getHostStillLeft());
 				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -184,10 +191,9 @@ public class GameController {
 			break;
 
 		case connect:
-			Thread thread = new Thread(new GameToGuiConnection(op.getIpAddr(),
-					mPort, this));
-			thread.start();
-			mGameToGuiThreads.add(thread);
+			GameToGuiConnection connection = new GameToGuiConnection(op.getIpAddr(), mPort, this);
+			new Thread(connection).start();
+			mGameToGuiThreads.put(op.getIpAddr(), connection);
 			Log.d("handle GaC", "connected : " + op.getIpAddr());
 			break;
 
@@ -202,8 +208,7 @@ public class GameController {
 
 		case delete:
 			int pilePosToDelete = op.getPile1();
-			if (mTable.get(pilePosToDelete) != null
-					&& mTable.get(pilePosToDelete).getSize() == 0) {
+			if (mTable.get(pilePosToDelete) != null && mTable.get(pilePosToDelete).getSize() == 0) {
 				mPileNames.remove(mTable.get(pilePosToDelete).getName());
 				mTable.set(pilePosToDelete, null);
 				sendUpdatedState();
@@ -252,6 +257,24 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+		case disconnect:
+			Log.e("in GaC Disconnect", "hello!");
+			String ipAddr = op.getIpAddr();
+
+			GameToGuiConnection conn = mGameToGuiThreads.get(ipAddr);
+			conn.end();
+			mGameToGuiThreads.remove(op.getIpAddr());
+			Log.e("in GaC Disconnect", "GameToGui removed, ip : " + ipAddr);
+
+			mGameListener.end(op.getIpAddr());
+			if (ipAddr.equals("127.0.0.1")) {
+				Log.e("host", "Leaving");
+				mGameState.setHostStillLeft(false);
+				sendUpdatedState();
+				mAllGameToGuiSockets.clear();
+			}
+			Log.e("in GaC Disconnect", "GameListener ended");
+			break;
 		default:
 		}
 	}
@@ -262,4 +285,5 @@ public class GameController {
 	public GameState getGameState() {
 		return mGameState;
 	}
+
 }

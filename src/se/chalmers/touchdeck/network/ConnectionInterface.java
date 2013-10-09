@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -55,4 +55,15 @@ public abstract class ConnectionInterface implements Runnable {
 	}
 
 	public abstract void send(Socket socket);
+
+	public abstract void remove(Socket socket);
+
+	public void end() {
+		try {
+			remove(mSocket);
+			mSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

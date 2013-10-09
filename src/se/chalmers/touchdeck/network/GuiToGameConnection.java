@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -48,6 +48,17 @@ public class GuiToGameConnection extends ConnectionInterface {
 		mGuiController.setSocket(socket);
 		Operation operation = new Operation(Op.connect);
 		mGuiController.sendOperation(operation);
+	}
+
+	@Override
+	public void end() {
+		super.end();
+	}
+
+	@Override
+	public void remove(Socket socket) {
+		mGuiController.removeSocket(socket);
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -41,6 +41,7 @@ public class GameState implements Serializable {
 	private ArrayList<Pile>		mPiles;
 	private HashSet<String>		mPileNames			= new HashSet<String>();
 	private int					mDefaultPileNo		= 1;
+	private boolean				mHostStillLeft		= true;
 
 	/**
 	 * Holds the state for the game
@@ -86,5 +87,19 @@ public class GameState implements Serializable {
 	 */
 	public void setDefaultPileNo(int pileNo) {
 		mDefaultPileNo = pileNo;
+	}
+
+	/**
+	 * @param b Indicates whether the host is still in the game
+	 */
+	public void setHostStillLeft(boolean b) {
+		mHostStillLeft = b;
+	}
+
+	/**
+	 * @return Whether the host is still in the game
+	 */
+	public boolean getHostStillLeft() {
+		return mHostStillLeft;
 	}
 }
