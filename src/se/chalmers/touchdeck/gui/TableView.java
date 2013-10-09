@@ -217,6 +217,11 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mToast = Toast.makeText(this, "Tap piles you want to send the top card to. Press BACK to exit.", Toast.LENGTH_LONG);
 			mToast.show();
 			break;
+		case R.id.menu_item_pile_move:
+			mTableState = TableState.pileMove;
+			mToast = Toast.makeText(this, "Select where to move the pile", Toast.LENGTH_LONG);
+			mToast.show();
+			break;
 		default:
 
 		}
@@ -323,6 +328,11 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			}
 
 			mGuiController.sendOperation(new Operation(Op.move, mPileId, v.getId(), currentPile.getCard(0)));
+			return;
+		} else if (mTableState.equals(TableState.pileMove)) {
+			mGuiController.sendOperation(new Operation(Op.pileMove, mPileId, v.getId(), null));
+			mToast.cancel();
+			mTableState = TableState.normal;
 			return;
 		}
 

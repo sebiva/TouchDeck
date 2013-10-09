@@ -252,6 +252,21 @@ public class GameController {
 				sendUpdatedState();
 			}
 			break;
+		case pileMove:
+			Pile pileToMove = mTable.get(op.getPile1());
+			Pile destination = mTable.get(op.getPile2());
+			if(pileToMove != null && destination == null) {				
+				mTable.set(op.getPile2(), new Pile(pileToMove.getName()));
+				destination = mTable.get(op.getPile2());
+				int totalCards = pileToMove.getSize();
+				for (int i = 0; i < totalCards; i++) {
+					Card card = pileToMove.takeCard(0);
+					destination.addCard(card);
+				}
+				mTable.set(op.getPile1(), null);
+				sendUpdatedState();
+			}
+			break;
 		default:
 		}
 	}
