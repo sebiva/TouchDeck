@@ -1,23 +1,46 @@
+/**
+ Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ */
+
+/**
+ This file is part of TouchDeck.
+
+ TouchDeck is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ TouchDeck is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.chalmers.touchdeck.gui;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.enums.TableState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -37,26 +60,24 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 	private int							mPileId;
 	private Card						mCard;
-	private static final int			INDEX_OF_MOVE	= 1;
+	private String						mIpAddr;
+	private final HashSet<Card>			mPeekedCards	= new HashSet<Card>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pile_view);
 		mGuiController = GuiController.getInstance();
-
 		mPileId = getIntent().getExtras().getInt("pileId");
-
+		mIpAddr = getIntent().getExtras().getString("ipAddr");
 		setupButtons();
-
 		mGuiController.setPileView(this);
-
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		// TODO getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -71,18 +92,18 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
 
-		// Get the position of the move button and its submenu
-		MenuItem item = menu.getItem(INDEX_OF_MOVE);
-		SubMenu subMenu = item.getSubMenu();
-
-		// Create a submenu entry for each pile on the table
-		for (int i = 0; i < 24; i++) {
-			Pile destPile = mGuiController.getGameState().getPiles().get(i);
-			if (destPile != null) {
-				subMenu.add(Menu.NONE, i, Menu.NONE, destPile.getName());
-			}
+		// Peek options
+		if (mPeekedCards.contains(mCard)) {
+			menu.findItem(R.id.menu_item_peek).setVisible(false);
+		} else {
+			menu.findItem(R.id.menu_item_unpeek).setVisible(false);
 		}
-
+		if (mPeekedCards.size() == 0) {
+			menu.findItem(R.id.menu_item_unpeek_all).setVisible(false);
+		}
+		if (mPeekedCards.size() == currentPile.getSize()) {
+			menu.findItem(R.id.menu_item_peek_all).setVisible(false);
+		}
 	}
 
 	/**
@@ -95,11 +116,36 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			mGuiController.sendOperation(new Operation(Op.flip, mPileId, mCard));
 			break;
 		case R.id.menu_item_move:
+			// Launch the TableView in move state
+			mGuiController.setTableState(TableState.move);
+			mGuiController.setMoveOp(new Operation(Op.move, mPileId, -1, mCard));
+			Intent table = new Intent(this, TableView.class);
+			// Don't start a new tableView, use the one already running.
+			table.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			startActivity(table);
+			finish();
 			break;
-		// Move destination
+
+		case R.id.menu_item_peek:
+			mPeekedCards.add(mCard);
+			setupButtons();
+			break;
+		case R.id.menu_item_unpeek:
+			mPeekedCards.remove(mCard);
+			setupButtons();
+			break;
+
+		case R.id.menu_item_peek_all:
+			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
+			mPeekedCards.addAll(currentPile.getCards());
+			setupButtons();
+			break;
+
+		case R.id.menu_item_unpeek_all:
+			mPeekedCards.clear();
+			setupButtons();
+			break;
 		default:
-			Log.d("Move Destination", "PileId:" + mPileId);
-			mGuiController.sendOperation(new Operation(Op.move, mPileId, item.getItemId(), mCard));
 		}
 		return true;
 	}
@@ -111,46 +157,53 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
-		// Get the pile id
-
 		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
-		if (currentPile != null) {
+		if (currentPile == null || (!currentPile.getOwner().equals("noOwner") && !mIpAddr.equals(currentPile.getOwner()))) {
+			// If the pile is deleted or protected, the user shouldn't see any cards
+			// TODO Fix something nicer
+			return;
+		}
+		LinkedList<Card> cards = currentPile.getCards();
+		for (int i = 0; i < currentPile.getSize(); i++) {
 
-			LinkedList<Card> cards = currentPile.getCards();
-			for (int i = 0; i < currentPile.getSize(); i++) {
+			Button b = new Button(this);
+			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
+			bp.setMargins(3, 0, 3, 0);
 
-				Button b = new Button(this);
-				LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
-				bp.setMargins(3, 0, 3, 0);
+			b.setId(i);
+			b.setTag("Card " + i);
 
-				b.setId(i);
-				b.setTag("Card " + i);
+			// Calculate the size of the button
+			Display display = getWindowManager().getDefaultDisplay();
+			Point size = new Point();
+			display.getSize(size);
 
-				Card card = cards.get(i);
+			int y = size.y / 2;
+			int x = (int) (y * 0.73);
+			Card card = cards.get(i);
 
-				int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
-				b.setBackgroundResource(image);
+			if (mPeekedCards.contains(card)) {
+				int faceUpImage = getResources().getIdentifier(card.getFaceUpImageName(), "drawable", getPackageName());
+				Drawable peekedCard = getResources().getDrawable(faceUpImage);
+				peekedCard.setBounds(0, 0, (int) (x * 0.8), (int) (y * 0.8));
+				b.setCompoundDrawables(peekedCard, null, null, null);
 
-				// Calculate the size of the button
-				Display display = getWindowManager().getDefaultDisplay();
-				Point size = new Point();
-				display.getSize(size);
-
-				int y = size.y / 2;
-				int x = (int) (y * 0.73);
-
-				b.setHeight(y);
-				b.setWidth(x);
-
-				layout.addView(b);
-				mButtons.add(b);
-				b.setOnClickListener(this);
-				b.setOnLongClickListener(this);
-				registerForContextMenu(b);
-
-				b.setLayoutParams(bp);
 			}
+
+			int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
+			b.setBackgroundResource(image);
+
+			b.setHeight(y);
+			b.setWidth(x);
+
+			layout.addView(b);
+			mButtons.add(b);
+			b.setOnClickListener(this);
+			b.setOnLongClickListener(this);
+			registerForContextMenu(b);
+
+			b.setLayoutParams(bp);
 		}
 	}
 
@@ -161,7 +214,11 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	 */
 	@Override
 	public void onClick(View v) {
-		openContextMenu(v);
+		try {
+			openContextMenu(v);
+		} catch (NullPointerException e) {
+
+		}
 	}
 
 	/**
@@ -173,4 +230,9 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		return true;
 	}
 
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+	}
 }

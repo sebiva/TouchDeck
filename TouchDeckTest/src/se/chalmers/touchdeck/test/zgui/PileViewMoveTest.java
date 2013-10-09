@@ -1,6 +1,28 @@
+/**
+ Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ */
+
+/**
+ This file is part of TouchDeck.
+
+ TouchDeck is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ TouchDeck is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.chalmers.touchdeck.test.zgui;
 
 import se.chalmers.touchdeck.R;
+import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gui.GuiController;
 import se.chalmers.touchdeck.gui.PileView;
 import se.chalmers.touchdeck.gui.StartScreen;
@@ -8,7 +30,6 @@ import se.chalmers.touchdeck.gui.TableView;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.jayway.android.robotium.solo.Condition;
@@ -27,7 +48,7 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 	private Solo				soloPile;
 
 	private GuiController		gc;
-	private int					deckPos;
+	private int					deckPos				= GameController.MID_OF_TABLE;
 	private PileView			pileView;
 	private String				secondPileName;
 	private int					secondPilePos;
@@ -60,7 +81,7 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 		soloTable.enterText(0, secondPileName);
 		soloTable.clickOnButton("OK");
 
-		soloTable.clickOnButton(tableView.getResources().getString(R.string.main_deck_name));
+		soloTable.clickOnButton(deckPos);
 
 		// Prepare for testing the pileview
 		soloTable.waitForActivity(PileView.class);
@@ -71,9 +92,8 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 	}
 
 	public void testMoveCard() {
-		Log.e("aue", "hejjejejeo");
 
-		Pile deck = gc.getGameState().getPiles().get(deckPos);
+		Pile deck = gc.getGameState().getPiles().get(deckPos + 1);
 		// Must be here for some reason
 		soloPile = new Solo(getInstrumentation(), pileView);
 
@@ -94,21 +114,16 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 
 		assertEquals(movedCard, cardToBeMoved);
 
-		clickBack(soloStart);
-		soloStart.waitForActivity(TableView.class);
-		soloTable.clickOnView(tableView.findViewById(deckPos));
+		clickBack(soloPile);
 
 		// Update
 		secondPile = gc.getGameState().getPiles().get(secondPilePos);
-		deck = gc.getGameState().getPiles().get(deckPos);
+		deck = gc.getGameState().getPiles().get(deckPos + 1);
 		Card secondCardToBeMoved = deck.getCard(2);
 
-		soloTable.waitForActivity(PileView.class);
+		soloTable.clickOnButton(deckPos + 1);
+
 		// Flips the third card
-		pileView = (PileView) soloTable.getCurrentActivity();
-		if (pileView == null) {
-			Log.d("ee", "feefefefufaoleuo");
-		}
 		soloTable.clickOnButton(2);
 		soloTable.clickOnText(FLIP_CARD_OPTION);
 

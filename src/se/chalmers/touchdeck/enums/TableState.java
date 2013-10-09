@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl EngstrÂšm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -19,21 +19,12 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.exceptions;
+package se.chalmers.touchdeck.enums;
 
 /**
- * Exception thrown when a card is not found
- * 
- * @author group17
+ * Represents the state of the table
+ *
  */
-public class CardNotFoundException extends Exception {
-	private static final long	serialVersionUID	= 6883143284907049675L;
-
-	public CardNotFoundException(String msg) {
-		super(msg);
-	}
-
-	public CardNotFoundException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+public enum TableState {
+	normal, move, moveAll, deal
 }

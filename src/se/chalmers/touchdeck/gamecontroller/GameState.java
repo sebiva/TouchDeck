@@ -1,3 +1,24 @@
+/**
+ Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ */
+
+/**
+ This file is part of TouchDeck.
+
+ TouchDeck is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ TouchDeck is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.chalmers.touchdeck.gamecontroller;
 
 import java.io.Serializable;
@@ -20,6 +41,7 @@ public class GameState implements Serializable {
 	private ArrayList<Pile>		mPiles;
 	private HashSet<String>		mPileNames			= new HashSet<String>();
 	private int					mDefaultPileNo		= 1;
+	private boolean				mHostStillLeft		= true;
 
 	/**
 	 * Holds the state for the game
@@ -65,5 +87,19 @@ public class GameState implements Serializable {
 	 */
 	public void setDefaultPileNo(int pileNo) {
 		mDefaultPileNo = pileNo;
+	}
+
+	/**
+	 * @param b Indicates whether the host is still in the game
+	 */
+	public void setHostStillLeft(boolean b) {
+		mHostStillLeft = b;
+	}
+
+	/**
+	 * @return Whether the host is still in the game
+	 */
+	public boolean getHostStillLeft() {
+		return mHostStillLeft;
 	}
 }
