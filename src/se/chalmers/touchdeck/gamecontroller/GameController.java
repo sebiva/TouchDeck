@@ -136,6 +136,16 @@ public class GameController {
 	 * @param op
 	 */
 	public synchronized void performOperation(Operation op) {
+		String ipAddr = op.getIpAddr();
+		Integer pilePosition = op.getPile1();
+		if (pilePosition != null) {
+			Pile p = mTable.get(pilePosition);
+			if (p != null) {
+				if (!p.getOwner().equals("noOwner") && !p.getOwner().equals(ipAddr)) {
+					return; // The user was not allowed to perform the operation
+				}
+			}
+		}
 
 		switch (op.getOp()) {
 
@@ -166,10 +176,10 @@ public class GameController {
 				if (c.equals(cardToFlip)) {
 					c.flipFace();
 					sendUpdatedState();
+					Log.d("handle GaC", "flip");
 					return;
 				}
 			}
-			Log.d("handle GaC", "flip");
 			break;
 
 		case create:
@@ -218,6 +228,9 @@ public class GameController {
 
 		case rename:
 			Pile pileToRename = mTable.get(op.getPile1());
+			if (pileToRename == null) {
+				return;
+			}
 			String oldName = pileToRename.getName();
 			if (mPileNames.contains(op.getName())) {
 				return;
@@ -266,13 +279,17 @@ public class GameController {
 			break;
 
 		case protect:
-			mTable.get(op.getPile1()).setOwner(op.getName());
-			sendUpdatedState();
+			Pile pileToProtect = mTable.get(op.getPile1());
+			if (pileToProtect != null) {
+				pileToProtect.setOwner(op.getName());
+				sendUpdatedState();
+			}
+
 			break;
 
 		case unprotect:
 			Pile protectedPile = mTable.get(op.getPile1());
-			if (protectedPile.getOwner().equals(op.getName())) {
+			if (protectedPile != null && protectedPile.getOwner().equals(op.getName())) {
 				protectedPile.setOwner("noOwner");
 				sendUpdatedState();
 			}
@@ -285,6 +302,8 @@ public class GameController {
 			}
 			mPileNames.clear();
 			createDeck();
+			mDefaultPileNameNo = 1;
+			mGameState.setDefaultPileNo(1);
 			sendUpdatedState();
 			break;
 
@@ -300,15 +319,15 @@ public class GameController {
 
 		case disconnect:
 			Log.e("in GaC Disconnect", "hello!");
-			String ipAddr = op.getIpAddr();
+			String ipDeviceAddr = op.getIpAddr();
 
-			GameToGuiConnection conn = mGameToGuiThreads.get(ipAddr);
+			GameToGuiConnection conn = mGameToGuiThreads.get(ipDeviceAddr);
 			conn.end();
 			mGameToGuiThreads.remove(op.getIpAddr());
-			Log.e("in GaC Disconnect", "GameToGui removed, ip : " + ipAddr);
+			Log.e("in GaC Disconnect", "GameToGui removed, ip : " + ipDeviceAddr);
 
 			mGameListener.end(op.getIpAddr());
-			if (ipAddr.equals("127.0.0.1")) {
+			if (ipDeviceAddr.equals("127.0.0.1")) {
 				Log.e("host", "Leaving");
 				mGameState.setHostStillLeft(false);
 				sendUpdatedState();

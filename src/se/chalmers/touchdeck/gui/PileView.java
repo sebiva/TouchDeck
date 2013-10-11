@@ -60,7 +60,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 	private int							mPileId;
 	private Card						mCard;
-	private String						mIpAddr;
+	private String						mMyIpAddr;
 	private final HashSet<Card>			mPeekedCards	= new HashSet<Card>();
 
 	@Override
@@ -69,7 +69,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		setContentView(R.layout.pile_view);
 		mGuiController = GuiController.getInstance();
 		mPileId = getIntent().getExtras().getInt("pileId");
-		mIpAddr = getIntent().getExtras().getString("ipAddr");
+		mMyIpAddr = getIntent().getExtras().getString("ipAddr");
 		setupButtons();
 		mGuiController.setPileView(this);
 	}
@@ -159,7 +159,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		layout.invalidate();
 		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
-		if (currentPile == null || (!currentPile.getOwner().equals("noOwner") && !mIpAddr.equals(currentPile.getOwner()))) {
+		if (currentPile == null || (!currentPile.getOwner().equals("noOwner") && !mMyIpAddr.equals(currentPile.getOwner()))) {
 			// If the pile is deleted or protected, the user shouldn't see any cards
 			// TODO Fix something nicer
 			return;
