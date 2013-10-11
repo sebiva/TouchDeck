@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">TouchDeck</string>
     <string name="main_deck_name">deck</string>
     <string name="action_settings">Settings</string>
@@ -8,10 +7,24 @@
     <string name="join_btn">Join Game</string>
     <string name="menu_item_flip">Flip card</string>
     <string name="menu_item_move">Move card</string>
+    <string name="menu_item_peek">Peek card</string>
+    <string name="menu_item_unpeek">Unpeek card</string>
+    <string name="menu_item_peek_all">Peek all cards</string>
+    <string name="menu_item_unpeek_all">Unpeek all cards</string>
     <string name="menu_item_shuffle">Shuffle pile</string>
     <string name="menu_item_delete">Delete pile</string>
+    <string name="menu_item_rename">Rename pile</string>
     <string name="menu_item_face_up">Face all cards up</string>
     <string name="menu_item_face_down">Face all cards down</string>
     <string name="menu_item_move_all">Move all cards</string>
-    
+    <string name="move_dest_tag">moveDestTag</string>
+    <string name="menu_item_protect_pile">Protect pile</string>
+    <string name="menu_item_unprotect_pile">Unprotect pile</string>
+    <string name="menu_item_protect_empty_pile">Protect pile</string>
+    <string name="menu_item_unprotect_empty_pile">Unprotect pile</string>
+    <string name="menu_item_deal_cards">Deal cards from pile</string>
+    <string name="menu_item_pile_move">Move this pile</string>
+    <string name="back_of_card">b2fv</string>
+    <string name="menu_option_terminate">Terminate Session</string>
+    <string name="menu_option_restart">Restart game</string>
 </resources>

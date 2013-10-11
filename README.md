@@ -1,5 +1,4 @@
 TouchDeck
 ==
 
-*"We used to dream about this stuff. Now, we get to build it. It's pretty neat."* - Steve Jobs
-
+*"We know where you are. We know where you’ve been. We can more or less know what you’re thinking about."* - Eric Schmidt

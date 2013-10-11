@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -45,5 +45,10 @@ public class GuiUpdater extends ListenerInterface {
 				notifyObservers(gameState);
 			}
 		}
+	}
+
+	@Override
+	public void end(String ipAddr) {
+		super.end(ipAddr);
 	}
 }

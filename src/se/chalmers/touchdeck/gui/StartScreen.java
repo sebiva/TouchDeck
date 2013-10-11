@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -35,7 +35,6 @@ import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 
 /**
@@ -53,13 +52,6 @@ public class StartScreen extends Activity implements Observer {
 		setContentView(R.layout.start_screen);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
 	/**
 	 * Called when the 'create game' - button is pressed. An intent is created and a TableView activity is started,
 	 * along with the gamecontroller as the user is the host of the game.
@@ -68,10 +60,9 @@ public class StartScreen extends Activity implements Observer {
 	 */
 	public void createGame(View v) {
 		Intent launchGui = new Intent(this, TableView.class);
-
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
-		launchGui.putExtra("IPaddr", LOCAL_IP);
+		launchGui.putExtra("ipAddr", LOCAL_IP);
 		startActivity(launchGui);
 	}
 
@@ -93,11 +84,14 @@ public class StartScreen extends Activity implements Observer {
 	 * Make this view not open again when pressing back
 	 */
 	@Override
-	public void onPause() {
-		super.onPause();
+	public void onStop() {
+		super.onStop();
 		finish();
 	}
 
+	/**
+	 * Listens to the dialog for the ip to be entered
+	 */
 	@Override
 	public void update(Observable obs, Object param) {
 
@@ -118,7 +112,7 @@ public class StartScreen extends Activity implements Observer {
 					emptyPiles.add(null);
 				}
 				launchGui.putExtra("state", new GameState(emptyPiles, new HashSet<String>()));
-				launchGui.putExtra("IPaddr", dt.getString()); // TODO
+				launchGui.putExtra("ipAddr", dt.getString());
 				startActivity(launchGui);
 			}
 

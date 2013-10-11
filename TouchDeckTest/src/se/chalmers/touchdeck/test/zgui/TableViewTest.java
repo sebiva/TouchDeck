@@ -74,7 +74,7 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<StartScreen>
 		solo.clickOnButton("OK");
 
 		String pilename2 = solo.getText(15).getText().toString();
-		assertEquals("[0]MyCool", pilename2);
+		assertEquals("[0]MyCoolP", pilename2);
 	}
 
 	private void clickBack(Solo solo) {
