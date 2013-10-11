@@ -45,22 +45,22 @@ import android.util.Log;
 public class GameController {
 
 	// Public constants
-	public static final int				NUM_ROWS				= 3;
-	public static final int				NUM_COLUMNS				= 8;
-	public static final int				MAX_NUMBER_OF_PILES		= NUM_ROWS * NUM_COLUMNS;
-	public static final int				MID_OF_TABLE			= MAX_NUMBER_OF_PILES / 2 - 1;
-	public static final String			MAIN_DECK_NAME			= "deck";
+	public static final int								NUM_ROWS				= 3;
+	public static final int								NUM_COLUMNS				= 8;
+	public static final int								MAX_NUMBER_OF_PILES		= NUM_ROWS * NUM_COLUMNS;
+	public static final int								MID_OF_TABLE			= MAX_NUMBER_OF_PILES / 2 - 1;
+	public static final String							MAIN_DECK_NAME			= "deck";
 
-	private final ArrayList<Pile>		mTable					= new ArrayList<Pile>();
-	private final HashSet<String>		mPileNames				= new HashSet<String>();
+	private final ArrayList<Pile>						mTable					= new ArrayList<Pile>();
+	private final HashSet<String>						mPileNames				= new HashSet<String>();
 
-	private final GameState				mGameState;
-	private final int					mPort					= 4243;
+	private final GameState								mGameState;
+	private final int									mPort					= 4243;
 	private final HashMap<String, GameToGuiConnection>	mGameToGuiThreads		= new HashMap<String, GameToGuiConnection>();
-	private final LinkedList<Socket>	mAllGameToGuiSockets	= new LinkedList<Socket>();
-	private final GameListener			mGameListener;
+	private final LinkedList<Socket>					mAllGameToGuiSockets	= new LinkedList<Socket>();
+	private final GameListener							mGameListener;
 
-	private int					mDefaultPileNameNo		= 1;
+	private int											mDefaultPileNameNo		= 1;
 
 	/**
 	 * Creates a new gameController and sets up a deck.
@@ -292,14 +292,8 @@ public class GameController {
 			Pile pileToMove = mTable.get(op.getPile1());
 			Pile destination = mTable.get(op.getPile2());
 			if (pileToMove != null && destination == null) {
-				mTable.set(op.getPile2(), new Pile(pileToMove.getName()));
-				destination = mTable.get(op.getPile2());
-				int totalCards = pileToMove.getSize();
-				for (int i = 0; i < totalCards; i++) {
-					Card card = pileToMove.takeCard(0);
-					destination.addCard(card);
-				}
-				mTable.set(op.getPile1(), null);
+				mTable.set(op.getPile2(), pileToMove);
+				mTable.set(op.getPile1(), destination);
 				sendUpdatedState();
 			}
 			break;

@@ -109,7 +109,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			Intent i = new Intent(this, StartScreen.class);
 			startActivity(i);
 			break;
-			
+
 		case R.id.menu_item_restart:
 			mGuiController.sendOperation(new Operation(Op.restart));
 			break;
