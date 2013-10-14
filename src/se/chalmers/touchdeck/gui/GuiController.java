@@ -50,7 +50,8 @@ public class GuiController implements Observer {
 	private static GuiController	sInstance	= null;
 
 	private final int				mPort		= 4242;
-	private String					mIpAddr;
+	private String					mHostIpAddr;
+	private String					mMyIpAddr;
 	private GuiUpdater				mGuiUpdater;
 	private Socket					mGuiToGameSocket;
 	private GuiToGameConnection		mGuiToGameConnection;
@@ -73,6 +74,8 @@ public class GuiController implements Observer {
 	 */
 	public void setSocket(Socket socket) {
 		mGuiToGameSocket = socket;
+		mMyIpAddr = socket.getLocalAddress().toString().substring(1);
+		Log.e("ueoau", mMyIpAddr);
 	}
 
 	/**
@@ -81,10 +84,10 @@ public class GuiController implements Observer {
 	 * @param ipAddr The ip address of the host.
 	 */
 	public void setupConnections(String ipAddr) {
-		this.mIpAddr = ipAddr;
+		this.mHostIpAddr = ipAddr;
 		mGuiUpdater = new GuiUpdater(this, 4243);
 		new Thread(mGuiUpdater).start();
-		mGuiToGameConnection = new GuiToGameConnection(mIpAddr, mPort, this);
+		mGuiToGameConnection = new GuiToGameConnection(mHostIpAddr, mPort, this);
 		new Thread(mGuiToGameConnection).start();
 	}
 
@@ -95,6 +98,7 @@ public class GuiController implements Observer {
 	 */
 	public void sendOperation(Operation op) {
 		ObjectOutputStream out = null;
+		op.setIpAddr(mMyIpAddr);
 		try {
 			out = new ObjectOutputStream(mGuiToGameSocket.getOutputStream());
 			out.writeObject(op);
@@ -103,6 +107,15 @@ public class GuiController implements Observer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Get the ip of the device
+	 * 
+	 * @return The ip address
+	 */
+	public String getMyIp() {
+		return mMyIpAddr;
 	}
 
 	/**
@@ -195,15 +208,15 @@ public class GuiController implements Observer {
 	 * Terminates the session
 	 */
 	public void terminate() {
-		Log.e("in GuC terminate", "ip : " + mIpAddr);
+		Log.e("in GuC terminate", "ip : " + mMyIpAddr);
 		if (mGuiUpdater != null) {
-			mGuiUpdater.end(mIpAddr);
+			mGuiUpdater.end(mMyIpAddr);
 			mGuiUpdater = null;
 		}
 		Log.e("in GuC terminate", "GuiUpdater ended");
 		if (!mTerminating) {
 			Operation op = new Operation(Op.disconnect);
-			op.setIpAddr(mIpAddr);
+			op.setIpAddr(mMyIpAddr);
 			sendOperation(op);
 			Log.e("in GuC terminate", "Disconnect sent");
 		}
