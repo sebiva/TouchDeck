@@ -19,7 +19,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#000000"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff" 
+            android:layout_marginLeft="2dp"/>
 
         <TextView
             android:id="@+id/tableStateText"
@@ -28,6 +29,7 @@
             android:layout_weight="1"
             android:background="#000000"
             android:textColor="#ffffff"
+            android:layout_marginRight="2dp"
             android:gravity="right" />
     </LinearLayout>
 

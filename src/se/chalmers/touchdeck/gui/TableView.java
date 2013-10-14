@@ -203,8 +203,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		switch (item.getItemId()) {
 		case R.id.menu_item_shuffle:
 			mGuiController.sendOperation(new Operation(Op.shuffle, mPileId));
-			mToast = Toast.makeText(this, mGuiController.getGameState().getPiles().get(mPileId).getName() + " shuffled!",
-					Toast.LENGTH_SHORT);
+			mToast = Toast.makeText(this, pileName + " shuffled!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_delete:
@@ -219,9 +218,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
 			break;
 		case R.id.menu_item_move_all:
-			mToast = Toast.makeText(this, "Select pile to move cards to", Toast.LENGTH_LONG);
 			setTableState(TableState.moveAll);
-			mToast.show();
 			break;
 		case R.id.menu_item_protect_pile:
 			mGuiController.sendOperation(new Operation(Op.protect, mPileId, IpFinder.getMyIp()));
@@ -245,14 +242,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			break;
 		case R.id.menu_item_deal_cards:
 			setTableState(TableState.deal);
-			mToast = Toast.makeText(this, "Tap piles you want to send the top card to. Press BACK to exit.", Toast.LENGTH_LONG);
-			mToast.show();
 			break;
 
 		case R.id.menu_item_pile_move:
 			setTableState(TableState.pileMove);
-			mToast = Toast.makeText(this, "Select where to move the pile", Toast.LENGTH_LONG);
-			mToast.show();
 			break;
 
 		case R.id.menu_item_rename:
@@ -275,56 +268,55 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		mTableLayout = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
 		for (int i = 0; i < GameController.NUM_ROWS; i++) {
-			TableRow tr = new TableRow(this);
-			tr.setTag("row" + i);
+			TableRow tableRow = new TableRow(this);
+			tableRow.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should
 			// be the same size
 			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
 			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
 
-				LinearLayout ll = new LinearLayout(this);
-				ll.setOrientation(LinearLayout.VERTICAL);
-				ll.setPadding(PADDING, PADDING, PADDING, PADDING);
+				LinearLayout lLayout = new LinearLayout(this);
+				lLayout.setOrientation(LinearLayout.VERTICAL);
+				lLayout.setPadding(PADDING, PADDING, PADDING, PADDING);
 				LayoutParams lp = new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
 
-				Button b = new Button(this);
+				Button btn = new Button(this);
 				// Create the layout parameters for the button, all buttons
 				// should be the same size
-				LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
+				LayoutParams btnParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
 
-				b.setId(GameController.NUM_COLUMNS * i + j);
-				b.setTag("Pile " + (GameController.NUM_ROWS * i + j));
-				// b.setText("Pile " + (num_columns*i + j));
+				btn.setId(GameController.NUM_COLUMNS * i + j);
+				btn.setTag("Pile " + (GameController.NUM_ROWS * i + j));
 
 				// Set this interface as the listener to the button
-				b.setOnClickListener(this);
-				registerForContextMenu(b);
+				btn.setOnClickListener(this);
+				registerForContextMenu(btn);
 
-				TextView tv = new TextView(this);
-				tv.setTextSize(12);
+				TextView textView = new TextView(this);
+				textView.setTextSize(12);
 
-				// Set this interface as the listener to the text view
-				tv.setOnClickListener(this);
-				registerForContextMenu(tv);
-				LayoutParams ba = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
+				// Set the tableview as the listener to the text view
+				textView.setOnClickListener(this);
+				registerForContextMenu(textView);
+				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
 
-				tv.setId(GameController.NUM_COLUMNS * i + j);
-				tv.setTag("Pile " + (GameController.NUM_ROWS * i + j));
+				textView.setId(GameController.NUM_COLUMNS * i + j);
+				textView.setTag("Pile " + (GameController.NUM_ROWS * i + j));
 
-				ll.addView(b);
-				b.setLayoutParams(bp);
+				lLayout.addView(btn);
+				btn.setLayoutParams(btnParams);
 
-				ll.addView(tv);
-				tv.setLayoutParams(ba);
+				lLayout.addView(textView);
+				textView.setLayoutParams(layoutParams);
 
-				tr.addView(ll);
-				ll.setLayoutParams(lp);
+				tableRow.addView(lLayout);
+				lLayout.setLayoutParams(lp);
 
-				mLayouts.add(ll);
+				mLayouts.add(lLayout);
 			}
 			// Add the row to the table and apply the layout
-			mTableLayout.addView(tr);
-			tr.setLayoutParams(tp);
+			mTableLayout.addView(tableRow);
+			tableRow.setLayoutParams(tp);
 		}
 	}
 
@@ -334,22 +326,25 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 * @param The view(in this case, button) that was clicked
 	 */
 	@Override
-	public void onClick(View v) {
+	public void onClick(View view) {
 		if (mTableState.equals(TableState.move)) {
 			Intent pileView = new Intent(this, PileView.class);
 			pileView.putExtra("pileId", mMoveOp.getPile1());
 			pileView.putExtra("ipAddr", IpFinder.getMyIp());
-			mMoveOp.setPile2(v.getId());
+			// Tell the pileView which pile was clicked
+			mMoveOp.setPile2(view.getId());
 			mGuiController.sendOperation(mMoveOp);
 			setTableState(TableState.normal);
 			startActivity(pileView);
 			mToast.cancel();
 			return;
+
 		} else if (mTableState.equals(TableState.moveAll)) {
-			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, v.getId(), null));
+			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, view.getId(), null));
 			mToast.cancel();
 			setTableState(TableState.normal);
 			return;
+
 		} else if (mTableState.equals(TableState.deal)) {
 			mToast.cancel();
 			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
@@ -365,27 +360,23 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				mToast.show();
 				return;
 			}
-
-			mGuiController.sendOperation(new Operation(Op.move, mPileId, v.getId(), currentPile.getCard(0)));
+			mGuiController.sendOperation(new Operation(Op.move, mPileId, view.getId(), currentPile.getCard(0)));
 			return;
+
 		} else if (mTableState.equals(TableState.pileMove)) {
-			mGuiController.sendOperation(new Operation(Op.pileMove, mPileId, v.getId(), null));
+			mGuiController.sendOperation(new Operation(Op.pileMove, mPileId, view.getId(), null));
 			mToast.cancel();
 			setTableState(TableState.normal);
 			return;
 		}
 
-		// Get which button has been pressed
-
-		mPileId = v.getId();
+		mPileId = view.getId();
 		Pile p = mGuiController.getGameState().getPiles().get(mPileId);
 
-		// Check if there is a pile on this position
 		if (p != null) {
 
 			// Checks whether the pile is protected by another user before
 			// allowing access to the pile view.
-
 			if ((p.getOwner().equals(IpFinder.getMyIp())) || (p.getOwner().equals("noOwner"))) {
 				Intent pileView = new Intent(this, PileView.class);
 				pileView.putExtra("pileId", mPileId);
@@ -407,14 +398,31 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	}
 
 	/**
-	 * Sets the state of the tableView
+	 * Sets the state of the tableView, updates the text in the textbar
 	 * 
 	 * @param tableState The state to set
 	 */
 	public void setTableState(TableState tableState) {
 		mTableState = tableState;
 		TextView tableStateText = (TextView) findViewById(R.id.tableStateText);
-		tableStateText.setText(mTableState.toString() + "mode");
+		String modeStr = "";
+		String pileName = mGuiController.getGameState().getPiles().get(mPileId).getName();
+		switch (mTableState) {
+		case deal:
+			modeStr = "Dealing from " + pileName;
+			break;
+		case move:
+			modeStr = "Moving from " + pileName;
+			break;
+		case moveAll:
+			modeStr = "Moving all from " + pileName;
+			break;
+		case pileMove:
+			modeStr = "Moving " + pileName;
+			break;
+		default:
+		}
+		tableStateText.setText(modeStr);
 	}
 
 	/**
@@ -449,24 +457,15 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			i.putExtra("pileId", mPileId);
 			i.putExtra("ipAddr", IpFinder.getMyIp());
 			setTableState(TableState.normal);
-			mToast.cancel();
-			mToast = Toast.makeText(this, "Move Canceled", Toast.LENGTH_SHORT);
-			mToast.show();
 			startActivity(i);
 			return;
 		} else if (mTableState.equals(TableState.moveAll)) {
 			// Abort move
 			setTableState(TableState.normal);
-			mToast.cancel();
-			mToast = Toast.makeText(this, "Move Canceled", Toast.LENGTH_SHORT);
-			mToast.show();
 			return;
 		} else if (mTableState.equals(TableState.deal)) {
 			// Exit deal mode
 			setTableState(TableState.normal);
-			mToast.cancel();
-			mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
-			mToast.show();
 			return;
 		}
 
@@ -486,7 +485,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			@Override
 			public void run() {
 				mIsBackPressedBefore = false;
-
 			}
 		}, 2000);
 	}
