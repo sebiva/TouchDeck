@@ -30,6 +30,7 @@ import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
@@ -38,7 +39,6 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +47,7 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Activity for inspecting a pile.
@@ -60,25 +61,21 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 	private int							mPileId;
 	private Card						mCard;
-	private String						mMyIpAddr;
 	private final HashSet<Card>			mPeekedCards	= new HashSet<Card>();
+	private Pile						mCurrentPile;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pile_view);
 		mGuiController = GuiController.getInstance();
+
 		mPileId = getIntent().getExtras().getInt("pileId");
-		mMyIpAddr = getIntent().getExtras().getString("ipAddr");
+
+		mCurrentPile = mGuiController.getGameState().getPiles().get(mPileId);
+
 		setupButtons();
 		mGuiController.setPileView(this);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		// TODO getMenuInflater().inflate(R.menu.main, menu);
-		return true;
 	}
 
 	/**
@@ -87,8 +84,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
-		mCard = currentPile.getCard(v.getId());
+		mCard = mCurrentPile.getCard(v.getId());
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_menu, menu);
 
@@ -101,7 +97,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		if (mPeekedCards.size() == 0) {
 			menu.findItem(R.id.menu_item_unpeek_all).setVisible(false);
 		}
-		if (mPeekedCards.size() == currentPile.getSize()) {
+		if (mPeekedCards.size() == mCurrentPile.getSize()) {
 			menu.findItem(R.id.menu_item_peek_all).setVisible(false);
 		}
 	}
@@ -136,8 +132,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			break;
 
 		case R.id.menu_item_peek_all:
-			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
-			mPeekedCards.addAll(currentPile.getCards());
+			mPeekedCards.addAll(mCurrentPile.getCards());
 			setupButtons();
 			break;
 
@@ -154,18 +149,26 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	 * Creates buttons that represents the cards in the pile.
 	 */
 	public void setupButtons() {
+		mCurrentPile = mGuiController.getGameState().getPiles().get(mPileId);
 		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
-		Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
-		if (currentPile == null || (!currentPile.getOwner().equals("noOwner") && !mMyIpAddr.equals(currentPile.getOwner()))) {
-			// If the pile is deleted or protected, the user shouldn't see any cards
-			// TODO Fix something nicer
+		TextView pileViewText = (TextView) findViewById(R.id.pileViewText);
+		if (mCurrentPile == null) {
+			pileViewText.setText("No Pile");
+			return;
+		} else if (mCurrentPile.getOwner().equals("noOwner")) {
+			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName());
+		} else if (mCurrentPile.getOwner().equals(IpFinder.getMyIp())) {
+			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + " - Protected by you");
+		} else {
+			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + " - Protected by someone else");
 			return;
 		}
-		LinkedList<Card> cards = currentPile.getCards();
-		for (int i = 0; i < currentPile.getSize(); i++) {
+
+		LinkedList<Card> cards = mCurrentPile.getCards();
+		for (int i = 0; i < mCurrentPile.getSize(); i++) {
 
 			Button b = new Button(this);
 			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
@@ -181,8 +184,9 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 			int y = size.y / 2;
 			int x = (int) (y * 0.73);
-			Card card = cards.get(i);
 
+			Card card = cards.get(i);
+			// Sets the peek image if the card is peeked
 			if (mPeekedCards.contains(card)) {
 				int faceUpImage = getResources().getIdentifier(card.getFaceUpImageName(), "drawable", getPackageName());
 				Drawable peekedCard = getResources().getDrawable(faceUpImage);
@@ -222,7 +226,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	}
 
 	/**
-	 * Called when one of the buttons is long clicked
+	 * Called when one of the buttons is longclicked
 	 */
 	@Override
 	public boolean onLongClick(View v) {

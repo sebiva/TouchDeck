@@ -33,6 +33,7 @@ import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.network.GuiToGameConnection;
 import se.chalmers.touchdeck.network.GuiUpdater;
+import se.chalmers.touchdeck.network.IpFinder;
 import android.content.Intent;
 import android.util.Log;
 
@@ -51,7 +52,7 @@ public class GuiController implements Observer {
 
 	private final int				mPort		= 4242;
 	private String					mHostIpAddr;
-	private String					mMyIpAddr;
+	private final String			mMyIpAddr	= IpFinder.getMyIp();
 	private GuiUpdater				mGuiUpdater;
 	private Socket					mGuiToGameSocket;
 	private GuiToGameConnection		mGuiToGameConnection;
@@ -74,8 +75,6 @@ public class GuiController implements Observer {
 	 */
 	public void setSocket(Socket socket) {
 		mGuiToGameSocket = socket;
-		mMyIpAddr = socket.getLocalAddress().toString().substring(1);
-		Log.e("ueoau", mMyIpAddr);
 	}
 
 	/**
@@ -107,15 +106,6 @@ public class GuiController implements Observer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Get the ip of the device
-	 * 
-	 * @return The ip address
-	 */
-	public String getMyIp() {
-		return mMyIpAddr;
 	}
 
 	/**

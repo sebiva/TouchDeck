@@ -35,6 +35,7 @@ import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -80,7 +81,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.table_view);
-		// Create Buttons in the tableview
 		setupButtons();
 		Serializable s = getIntent().getExtras().getSerializable("state");
 		mHostIpAddr = getIntent().getExtras().getString("ipAddr");
@@ -112,6 +112,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 		case R.id.menu_item_restart:
 			mGuiController.sendOperation(new Operation(Op.restart));
+			setTableState(TableState.normal);
 			break;
 
 		default:
@@ -147,7 +148,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 			// Stops the context menu from inflating if the user should not have
 			// access to the pile.
-			if (currentPile.getSize() > 0 && (pileOwner.equals(mGuiController.getMyIp()) || pileOwner.equals("noOwner"))) {
+			if (currentPile.getSize() > 0 && (pileOwner.equals(IpFinder.getMyIp()) || pileOwner.equals("noOwner"))) {
 				inflater.inflate(R.menu.pile_menu, menu);
 
 				// Checks whether the pile is protected or not and sets which
@@ -160,7 +161,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
-				} else if (pileOwner.equals(mGuiController.getMyIp())) {
+				} else if (pileOwner.equals(IpFinder.getMyIp())) {
 					unprotectPile.setVisible(true);
 					protectPile.setVisible(false);
 				} else {
@@ -168,7 +169,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 					protectPile.setVisible(false);
 				}
 
-			} else if (pileOwner.equals(mGuiController.getMyIp()) || pileOwner.equals("noOwner")) {
+			} else if (pileOwner.equals(IpFinder.getMyIp()) || pileOwner.equals("noOwner")) {
 
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 
@@ -182,7 +183,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
-				} else if (pileOwner.equals(mGuiController.getMyIp())) {
+				} else if (pileOwner.equals(IpFinder.getMyIp())) {
 					unprotectPile.setVisible(true);
 					protectPile.setVisible(false);
 				} else {
@@ -203,8 +204,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		switch (item.getItemId()) {
 		case R.id.menu_item_shuffle:
 			mGuiController.sendOperation(new Operation(Op.shuffle, mPileId));
-			mToast = Toast.makeText(this, mGuiController.getGameState().getPiles().get(mPileId).getName() + " shuffled!",
-					Toast.LENGTH_SHORT);
+			mToast = Toast.makeText(this, pileName + " shuffled!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_delete:
@@ -219,40 +219,34 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			mGuiController.sendOperation(new Operation(Op.faceDown, mPileId));
 			break;
 		case R.id.menu_item_move_all:
-			mToast = Toast.makeText(this, "Select pile to move cards to", Toast.LENGTH_LONG);
-			mTableState = TableState.moveAll;
-			mToast.show();
+			setTableState(TableState.moveAll);
 			break;
 		case R.id.menu_item_protect_pile:
-			mGuiController.sendOperation(new Operation(Op.protect, mPileId, mGuiController.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.protect, mPileId, IpFinder.getMyIp()));
 			mToast = Toast.makeText(this, pileName + " protected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_protect_empty_pile:
-			mGuiController.sendOperation(new Operation(Op.protect, mPileId, mGuiController.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.protect, mPileId, IpFinder.getMyIp()));
 			mToast = Toast.makeText(this, pileName + " protected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_unprotect_pile:
-			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, mGuiController.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, IpFinder.getMyIp()));
 			mToast = Toast.makeText(this, pileName + " unprotected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_unprotect_empty_pile:
-			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, mGuiController.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, IpFinder.getMyIp()));
 			mToast = Toast.makeText(this, pileName + " unprotected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_deal_cards:
-			mTableState = TableState.deal;
-			mToast = Toast.makeText(this, "Tap piles you want to send the top card to. Press BACK to exit.", Toast.LENGTH_LONG);
-			mToast.show();
+			setTableState(TableState.deal);
 			break;
 
 		case R.id.menu_item_pile_move:
-			mTableState = TableState.pileMove;
-			mToast = Toast.makeText(this, "Select where to move the pile", Toast.LENGTH_LONG);
-			mToast.show();
+			setTableState(TableState.pileMove);
 			break;
 
 		case R.id.menu_item_rename:
@@ -275,56 +269,55 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		mTableLayout = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
 		for (int i = 0; i < GameController.NUM_ROWS; i++) {
-			TableRow tr = new TableRow(this);
-			tr.setTag("row" + i);
+			TableRow tableRow = new TableRow(this);
+			tableRow.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should
 			// be the same size
 			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
 			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
 
-				LinearLayout ll = new LinearLayout(this);
-				ll.setOrientation(LinearLayout.VERTICAL);
-				ll.setPadding(PADDING, PADDING, PADDING, PADDING);
+				LinearLayout lLayout = new LinearLayout(this);
+				lLayout.setOrientation(LinearLayout.VERTICAL);
+				lLayout.setPadding(PADDING, PADDING, PADDING, PADDING);
 				LayoutParams lp = new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
 
-				Button b = new Button(this);
+				Button btn = new Button(this);
 				// Create the layout parameters for the button, all buttons
 				// should be the same size
-				LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
+				LayoutParams btnParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
 
-				b.setId(GameController.NUM_COLUMNS * i + j);
-				b.setTag("Pile " + (GameController.NUM_ROWS * i + j));
-				// b.setText("Pile " + (num_columns*i + j));
+				btn.setId(GameController.NUM_COLUMNS * i + j);
+				btn.setTag("Pile " + (GameController.NUM_ROWS * i + j));
 
 				// Set this interface as the listener to the button
-				b.setOnClickListener(this);
-				registerForContextMenu(b);
+				btn.setOnClickListener(this);
+				registerForContextMenu(btn);
 
-				TextView tv = new TextView(this);
-				tv.setTextSize(12);
+				TextView textView = new TextView(this);
+				textView.setTextSize(12);
 
-				// Set this interface as the listener to the text view
-				tv.setOnClickListener(this);
-				registerForContextMenu(tv);
-				LayoutParams ba = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
+				// Set the tableview as the listener to the text view
+				textView.setOnClickListener(this);
+				registerForContextMenu(textView);
+				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
 
-				tv.setId(GameController.NUM_COLUMNS * i + j);
-				tv.setTag("Pile " + (GameController.NUM_ROWS * i + j));
+				textView.setId(GameController.NUM_COLUMNS * i + j);
+				textView.setTag("Pile " + (GameController.NUM_ROWS * i + j));
 
-				ll.addView(b);
-				b.setLayoutParams(bp);
+				lLayout.addView(btn);
+				btn.setLayoutParams(btnParams);
 
-				ll.addView(tv);
-				tv.setLayoutParams(ba);
+				lLayout.addView(textView);
+				textView.setLayoutParams(layoutParams);
 
-				tr.addView(ll);
-				ll.setLayoutParams(lp);
+				tableRow.addView(lLayout);
+				lLayout.setLayoutParams(lp);
 
-				mLayouts.add(ll);
+				mLayouts.add(lLayout);
 			}
 			// Add the row to the table and apply the layout
-			mTableLayout.addView(tr);
-			tr.setLayoutParams(tp);
+			mTableLayout.addView(tableRow);
+			tableRow.setLayoutParams(tp);
 		}
 	}
 
@@ -334,62 +327,55 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 * @param The view(in this case, button) that was clicked
 	 */
 	@Override
-	public void onClick(View v) {
+	public void onClick(View view) {
 		if (mTableState.equals(TableState.move)) {
 			Intent pileView = new Intent(this, PileView.class);
 			pileView.putExtra("pileId", mMoveOp.getPile1());
-			pileView.putExtra("ipAddr", mGuiController.getMyIp());
-			mMoveOp.setPile2(v.getId());
+			// Tell the pileView which pile was clicked
+			mMoveOp.setPile2(view.getId());
 			mGuiController.sendOperation(mMoveOp);
-			mTableState = TableState.normal;
+			setTableState(TableState.normal);
 			startActivity(pileView);
-			mToast.cancel();
 			return;
+
 		} else if (mTableState.equals(TableState.moveAll)) {
-			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, v.getId(), null));
-			mToast.cancel();
-			mTableState = TableState.normal;
+			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, view.getId(), null));
+			setTableState(TableState.normal);
 			return;
+
 		} else if (mTableState.equals(TableState.deal)) {
-			mToast.cancel();
 			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 			if (currentPile.getSize() == 1) {
 				// Exit deal mode if there are no more cards in the pile after this move
-				mTableState = TableState.normal;
+				setTableState(TableState.normal);
 				mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
 				mToast.show();
-			} else if (!(currentPile.getOwner().equals("noOwner") || mGuiController.getMyIp().equals(currentPile.getOwner()))) {
+			} else if (!(currentPile.getOwner().equals("noOwner") || IpFinder.getMyIp().equals(currentPile.getOwner()))) {
 				// Exit deal mode if the pile dealing from has been protected by another user
-				mTableState = TableState.normal;
+				setTableState(TableState.normal);
 				mToast = Toast.makeText(this, "The pile dealing from is now protected!", Toast.LENGTH_SHORT);
 				mToast.show();
 				return;
 			}
-
-			mGuiController.sendOperation(new Operation(Op.move, mPileId, v.getId(), currentPile.getCard(0)));
+			mGuiController.sendOperation(new Operation(Op.move, mPileId, view.getId(), currentPile.getCard(0)));
 			return;
+
 		} else if (mTableState.equals(TableState.pileMove)) {
-			mGuiController.sendOperation(new Operation(Op.pileMove, mPileId, v.getId(), null));
-			mToast.cancel();
-			mTableState = TableState.normal;
+			mGuiController.sendOperation(new Operation(Op.pileMove, mPileId, view.getId(), null));
+			setTableState(TableState.normal);
 			return;
 		}
 
-		// Get which button has been pressed
-
-		mPileId = v.getId();
+		mPileId = view.getId();
 		Pile p = mGuiController.getGameState().getPiles().get(mPileId);
 
-		// Check if there is a pile on this position
 		if (p != null) {
 
 			// Checks whether the pile is protected by another user before
 			// allowing access to the pile view.
-
-			if ((p.getOwner().equals(mGuiController.getMyIp())) || (p.getOwner().equals("noOwner"))) {
+			if ((p.getOwner().equals(IpFinder.getMyIp())) || (p.getOwner().equals("noOwner"))) {
 				Intent pileView = new Intent(this, PileView.class);
 				pileView.putExtra("pileId", mPileId);
-				pileView.putExtra("ipAddr", mGuiController.getMyIp());
 				startActivity(pileView);
 			} else {
 				mToast = Toast.makeText(this, "This pile is protected by another user!", Toast.LENGTH_SHORT);
@@ -407,12 +393,31 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	}
 
 	/**
-	 * Sets the state of the tableView
+	 * Sets the state of the tableView, updates the text in the textbar
 	 * 
 	 * @param tableState The state to set
 	 */
 	public void setTableState(TableState tableState) {
 		mTableState = tableState;
+		TextView tableStateText = (TextView) findViewById(R.id.tableStateText);
+		String modeStr = "";
+		String pileName = mGuiController.getGameState().getPiles().get(mPileId).getName();
+		switch (mTableState) {
+		case deal:
+			modeStr = "Dealing from " + pileName;
+			break;
+		case move:
+			modeStr = "Moving from " + pileName;
+			break;
+		case moveAll:
+			modeStr = "Moving all from " + pileName;
+			break;
+		case pileMove:
+			modeStr = "Moving " + pileName;
+			break;
+		default:
+		}
+		tableStateText.setText(modeStr);
 	}
 
 	/**
@@ -445,26 +450,16 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// Abort the move and go back to the pileView
 			Intent i = new Intent(this, PileView.class);
 			i.putExtra("pileId", mPileId);
-			i.putExtra("ipAddr", mGuiController.getMyIp());
-			mTableState = TableState.normal;
-			mToast.cancel();
-			mToast = Toast.makeText(this, "Move Canceled", Toast.LENGTH_SHORT);
-			mToast.show();
+			setTableState(TableState.normal);
 			startActivity(i);
 			return;
 		} else if (mTableState.equals(TableState.moveAll)) {
 			// Abort move
-			mTableState = TableState.normal;
-			mToast.cancel();
-			mToast = Toast.makeText(this, "Move Canceled", Toast.LENGTH_SHORT);
-			mToast.show();
+			setTableState(TableState.normal);
 			return;
 		} else if (mTableState.equals(TableState.deal)) {
 			// Exit deal mode
-			mTableState = TableState.normal;
-			mToast.cancel();
-			mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
-			mToast.show();
+			setTableState(TableState.normal);
 			return;
 		}
 
@@ -484,7 +479,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			@Override
 			public void run() {
 				mIsBackPressedBefore = false;
-
 			}
 		}, 2000);
 	}
@@ -493,6 +487,11 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 * Updates the tableView to show the current state of all piles
 	 */
 	public void updateTableView() {
+		// Set the ip in the textbar
+		TextView ipText = (TextView) findViewById(R.id.myIpText);
+		String myIp = IpFinder.getMyIp() == null ? "" : IpFinder.getMyIp();
+		ipText.setText(myIp);
+
 		int i = 0;
 
 		for (Pile p : mGuiController.getGameState().getPiles()) {
