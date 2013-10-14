@@ -61,7 +61,6 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 	private int							mPileId;
 	private Card						mCard;
-	private String						mMyIpAddr;
 	private final HashSet<Card>			mPeekedCards	= new HashSet<Card>();
 	private Pile						mCurrentPile;
 
@@ -72,19 +71,8 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		mGuiController = GuiController.getInstance();
 
 		mPileId = getIntent().getExtras().getInt("pileId");
-		mMyIpAddr = getIntent().getExtras().getString("ipAddr");
 
 		mCurrentPile = mGuiController.getGameState().getPiles().get(mPileId);
-		TextView pileViewText = (TextView) findViewById(R.id.pileViewText);
-		String isProtected = "";
-		if (mCurrentPile.getOwner().equals("noOwner")) {
-		} else if (mCurrentPile.getOwner().equals(IpFinder.getMyIp())) {
-			isProtected = " - Protected by you";
-		} else {
-			isProtected = "protected";
-		}
-
-		pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + isProtected);
 
 		setupButtons();
 		mGuiController.setPileView(this);
@@ -162,15 +150,23 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	 */
 	public void setupButtons() {
 		mCurrentPile = mGuiController.getGameState().getPiles().get(mPileId);
-
 		LinearLayout layout = (LinearLayout) findViewById(R.id.pileLinear);
 		layout.removeAllViewsInLayout();
 		layout.invalidate();
 
-		if (mCurrentPile == null || (!mCurrentPile.getOwner().equals("noOwner") && !mMyIpAddr.equals(mCurrentPile.getOwner()))) {
-			// If the pile is deleted or protected, the user shouldn't see any cards
+		TextView pileViewText = (TextView) findViewById(R.id.pileViewText);
+		if (mCurrentPile == null) {
+			pileViewText.setText("No Pile");
+			return;
+		} else if (mCurrentPile.getOwner().equals("noOwner")) {
+			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName());
+		} else if (mCurrentPile.getOwner().equals(IpFinder.getMyIp())) {
+			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + " - Protected by you");
+		} else {
+			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + " - Protected by someone else");
 			return;
 		}
+
 		LinkedList<Card> cards = mCurrentPile.getCards();
 		for (int i = 0; i < mCurrentPile.getSize(); i++) {
 

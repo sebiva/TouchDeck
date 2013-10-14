@@ -112,6 +112,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 		case R.id.menu_item_restart:
 			mGuiController.sendOperation(new Operation(Op.restart));
+			setTableState(TableState.normal);
 			break;
 
 		default:
@@ -330,23 +331,19 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (mTableState.equals(TableState.move)) {
 			Intent pileView = new Intent(this, PileView.class);
 			pileView.putExtra("pileId", mMoveOp.getPile1());
-			pileView.putExtra("ipAddr", IpFinder.getMyIp());
 			// Tell the pileView which pile was clicked
 			mMoveOp.setPile2(view.getId());
 			mGuiController.sendOperation(mMoveOp);
 			setTableState(TableState.normal);
 			startActivity(pileView);
-			mToast.cancel();
 			return;
 
 		} else if (mTableState.equals(TableState.moveAll)) {
 			mGuiController.sendOperation(new Operation(Op.moveAll, mPileId, view.getId(), null));
-			mToast.cancel();
 			setTableState(TableState.normal);
 			return;
 
 		} else if (mTableState.equals(TableState.deal)) {
-			mToast.cancel();
 			Pile currentPile = mGuiController.getGameState().getPiles().get(mPileId);
 			if (currentPile.getSize() == 1) {
 				// Exit deal mode if there are no more cards in the pile after this move
@@ -365,7 +362,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 		} else if (mTableState.equals(TableState.pileMove)) {
 			mGuiController.sendOperation(new Operation(Op.pileMove, mPileId, view.getId(), null));
-			mToast.cancel();
 			setTableState(TableState.normal);
 			return;
 		}
@@ -380,7 +376,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			if ((p.getOwner().equals(IpFinder.getMyIp())) || (p.getOwner().equals("noOwner"))) {
 				Intent pileView = new Intent(this, PileView.class);
 				pileView.putExtra("pileId", mPileId);
-				pileView.putExtra("ipAddr", IpFinder.getMyIp());
 				startActivity(pileView);
 			} else {
 				mToast = Toast.makeText(this, "This pile is protected by another user!", Toast.LENGTH_SHORT);
@@ -455,7 +450,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// Abort the move and go back to the pileView
 			Intent i = new Intent(this, PileView.class);
 			i.putExtra("pileId", mPileId);
-			i.putExtra("ipAddr", IpFinder.getMyIp());
 			setTableState(TableState.normal);
 			startActivity(i);
 			return;
