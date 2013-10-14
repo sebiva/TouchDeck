@@ -32,6 +32,7 @@ import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.JoinGameDialog;
 import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,7 +45,6 @@ import android.view.View;
  * @author group17
  */
 public class StartScreen extends Activity implements Observer {
-	private final String	LOCAL_IP	= "127.0.0.1";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class StartScreen extends Activity implements Observer {
 		Intent launchGui = new Intent(this, TableView.class);
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
-		launchGui.putExtra("ipAddr", LOCAL_IP);
+		launchGui.putExtra("ipAddr", IpFinder.getMyIp());
 		startActivity(launchGui);
 	}
 

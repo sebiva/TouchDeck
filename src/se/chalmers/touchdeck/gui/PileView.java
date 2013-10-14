@@ -222,7 +222,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	}
 
 	/**
-	 * Called when one of the buttons is long clicked
+	 * Called when one of the buttons is longclicked
 	 */
 	@Override
 	public boolean onLongClick(View v) {
