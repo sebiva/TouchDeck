@@ -35,6 +35,7 @@ import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Pile;
 import se.chalmers.touchdeck.network.GameListener;
 import se.chalmers.touchdeck.network.GameToGuiConnection;
+import se.chalmers.touchdeck.network.IpFinder;
 import android.util.Log;
 
 /**
@@ -327,7 +328,7 @@ public class GameController {
 			Log.e("in GaC Disconnect", "GameToGui removed, ip : " + ipDeviceAddr);
 
 			mGameListener.end(op.getIpAddr());
-			if (ipDeviceAddr.equals("127.0.0.1")) {
+			if (ipDeviceAddr.equals(IpFinder.getMyIp())) {
 				Log.e("host", "Leaving");
 				mGameState.setHostStillLeft(false);
 				sendUpdatedState();
