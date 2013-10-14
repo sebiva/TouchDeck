@@ -33,6 +33,7 @@ import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
+import se.chalmers.touchdeck.gui.dialogs.DialogText.Context;
 import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.models.Pile;
 import se.chalmers.touchdeck.network.IpFinder;
@@ -251,7 +252,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 		case R.id.menu_item_rename:
 			String msg = "Please enter a new name for the pile: ";
-			PileNameDialog dialog = new PileNameDialog(this, item.getItemId(), msg, mGuiController.getGameState().getDefaultPileName(),
+			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg, mGuiController.getGameState().getDefaultPileName(),
 					DialogText.Context.renamePile);
 			dialog.show(this);
 
@@ -547,9 +548,16 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (obs instanceof DialogText) {
 			GameState gameState = mGuiController.getGameState();
 			DialogText dt = (DialogText) param;
-
 			// See if the name provided is unique
 			if (gameState.getPileNames().contains(dt.getString())) {
+
+				if (dt.getString().equals(gameState.getDefaultPileName())) {
+					// If the default name has already been taken, let the gameController handle it
+					Op operation = dt.getContext() == Context.namePile ? Op.create : Op.rename;
+
+					mGuiController.sendOperation(new Operation(operation, dt.getId(), gameState.getDefaultPileName()));
+					return;
+				}
 				// Prompt the user to try again
 				String msg = "Please enter a unique name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
@@ -562,18 +570,9 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 			} else {
 				// Go ahead with creating or renaming
-				switch (dt.getContext()) {
-				case namePile:
-					mGuiController.sendOperation(new Operation(Op.create, dt.getId(), dt.getString()));
-					updateTableView();
-					break;
+				Op operation = dt.getContext() == Context.namePile ? Op.create : Op.rename;
+				mGuiController.sendOperation(new Operation(operation, dt.getId(), dt.getString()));
 
-				case renamePile:
-					mGuiController.sendOperation(new Operation(Op.rename, mPileId, dt.getString()));
-					break;
-				default:
-					break;
-				}
 			}
 		}
 

@@ -90,6 +90,13 @@ public class GameState implements Serializable {
 	}
 
 	/**
+	 * @return The number of the default pile
+	 */
+	public int getDefaultPileNo() {
+		return mDefaultPileNo;
+	}
+
+	/**
 	 * @param b Indicates whether the host is still in the game
 	 */
 	public void setHostStillLeft(boolean b) {

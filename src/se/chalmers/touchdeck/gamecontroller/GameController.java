@@ -61,8 +61,6 @@ public class GameController {
 	private final LinkedList<Socket>					mAllGameToGuiSockets	= new LinkedList<Socket>();
 	private final GameListener							mGameListener;
 
-	private int											mDefaultPileNameNo		= 1;
-
 	/**
 	 * Creates a new gameController and sets up a deck.
 	 */
@@ -185,21 +183,28 @@ public class GameController {
 
 		case create:
 			int pilePos = op.getPile1();
-			String name = op.getName();
 			if (mTable.get(pilePos) != null) {
 				return; // There was already a pile there
 			}
-			if (mPileNames.contains(name)) {
-				return;
-			} else if (name.equals("Pile " + mDefaultPileNameNo)) {
-				mDefaultPileNameNo++;
-				mGameState.setDefaultPileNo(mDefaultPileNameNo);
+			String name = "";
+			if (mPileNames.contains(op.getName())) {
+				int defaultNo = mGameState.getDefaultPileNo();
+				do {
+					name = "Pile " + defaultNo;
+					defaultNo++;
+				} while (mGameState.getPileNames().contains(name));
+				mGameState.setDefaultPileNo(defaultNo);
+			} else if (op.getName().equals("Pile " + mGameState.getDefaultPileNo())) {
+				name = mGameState.getDefaultPileName();
+				mGameState.setDefaultPileNo(mGameState.getDefaultPileNo() + 1);
+			} else {
+				name = op.getName();
 			}
 
 			mTable.set(pilePos, new Pile(name));
 			mPileNames.add(name);
 			sendUpdatedState();
-			Log.d("handle GaC", "create");
+			Log.d("handle GaC", "create" + name);
 			break;
 
 		case connect:
@@ -233,15 +238,23 @@ public class GameController {
 				return;
 			}
 			String oldName = pileToRename.getName();
+			String newName = "";
 			if (mPileNames.contains(op.getName())) {
-				return;
-			} else if (op.getName().equals("Pile " + mDefaultPileNameNo)) {
-				mDefaultPileNameNo++;
-				mGameState.setDefaultPileNo(mDefaultPileNameNo);
+				int defaultNo = mGameState.getDefaultPileNo();
+				do {
+					newName = "Pile " + defaultNo;
+					defaultNo++;
+				} while (mGameState.getPileNames().contains(newName));
+				mGameState.setDefaultPileNo(defaultNo);
+			} else if (op.getName().equals("Pile " + mGameState.getDefaultPileNo())) {
+				newName = mGameState.getDefaultPileName();
+				mGameState.setDefaultPileNo(mGameState.getDefaultPileNo() + 1);
+			} else {
+				newName = op.getName();
 			}
 
-			pileToRename.setName(op.getName());
-			mPileNames.add(op.getName());
+			pileToRename.setName(newName);
+			mPileNames.add(newName);
 			mPileNames.remove(oldName);
 			sendUpdatedState();
 			break;
@@ -303,7 +316,6 @@ public class GameController {
 			}
 			mPileNames.clear();
 			createDeck();
-			mDefaultPileNameNo = 1;
 			mGameState.setDefaultPileNo(1);
 			sendUpdatedState();
 			break;
