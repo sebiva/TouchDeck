@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstr√∂m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -41,7 +41,7 @@ public class PileNameDialog extends Observable {
 	private final DialogText	mDialogText;
 	private final String		mMessage;
 	private final String		mDefaultName;
-	private DialogText.Context 	mContext = DialogText.Context.namePile;
+	private DialogText.Context	mContext	= DialogText.Context.namePile;
 
 	/**
 	 * Creates a new Dialog object
@@ -50,7 +50,7 @@ public class PileNameDialog extends Observable {
 	 * @param id The id of the button that was pressed
 	 * @param msg The message that will be shown to the user
 	 */
-	
+
 	public PileNameDialog(Observer o, int id, String msg, String defaultName, DialogText.Context context) {
 		mDialogText = new DialogText(o, id, context);
 		mContext = context;
@@ -68,17 +68,17 @@ public class PileNameDialog extends Observable {
 		// A text input for the user to enter the name in
 		mInput = new EditText(act);
 		AlertDialog.Builder alert = new AlertDialog.Builder(act);
-		switch(mContext){
-			case namePile:
-				alert.setTitle("Create pile");
-				break;
-			case renamePile:
-				alert.setTitle("Rename pile");
-				break;
-			default:
-				break;	
+		switch (mContext) {
+		case namePile:
+			alert.setTitle("Create pile");
+			break;
+		case renamePile:
+			alert.setTitle("Rename pile");
+			break;
+		default:
+			break;
 		}
-		
+
 		alert.setMessage(mMessage);
 
 		// Set an EditText view to get user input

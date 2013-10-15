@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -160,7 +160,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		if (mCurrentPile == null) {
 			pileViewText.setText("No Pile");
 			return;
-		} else if (mCurrentPile.getOwner().equals("noOwner")) {
+		} else if (mCurrentPile.getOwner().equals(Constant.PileHasNoOwner)) {
 			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName());
 		} else if (mCurrentPile.getOwner().equals(mMyGameIp)) {
 			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + " - Protected by you");

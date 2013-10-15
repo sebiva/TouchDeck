@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstr√∂m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -86,15 +86,15 @@ public class PileTest extends TestCase {
 		Card c5 = p.takeCard(0);
 		assertEquals(null, c5);
 	}
-	
+
 	/**
 	 * Test creating piles
 	 */
 	public void testSetName() {
-		Pile p1 = new Pile("name1"); 			//Set initial name.
+		Pile p1 = new Pile("name1"); // Set initial name.
 		assertEquals("name1", p1.getName());
-		
-		p1.setName("name2");					// Change name.
+
+		p1.setName("name2"); // Change name.
 		assertEquals("name2", p1.getName());
 	}
 }

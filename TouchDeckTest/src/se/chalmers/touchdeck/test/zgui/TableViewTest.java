@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -26,7 +26,6 @@ import se.chalmers.touchdeck.gui.StartScreen;
 import se.chalmers.touchdeck.gui.TableView;
 import se.chalmers.touchdeck.models.Constant;
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -75,9 +74,5 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<StartScreen>
 
 		String pilename2 = solo.getText(15).getText().toString();
 		assertEquals("[0]MyCoolP", pilename2);
-	}
-
-	private void clickBack(Solo solo) {
-		solo.sendKey(KeyEvent.KEYCODE_BACK);
 	}
 }

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -36,10 +36,10 @@ public class Pile implements Serializable {
 	/**
 	 * Serializable
 	 */
-	private static final long serialVersionUID = -3056217673776714467L;
-	private final LinkedList<Card> mCards = new LinkedList<Card>();
-	private String mName;
-	private String mOwner = "noOwner";
+	private static final long		serialVersionUID	= -3056217673776714467L;
+	private final LinkedList<Card>	mCards				= new LinkedList<Card>();
+	private String					mName;
+	private String					mOwner				= "noOwner";
 
 	/**
 	 * Constructor
@@ -55,8 +55,7 @@ public class Pile implements Serializable {
 	/**
 	 * Adds a card to the pile
 	 * 
-	 * @param card
-	 *            The card to add
+	 * @param card The card to add
 	 */
 	public void addCard(Card card) {
 		mCards.addFirst(card);
@@ -65,11 +64,9 @@ public class Pile implements Serializable {
 	/**
 	 * Takes one card from the pile
 	 * 
-	 * @param pos
-	 *            The position of the card
+	 * @param pos The position of the card
 	 * @return The card
-	 * @throws CardNotFoundException
-	 *             If there is no such card in the pile
+	 * @throws CardNotFoundException If there is no such card in the pile
 	 */
 	public Card takeCard(int pos) {
 		try {
@@ -109,12 +106,11 @@ public class Pile implements Serializable {
 
 	/**
 	 * Sets the name of pile
-	 * 
 	 */
 	public void setName(String name) {
 		mName = name;
 	}
-	
+
 	/**
 	 * Returns the card at a certain index
 	 * 
@@ -131,8 +127,7 @@ public class Pile implements Serializable {
 	}
 
 	/**
-	 * Randomly rearranges the order of cards in the pile, effectively shuffling
-	 * it
+	 * Randomly rearranges the order of cards in the pile, effectively shuffling it
 	 */
 	public void shuffle() {
 		for (int i = 0; i < 10; i++) {
@@ -148,8 +143,7 @@ public class Pile implements Serializable {
 	}
 
 	/**
-	 * @param Owner
-	 *            the Owner to set
+	 * @param Owner the Owner to set
 	 */
 	public void setOwner(String owner) {
 		this.mOwner = owner;

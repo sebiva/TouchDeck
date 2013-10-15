@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -32,7 +32,6 @@ import se.chalmers.touchdeck.gui.TableView;
 import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
 
 import com.jayway.android.robotium.solo.Condition;
 import com.jayway.android.robotium.solo.Solo;
@@ -40,8 +39,6 @@ import com.jayway.android.robotium.solo.Solo;
 public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScreen> {
 
 	private static final String	FLIP_CARD_OPTION	= "Flip card";
-	private static final String	MOVE_CARD_OPTION	= "Move card";
-	private static final String	DECK				= "deck";
 
 	private StartScreen			startScreen;
 	private TableView			tableView;
@@ -143,10 +140,6 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 		assertNotSame(firstImageCard2, startImageCard2);
 		assertNotSame(firstImage, firstImageCard2);
 
-	}
-
-	private void clickBack(Solo solo) {
-		solo.sendKey(KeyEvent.KEYCODE_BACK);
 	}
 
 	private void waitTime(int timeMilli) {

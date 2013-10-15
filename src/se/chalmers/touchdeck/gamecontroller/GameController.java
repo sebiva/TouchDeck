@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -134,7 +134,7 @@ public class GameController {
 		if (pilePosition != null) {
 			Pile p = mTable.get(pilePosition);
 			if (p != null) {
-				if (!p.getOwner().equals("noOwner") && !p.getOwner().equals(ipAddr)) {
+				if (!p.getOwner().equals(Constant.PileHasNoOwner) && !p.getOwner().equals(ipAddr)) {
 					return; // The user was not allowed to perform the operation
 				}
 			}
@@ -298,7 +298,7 @@ public class GameController {
 		case unprotect:
 			Pile protectedPile = mTable.get(op.getPile1());
 			if (protectedPile != null && protectedPile.getOwner().equals(op.getName())) {
-				protectedPile.setOwner("noOwner");
+				protectedPile.setOwner(Constant.PileHasNoOwner);
 				sendUpdatedState();
 			}
 			break;
@@ -346,7 +346,7 @@ public class GameController {
 			for (Pile p : mTable) {
 				if (p != null) {
 					if (p.getOwner().equals(ipDeviceAddr)) {
-						p.setOwner("noOwner");
+						p.setOwner(Constant.PileHasNoOwner);
 					}
 				} else {
 				}

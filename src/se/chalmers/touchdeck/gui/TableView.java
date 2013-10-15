@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -157,7 +157,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 			// Stops the context menu from inflating if the user should not have
 			// access to the pile.
-			if (currentPile.getSize() > 0 && (pileOwner.equals(mMyGameIp) || pileOwner.equals("noOwner"))) {
+			if (currentPile.getSize() > 0 && (pileOwner.equals(mMyGameIp) || pileOwner.equals(Constant.PileHasNoOwner))) {
 				inflater.inflate(R.menu.pile_menu, menu);
 
 				// Checks whether the pile is protected or not and sets which
@@ -167,7 +167,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				MenuItem protectPile = menu.findItem(R.id.menu_item_protect_pile);
 				MenuItem unprotectPile = menu.findItem(R.id.menu_item_unprotect_pile);
 
-				if (pileOwner.equals("noOwner")) {
+				if (pileOwner.equals(Constant.PileHasNoOwner)) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
 				} else if (pileOwner.equals(mMyGameIp)) {
@@ -178,7 +178,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 					protectPile.setVisible(false);
 				}
 
-			} else if (pileOwner.equals(mMyGameIp) || pileOwner.equals("noOwner")) {
+			} else if (pileOwner.equals(mMyGameIp) || pileOwner.equals(Constant.PileHasNoOwner)) {
 
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 
@@ -189,7 +189,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				MenuItem protectPile = menu.findItem(R.id.menu_item_protect_empty_pile);
 				MenuItem unprotectPile = menu.findItem(R.id.menu_item_unprotect_empty_pile);
 
-				if (pileOwner.equals("noOwner")) {
+				if (pileOwner.equals(Constant.PileHasNoOwner)) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
 				} else if (pileOwner.equals(mMyGameIp)) {
@@ -360,7 +360,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				setTableState(TableState.normal);
 				mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
 				mToast.show();
-			} else if (!(currentPile.getOwner().equals("noOwner") || mMyGameIp.equals(currentPile.getOwner()))) {
+			} else if (!(currentPile.getOwner().equals(Constant.PileHasNoOwner) || mMyGameIp.equals(currentPile.getOwner()))) {
 				// Exit deal mode if the pile dealing from has been protected by another user
 				setTableState(TableState.normal);
 				mToast = Toast.makeText(this, "The pile dealing from is now protected!", Toast.LENGTH_SHORT);
@@ -383,7 +383,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 			// Checks whether the pile is protected by another user before
 			// allowing access to the pile view.
-			if ((p.getOwner().equals(mMyGameIp)) || (p.getOwner().equals("noOwner"))) {
+			if ((p.getOwner().equals(mMyGameIp)) || (p.getOwner().equals(Constant.PileHasNoOwner))) {
 				Intent pileView = new Intent(this, PileView.class);
 				pileView.putExtra(Constant.IntentPileViewPileId, mPileId);
 				pileView.putExtra(Constant.IntentPileViewIp, mMyGameIp);
@@ -453,7 +453,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// mGuiController.terminate();
 			android.os.Process.killProcess(android.os.Process.myPid());
 		}
-		// TODO mTerminateMode = false
 	}
 
 	/**
@@ -533,7 +532,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 					// Sets the picture of the pile to the back of a card
 					// if the pile is protected by a user.
 
-					if (!p.getOwner().equals("noOwner")) {
+					if (!p.getOwner().equals(Constant.PileHasNoOwner)) {
 						int back = this.getResources().getIdentifier(getString(R.string.back_of_card), "drawable", this.getPackageName());
 						b.setBackgroundResource(back);
 					} else {
