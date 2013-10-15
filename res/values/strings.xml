@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TouchDeck</string>
-    <string name="main_deck_name">deck</string>
     <string name="action_settings">Settings</string>
     <string name="create_btn">Create Game</string>
     <string name="join_btn">Join Game</string>

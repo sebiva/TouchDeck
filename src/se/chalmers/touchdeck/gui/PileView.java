@@ -29,6 +29,7 @@ import se.chalmers.touchdeck.enums.TableState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
+import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
 import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
@@ -70,7 +71,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		setContentView(R.layout.pile_view);
 		mGuiController = GuiController.getInstance();
 
-		mPileId = getIntent().getExtras().getInt("pileId");
+		mPileId = getIntent().getExtras().getInt(Constant.IntentPileViewPileId);
 
 		mCurrentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
@@ -170,44 +171,44 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		LinkedList<Card> cards = mCurrentPile.getCards();
 		for (int i = 0; i < mCurrentPile.getSize(); i++) {
 
-			Button b = new Button(this);
-			LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
-			bp.setMargins(3, 0, 3, 0);
+			Button btn = new Button(this);
+			LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
+			btnParams.setMargins(Constant.PileViewCardMargin, 0, Constant.PileViewCardMargin, 0);
 
-			b.setId(i);
-			b.setTag("Card " + i);
+			btn.setId(i);
+			btn.setTag("Card " + i);
 
 			// Calculate the size of the button
 			Display display = getWindowManager().getDefaultDisplay();
 			Point size = new Point();
 			display.getSize(size);
 
-			int y = size.y / 2;
-			int x = (int) (y * 0.73);
+			int y = (int) (size.y / Constant.PileViewCardYFactor);
+			int x = (int) (y * Constant.PileViewCardXFactor);
 
 			Card card = cards.get(i);
 			// Sets the peek image if the card is peeked
 			if (mPeekedCards.contains(card)) {
 				int faceUpImage = getResources().getIdentifier(card.getFaceUpImageName(), "drawable", getPackageName());
 				Drawable peekedCard = getResources().getDrawable(faceUpImage);
-				peekedCard.setBounds(0, 0, (int) (x * 0.8), (int) (y * 0.8));
-				b.setCompoundDrawables(peekedCard, null, null, null);
+				peekedCard.setBounds(0, 0, (int) (x * Constant.PileViewPeekFactor), (int) (y * Constant.PileViewPeekFactor));
+				btn.setCompoundDrawables(peekedCard, null, null, null);
 
 			}
 
 			int image = getResources().getIdentifier(card.getImageName(), "drawable", getPackageName());
-			b.setBackgroundResource(image);
+			btn.setBackgroundResource(image);
 
-			b.setHeight(y);
-			b.setWidth(x);
+			btn.setHeight(y);
+			btn.setWidth(x);
 
-			layout.addView(b);
-			mButtons.add(b);
-			b.setOnClickListener(this);
-			b.setOnLongClickListener(this);
-			registerForContextMenu(b);
+			layout.addView(btn);
+			mButtons.add(btn);
+			btn.setOnClickListener(this);
+			btn.setOnLongClickListener(this);
+			registerForContextMenu(btn);
 
-			b.setLayoutParams(bp);
+			btn.setLayoutParams(btnParams);
 		}
 	}
 

@@ -28,13 +28,13 @@ import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.enums.TableState;
-import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.DialogText.Context;
 import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
+import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
 import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
@@ -63,32 +63,29 @@ import android.widget.Toast;
  */
 public class TableView extends Activity implements OnClickListener, Observer {
 
-	private static final int				MAX_PILE_NAME_LENGTH	= 20;
-	private static final int				MAX_PILE_NAME_DISPLAYED	= 7;
-	private static final int				PADDING					= 5;
 	private TableLayout						mTableLayout;
-	private final ArrayList<LinearLayout>	mLayouts				= new ArrayList<LinearLayout>();
+	private final ArrayList<LinearLayout>	mLayouts		= new ArrayList<LinearLayout>();
 	private GuiController					mGuiController;
 
 	private int								mPileId;
 	private boolean							mIsBackPressedBefore;
-	private TableState						mTableState				= TableState.normal;
+	private TableState						mTableState		= TableState.normal;
 	private Operation						mMoveOp;
 	private Toast							mToast;
 	private String							mHostIpAddr;
 	private String							mDisplayIp;
 	private String							mMyGameIp;
-	private boolean							mTerminateMode			= false;
-	private boolean							mIsHost					= false;
+	private boolean							mTerminateMode	= false;
+	private boolean							mIsHost			= false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.table_view);
 		setupButtons();
-		Serializable s = getIntent().getExtras().getSerializable("state");
-		mHostIpAddr = getIntent().getExtras().getString("ipAddr");
-		if (mHostIpAddr.equals("Host")) {
+		Serializable s = getIntent().getExtras().getSerializable(Constant.IntentTableViewState);
+		mHostIpAddr = getIntent().getExtras().getString(Constant.IntentTableViewIP);
+		if (mHostIpAddr.equals(Constant.IntentTableViewHost)) {
 			mIsHost = true;
 			mHostIpAddr = IpFinder.LOOP_BACK;
 			mDisplayIp = IpFinder.getMyIp();
@@ -280,17 +277,17 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public void setupButtons() {
 		mTableLayout = (TableLayout) findViewById(R.id.tableTable);
 		// Create a number of rows in the table
-		for (int i = 0; i < GameController.NUM_ROWS; i++) {
+		for (int i = 0; i < Constant.NumRows; i++) {
 			TableRow tableRow = new TableRow(this);
 			tableRow.setTag("row" + i);
 			// Create the layout parameters for the table row, all rows should
 			// be the same size
 			LayoutParams tp = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1.0f);
-			for (int j = 0; j < GameController.NUM_COLUMNS; j++) {
+			for (int j = 0; j < Constant.NumColumns; j++) {
 
 				LinearLayout lLayout = new LinearLayout(this);
 				lLayout.setOrientation(LinearLayout.VERTICAL);
-				lLayout.setPadding(PADDING, PADDING, PADDING, PADDING);
+				lLayout.setPadding(Constant.PileMargin, Constant.PileMargin, Constant.PileMargin, Constant.PileMargin);
 				LayoutParams lp = new TableRow.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
 
 				Button btn = new Button(this);
@@ -298,8 +295,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				// should be the same size
 				LayoutParams btnParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
 
-				btn.setId(GameController.NUM_COLUMNS * i + j);
-				btn.setTag("Pile " + (GameController.NUM_ROWS * i + j));
+				btn.setId(Constant.NumColumns * i + j);
+				btn.setTag("Pile " + (Constant.NumRows * i + j));
 
 				// Set this interface as the listener to the button
 				btn.setOnClickListener(this);
@@ -313,8 +310,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				registerForContextMenu(textView);
 				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
 
-				textView.setId(GameController.NUM_COLUMNS * i + j);
-				textView.setTag("Pile " + (GameController.NUM_ROWS * i + j));
+				textView.setId(Constant.NumColumns * i + j);
+				textView.setTag("Pile " + (Constant.NumRows * i + j));
 
 				lLayout.addView(btn);
 				btn.setLayoutParams(btnParams);
@@ -504,6 +501,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		// Set the ip in the textbar
 		TextView ipText = (TextView) findViewById(R.id.myIpText);
 		String myIp = mDisplayIp;
+		myIp = mIsHost ? "Host - " + myIp : "Client - " + myIp;
 		ipText.setText(myIp);
 
 		int i = 0;
@@ -520,8 +518,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			} else {
 
 				String name = p.getName();
-				if (name.length() > MAX_PILE_NAME_DISPLAYED) {
-					name = name.substring(0, MAX_PILE_NAME_DISPLAYED);
+				if (name.length() > Constant.MaxPileNameDisplayed) {
+					name = name.substring(0, Constant.MaxPileNameDisplayed);
 				}
 				tv.setText("[" + p.getSize() + "]" + name);
 
@@ -575,7 +573,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				String msg = "Please enter a unique name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());
 				dialog.show(this);
-			} else if (dt.getString().length() > MAX_PILE_NAME_LENGTH) {
+			} else if (dt.getString().length() > Constant.MaxPileNameLength) {
 				// Prompt the user to try again
 				String msg = "Please enter a shorter name: ";
 				PileNameDialog dialog = new PileNameDialog(this, dt.getId(), msg, gameState.getDefaultPileName(), dt.getContext());

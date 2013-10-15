@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import se.chalmers.touchdeck.enums.Rank;
 import se.chalmers.touchdeck.enums.Suit;
 import se.chalmers.touchdeck.models.Card;
+import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
 import se.chalmers.touchdeck.network.GameListener;
 import se.chalmers.touchdeck.network.GameToGuiConnection;
@@ -45,18 +46,11 @@ import android.util.Log;
  */
 public class GameController {
 
-	// Public constants
-	public static final int								NUM_ROWS				= 3;
-	public static final int								NUM_COLUMNS				= 8;
-	public static final int								MAX_NUMBER_OF_PILES		= NUM_ROWS * NUM_COLUMNS;
-	public static final int								MID_OF_TABLE			= MAX_NUMBER_OF_PILES / 2 - 1;
-	public static final String							MAIN_DECK_NAME			= "deck";
-
 	private final ArrayList<Pile>						mTable					= new ArrayList<Pile>();
 	private final HashSet<String>						mPileNames				= new HashSet<String>();
 
 	private final GameState								mGameState;
-	private final int									mPort					= 4243;
+	private final int									mGuiPort				= Constant.GuiControllerPort;
 	private final HashMap<String, GameToGuiConnection>	mGameToGuiThreads		= new HashMap<String, GameToGuiConnection>();
 	private final LinkedList<Socket>					mAllGameToGuiSockets	= new LinkedList<Socket>();
 	private final GameListener							mGameListener;
@@ -66,14 +60,14 @@ public class GameController {
 	 */
 	public GameController() {
 		// Fill the table empty positions.
-		for (int i = 0; i < MAX_NUMBER_OF_PILES; i++) {
+		for (int i = 0; i < Constant.NumOfPiles; i++) {
 			mTable.add(i, null);
 		}
 		createDeck();
 		mGameState = new GameState(mTable, mPileNames);
 
 		// Start the listener for incoming connections
-		mGameListener = new GameListener(this, 4242);
+		mGameListener = new GameListener(this, Constant.GameControllerPort);
 		new Thread(mGameListener).start();
 	}
 
@@ -117,15 +111,15 @@ public class GameController {
 	 * @return A pile containing the deck
 	 */
 	private Pile createDeck() {
-		Pile deck = new Pile(MAIN_DECK_NAME);
-		mPileNames.add(MAIN_DECK_NAME);
+		Pile deck = new Pile(Constant.MainDeckName);
+		mPileNames.add(Constant.MainDeckName);
 		for (Suit suit : Suit.values()) {
 			for (Rank rank : Rank.values()) {
 				deck.addCard(new Card(suit, rank));
 			}
 		}
 		// Put the deck at the middle of the table
-		mTable.set(MID_OF_TABLE, deck);
+		mTable.set(Constant.MidOfTable, deck);
 		return deck;
 	}
 
@@ -208,7 +202,7 @@ public class GameController {
 			break;
 
 		case connect:
-			GameToGuiConnection connection = new GameToGuiConnection(op.getIpAddr(), mPort, this);
+			GameToGuiConnection connection = new GameToGuiConnection(op.getIpAddr(), mGuiPort, this);
 			new Thread(connection).start();
 			mGameToGuiThreads.put(op.getIpAddr(), connection);
 			Log.d("handle GaC", "connected : " + op.getIpAddr());
@@ -311,7 +305,7 @@ public class GameController {
 
 		case restart:
 			mTable.clear();
-			for (int i = 0; i < MAX_NUMBER_OF_PILES; i++) {
+			for (int i = 0; i < Constant.NumOfPiles; i++) {
 				mTable.add(i, null);
 			}
 			mPileNames.clear();

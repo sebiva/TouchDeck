@@ -31,6 +31,7 @@ import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.JoinGameDialog;
+import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
 import android.app.Activity;
 import android.content.Intent;
@@ -60,8 +61,8 @@ public class StartScreen extends Activity implements Observer {
 	public void createGame(View v) {
 		Intent launchGui = new Intent(this, TableView.class);
 		GameController gc = new GameController();
-		launchGui.putExtra("state", gc.getGameState());
-		launchGui.putExtra("ipAddr", "Host");
+		launchGui.putExtra(Constant.IntentTableViewState, gc.getGameState());
+		launchGui.putExtra(Constant.IntentTableViewIP, Constant.IntentTableViewHost);
 		startActivity(launchGui);
 	}
 
@@ -105,13 +106,12 @@ public class StartScreen extends Activity implements Observer {
 			} else {
 				Intent launchGui = new Intent(this, TableView.class);
 				ArrayList<Pile> emptyPiles = new ArrayList<Pile>();
-				int numButtons = getResources().getInteger(R.integer.table_Col_Count)
-						* getResources().getInteger(R.integer.table_RowC_ount);
+				int numButtons = Constant.NumOfPiles;
 				for (int i = 0; i < numButtons; i++) {
 					emptyPiles.add(null);
 				}
-				launchGui.putExtra("state", new GameState(emptyPiles, new HashSet<String>()));
-				launchGui.putExtra("ipAddr", dt.getString());
+				launchGui.putExtra(Constant.IntentTableViewState, new GameState(emptyPiles, new HashSet<String>()));
+				launchGui.putExtra(Constant.IntentTableViewIP, dt.getString());
 				startActivity(launchGui);
 			}
 

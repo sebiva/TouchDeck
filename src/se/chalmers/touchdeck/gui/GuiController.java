@@ -31,6 +31,7 @@ import se.chalmers.touchdeck.enums.TableState;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
+import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.network.GuiToGameConnection;
 import se.chalmers.touchdeck.network.GuiUpdater;
 import android.content.Intent;
@@ -50,7 +51,7 @@ public class GuiController implements Observer {
 
 	private static GuiController	sInstance			= null;
 
-	private final int				mPort				= 4242;
+	private final int				mGamePort			= Constant.GameControllerPort;
 	private String					mHostIpAddr;
 	private String					mMyIpAddr;
 	private GuiUpdater				mGuiUpdater;
@@ -88,9 +89,9 @@ public class GuiController implements Observer {
 	public void setupConnections(String hostIpAddr, String myGameIpAddr) {
 		mHostIpAddr = hostIpAddr;
 		mMyIpAddr = myGameIpAddr;
-		mGuiUpdater = new GuiUpdater(this, 4243);
+		mGuiUpdater = new GuiUpdater(this, Constant.GuiControllerPort);
 		new Thread(mGuiUpdater).start();
-		mGuiToGameConnection = new GuiToGameConnection(mHostIpAddr, mPort, this);
+		mGuiToGameConnection = new GuiToGameConnection(mHostIpAddr, mGamePort, this);
 		new Thread(mGuiToGameConnection).start();
 	}
 
