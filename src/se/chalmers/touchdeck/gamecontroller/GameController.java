@@ -317,7 +317,9 @@ public class GameController {
 			mPileNames.clear();
 			createDeck();
 			mGameState.setDefaultPileNo(1);
+			mGameState.setIsRestarted(true);
 			sendUpdatedState();
+			mGameState.setIsRestarted(false);
 			break;
 
 		case pileMove:

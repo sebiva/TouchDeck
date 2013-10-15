@@ -138,6 +138,7 @@ public class GuiController implements Observer {
 				mTableView.startActivity(i);
 				return;
 			}
+
 			setGameState(gs);
 
 			Log.d("network GuC", "New state Received");
@@ -146,6 +147,9 @@ public class GuiController implements Observer {
 				@Override
 				public void run() {
 					mTableView.updateTableView();
+					if (mGameState.getIsRestarted()) {
+						mTableView.setTableState(TableState.normal);
+					}
 					if (mPileView != null) {
 						mPileView.setupButtons();
 					}

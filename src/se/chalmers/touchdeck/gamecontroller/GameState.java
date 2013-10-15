@@ -42,6 +42,7 @@ public class GameState implements Serializable {
 	private HashSet<String>		mPileNames			= new HashSet<String>();
 	private int					mDefaultPileNo		= 1;
 	private boolean				mHostStillLeft		= true;
+	private boolean				mIsRestarted		= false;
 
 	/**
 	 * Holds the state for the game
@@ -108,5 +109,19 @@ public class GameState implements Serializable {
 	 */
 	public boolean getHostStillLeft() {
 		return mHostStillLeft;
+	}
+
+	/**
+	 * @return the mIsRestarted
+	 */
+	public boolean getIsRestarted() {
+		return mIsRestarted;
+	}
+
+	/**
+	 * @param mIsRestarted the mIsRestarted to set
+	 */
+	public void setIsRestarted(boolean isRestarted) {
+		mIsRestarted = isRestarted;
 	}
 }

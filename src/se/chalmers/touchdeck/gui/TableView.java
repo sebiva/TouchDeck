@@ -125,7 +125,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 		case R.id.menu_item_restart:
 			mGuiController.sendOperation(new Operation(Op.restart));
-			setTableState(TableState.normal);
 			break;
 
 		default:
