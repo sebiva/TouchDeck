@@ -47,10 +47,10 @@ public abstract class ConnectionInterface implements Runnable {
 		try {
 			InetAddress serverAddr = InetAddress.getByName(mIpAddr);
 			mSocket = new Socket(serverAddr, mPort);
-			Log.d("ConInt", "Client socket setup at " + mIpAddr + ":" + mPort);
+			Log.d("ConInt " + mPort, "Client socket setup at " + mIpAddr + ":" + mPort);
 			send(mSocket);
 		} catch (IOException e1) {
-			Log.e("ConInt", "Error setting up client" + e1.getMessage() + mIpAddr);
+			Log.e("ConInt " + mPort, "Error setting up client" + e1.getMessage() + mIpAddr);
 		}
 	}
 
@@ -61,8 +61,11 @@ public abstract class ConnectionInterface implements Runnable {
 	public void end() {
 		try {
 			remove(mSocket);
-			mSocket.close();
+			if (mSocket != null) {
+				mSocket.close();
+			}
 		} catch (IOException e) {
+			Log.e("ConInt " + mPort, "Error closing socket");
 			e.printStackTrace();
 		}
 	}

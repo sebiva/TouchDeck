@@ -32,7 +32,6 @@ import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gui.dialogs.DialogText;
 import se.chalmers.touchdeck.gui.dialogs.JoinGameDialog;
 import se.chalmers.touchdeck.models.Pile;
-import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -62,7 +61,7 @@ public class StartScreen extends Activity implements Observer {
 		Intent launchGui = new Intent(this, TableView.class);
 		GameController gc = new GameController();
 		launchGui.putExtra("state", gc.getGameState());
-		launchGui.putExtra("ipAddr", IpFinder.getMyIp());
+		launchGui.putExtra("ipAddr", "Host");
 		startActivity(launchGui);
 	}
 

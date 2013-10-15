@@ -59,12 +59,16 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 				Socket clientSocket = mServerSocket.accept();
 				ConnectionHandler handler = new ConnectionHandler(clientSocket);
 				String ipAddr = clientSocket.getInetAddress().toString().substring(1); // Remove a "/"
-				Log.d("in Listener" + mPort, "IP : " + ipAddr);
+				Log.d("in Listener " + mPort, "IP : " + ipAddr);
 				mHandlers.put(ipAddr, handler);
 				new Thread(handler).start();
-				Log.d("ListenerInt" + mPort, "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
+				Log.d("ListenerInt " + mPort, "New connection handler started: " + clientSocket.getInetAddress().getHostAddress());
 			} catch (IOException e) {
-				Log.e("ListenerInt" + mPort, "Could not create client socket");
+				if (mServerSocket.isClosed()) {
+					Log.e("ListenerInt " + mPort, "Server socket closed!");
+				} else {
+					Log.e("ListenerInt " + mPort, "Could not create client socket");
+				}
 				return;
 			}
 		} while (mLoopForever);
@@ -76,7 +80,12 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 		ConnectionHandler c = mHandlers.get(ipAddr);
 		mHandlers.remove(ipAddr);
 		if (c == null) {
-			Log.e("Listener" + mPort, "connection null, closing server");
+			try {
+				mServerSocket.close();
+			} catch (IOException e) {
+				Log.e("ListenerInt " + mPort, "Error closing server socket");
+			}
+			Log.d("ListenerInt " + mPort, "connection null, closing server");
 			return;
 		}
 		try {
@@ -104,23 +113,21 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 			clientSocket = s;
 		}
 
-		// TODO Error handling
 		@Override
 		public void run() {
 			// Keep reading the input
 			while (!isStopped) {
-				Log.d("ListenerInt" + mPort, "In loop");
+				Log.d("ListenerInt " + mPort, "In handling loop");
 				ObjectInputStream ois = null;
 				try {
 					if (clientSocket == null) {
 						return;
 					}
 					ois = (new ObjectInputStream(clientSocket.getInputStream()));
-					Log.d("ListenerInt" + mPort, "InputStream created");
+					Log.d("ListenerInt " + mPort, "InputStream created");
 				} catch (IOException e) {
-					Log.e("ListenerInt" + mPort, "Exiting ConnectionHandler");
-					e.printStackTrace();
-					return; // break;
+					Log.e("ListenerInt " + mPort, "Exiting ConnectionHandler");
+					return;
 				}
 				Serializable op;
 				try {
@@ -129,13 +136,11 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 					String ipAddr = clientSocket.getRemoteSocketAddress().toString();
 					ipAddr = ipAddr.substring(1, ipAddr.indexOf(":"));
 					handle(op, ipAddr);
-					Log.d("ListenerInt" + mPort, "Operation completed, ip : " + ipAddr + ", op : " + op.toString());
+					Log.d("ListenerInt " + mPort, "Operation completed, ip : " + ipAddr + ", op : " + op.toString());
 				} catch (IOException e) {
-					Log.e("ListenerInt" + mPort, "Reading went wrong, IO");
-					e.printStackTrace();
+					Log.e("ListenerInt " + mPort, "Reading went wrong, IO");
 				} catch (ClassNotFoundException e) {
-					Log.e("ListenerInt" + mPort, "Reading went wrong, ClassNotFound");
-					e.printStackTrace();
+					Log.e("ListenerInt " + mPort, "Reading went wrong, ClassNotFound");
 				}
 			}
 		}

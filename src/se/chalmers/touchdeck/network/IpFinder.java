@@ -35,6 +35,7 @@ import android.util.Log;
  */
 public class IpFinder {
 	private static String		mIpAddr				= null;
+	public static String		LOOP_BACK			= "127.0.0.1";
 	private static final int	MAX_LENGTH_OF_IP	= 15;
 
 	/**
@@ -66,7 +67,7 @@ public class IpFinder {
 		}
 		// If no other address found, use the loopback address
 		if (mIpAddr == null) {
-			mIpAddr = "127.0.0.1";
+			mIpAddr = LOOP_BACK;
 		}
 		return mIpAddr;
 	}

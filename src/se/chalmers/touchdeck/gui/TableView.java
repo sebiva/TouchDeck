@@ -76,7 +76,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	private Operation						mMoveOp;
 	private Toast							mToast;
 	private String							mHostIpAddr;
+	private String							mDisplayIp;
+	private String							mMyGameIp;
 	private boolean							mTerminateMode			= false;
+	private boolean							mIsHost					= false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +88,19 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		setupButtons();
 		Serializable s = getIntent().getExtras().getSerializable("state");
 		mHostIpAddr = getIntent().getExtras().getString("ipAddr");
+		if (mHostIpAddr.equals("Host")) {
+			mIsHost = true;
+			mHostIpAddr = IpFinder.LOOP_BACK;
+			mDisplayIp = IpFinder.getMyIp();
+			mMyGameIp = IpFinder.LOOP_BACK;
+		} else {
+			mDisplayIp = IpFinder.getMyIp();
+			mMyGameIp = IpFinder.getMyIp();
+		}
 		GameState gs = (GameState) s;
 
 		mGuiController = GuiController.getInstance();
-		mGuiController.setupConnections(mHostIpAddr);
+		mGuiController.setupConnections(mHostIpAddr, mMyGameIp);
 		mGuiController.setGameState(gs);
 		mGuiController.setTableView(this);
 	}
@@ -149,7 +161,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 			// Stops the context menu from inflating if the user should not have
 			// access to the pile.
-			if (currentPile.getSize() > 0 && (pileOwner.equals(IpFinder.getMyIp()) || pileOwner.equals("noOwner"))) {
+			if (currentPile.getSize() > 0 && (pileOwner.equals(mMyGameIp) || pileOwner.equals("noOwner"))) {
 				inflater.inflate(R.menu.pile_menu, menu);
 
 				// Checks whether the pile is protected or not and sets which
@@ -162,7 +174,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
-				} else if (pileOwner.equals(IpFinder.getMyIp())) {
+				} else if (pileOwner.equals(mMyGameIp)) {
 					unprotectPile.setVisible(true);
 					protectPile.setVisible(false);
 				} else {
@@ -170,7 +182,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 					protectPile.setVisible(false);
 				}
 
-			} else if (pileOwner.equals(IpFinder.getMyIp()) || pileOwner.equals("noOwner")) {
+			} else if (pileOwner.equals(mMyGameIp) || pileOwner.equals("noOwner")) {
 
 				inflater.inflate(R.menu.empty_pile_menu, menu);
 
@@ -184,7 +196,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				if (pileOwner.equals("noOwner")) {
 					protectPile.setVisible(true);
 					unprotectPile.setVisible(false);
-				} else if (pileOwner.equals(IpFinder.getMyIp())) {
+				} else if (pileOwner.equals(mMyGameIp)) {
 					unprotectPile.setVisible(true);
 					protectPile.setVisible(false);
 				} else {
@@ -223,22 +235,22 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			setTableState(TableState.moveAll);
 			break;
 		case R.id.menu_item_protect_pile:
-			mGuiController.sendOperation(new Operation(Op.protect, mPileId, IpFinder.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.protect, mPileId, mMyGameIp));
 			mToast = Toast.makeText(this, pileName + " protected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_protect_empty_pile:
-			mGuiController.sendOperation(new Operation(Op.protect, mPileId, IpFinder.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.protect, mPileId, mMyGameIp));
 			mToast = Toast.makeText(this, pileName + " protected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_unprotect_pile:
-			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, IpFinder.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, mMyGameIp));
 			mToast = Toast.makeText(this, pileName + " unprotected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
 		case R.id.menu_item_unprotect_empty_pile:
-			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, IpFinder.getMyIp()));
+			mGuiController.sendOperation(new Operation(Op.unprotect, mPileId, mMyGameIp));
 			mToast = Toast.makeText(this, pileName + " unprotected!", Toast.LENGTH_SHORT);
 			mToast.show();
 			break;
@@ -351,7 +363,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				setTableState(TableState.normal);
 				mToast = Toast.makeText(this, "Exited deal mode", Toast.LENGTH_SHORT);
 				mToast.show();
-			} else if (!(currentPile.getOwner().equals("noOwner") || IpFinder.getMyIp().equals(currentPile.getOwner()))) {
+			} else if (!(currentPile.getOwner().equals("noOwner") || mMyGameIp.equals(currentPile.getOwner()))) {
 				// Exit deal mode if the pile dealing from has been protected by another user
 				setTableState(TableState.normal);
 				mToast = Toast.makeText(this, "The pile dealing from is now protected!", Toast.LENGTH_SHORT);
@@ -374,7 +386,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 			// Checks whether the pile is protected by another user before
 			// allowing access to the pile view.
-			if ((p.getOwner().equals(IpFinder.getMyIp())) || (p.getOwner().equals("noOwner"))) {
+			if ((p.getOwner().equals(mMyGameIp)) || (p.getOwner().equals("noOwner"))) {
 				Intent pileView = new Intent(this, PileView.class);
 				pileView.putExtra("pileId", mPileId);
 				startActivity(pileView);
@@ -492,7 +504,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public void updateTableView() {
 		// Set the ip in the textbar
 		TextView ipText = (TextView) findViewById(R.id.myIpText);
-		String myIp = IpFinder.getMyIp() == null ? "" : IpFinder.getMyIp();
+		String myIp = mDisplayIp;
 		ipText.setText(myIp);
 
 		int i = 0;

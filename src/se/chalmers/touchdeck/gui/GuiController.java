@@ -33,9 +33,9 @@ import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.network.GuiToGameConnection;
 import se.chalmers.touchdeck.network.GuiUpdater;
-import se.chalmers.touchdeck.network.IpFinder;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Controls the gui of the game. Singleton class
@@ -48,15 +48,16 @@ public class GuiController implements Observer {
 	private TableView				mTableView;
 	private PileView				mPileView;
 
-	private static GuiController	sInstance	= null;
+	private static GuiController	sInstance			= null;
 
-	private final int				mPort		= 4242;
+	private final int				mPort				= 4242;
 	private String					mHostIpAddr;
-	private final String			mMyIpAddr	= IpFinder.getMyIp();
+	private String					mMyIpAddr;
 	private GuiUpdater				mGuiUpdater;
 	private Socket					mGuiToGameSocket;
 	private GuiToGameConnection		mGuiToGameConnection;
 	private boolean					mTerminating;
+	private boolean					mConnectedToGame	= false;
 
 	public static GuiController getInstance() {
 		if (sInstance == null) {
@@ -66,6 +67,7 @@ public class GuiController implements Observer {
 	}
 
 	private GuiController() {
+		Log.d("GuC", "Creating new GuiController");
 	}
 
 	/**
@@ -80,10 +82,12 @@ public class GuiController implements Observer {
 	/**
 	 * Sets up the connections for network play
 	 * 
-	 * @param ipAddr The ip address of the host.
+	 * @param hostIpAddr The ip address of the host.
+	 * @param myGameIpAddr The ip address of the client
 	 */
-	public void setupConnections(String ipAddr) {
-		this.mHostIpAddr = ipAddr;
+	public void setupConnections(String hostIpAddr, String myGameIpAddr) {
+		mHostIpAddr = hostIpAddr;
+		mMyIpAddr = myGameIpAddr;
 		mGuiUpdater = new GuiUpdater(this, 4243);
 		new Thread(mGuiUpdater).start();
 		mGuiToGameConnection = new GuiToGameConnection(mHostIpAddr, mPort, this);
@@ -96,6 +100,10 @@ public class GuiController implements Observer {
 	 * @param op The operation that has been made
 	 */
 	public void sendOperation(Operation op) {
+		if (!mConnectedToGame && !op.getOp().equals(Op.connect)) {
+			Toast.makeText(mTableView, "Not connected!", Toast.LENGTH_SHORT).show();
+			return;
+		}
 		ObjectOutputStream out = null;
 		op.setIpAddr(mMyIpAddr);
 		try {
@@ -117,7 +125,8 @@ public class GuiController implements Observer {
 	@Override
 	public void update(Observable obs, Object param) {
 		if (obs instanceof GuiUpdater) {
-			Log.d("network GuC", "in observer - update");
+			mConnectedToGame = true;
+			Log.d("network GuC", "in observer - update, connected : " + mConnectedToGame);
 			// Update the state of the game
 			GameState gs = (GameState) param;
 			// If the host has left, close the session
@@ -198,25 +207,27 @@ public class GuiController implements Observer {
 	 * Terminates the session
 	 */
 	public void terminate() {
+
 		Log.d("in GuC terminate", "ip : " + mMyIpAddr);
 		if (mGuiUpdater != null) {
 			mGuiUpdater.end(mMyIpAddr);
 			mGuiUpdater = null;
+			Log.d("in GuC terminate", "GuiUpdater ended");
 		}
-		Log.d("in GuC terminate", "GuiUpdater ended");
-		if (!mTerminating) {
+		if (!mTerminating && mConnectedToGame) {
+			// If it was the user itself initiating the termination, tell the host
 			Operation op = new Operation(Op.disconnect);
 			op.setIpAddr(mMyIpAddr);
 			sendOperation(op);
 			Log.d("in GuC terminate", "Disconnect sent");
 		}
-
-		mGuiToGameConnection.end();
-		mGuiToGameConnection = null;
-		Log.d("in GuC terminate", "GuiToGame Ended");
+		if (mGuiToGameConnection != null) {
+			mGuiToGameConnection.end();
+			mGuiToGameConnection = null;
+			Log.d("in GuC terminate", "GuiToGame Ended");
+		}
 
 		sInstance = null;
-
 	}
 
 	/**
