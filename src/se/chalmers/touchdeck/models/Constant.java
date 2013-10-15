@@ -30,6 +30,7 @@ public class Constant {
 
 	public static final String	MainDeckName			= "deck";
 	public static final String	IntentPileViewPileId	= "pileId";
+	public static final String	IntentPileViewIp		= "pileViewIp";
 	public static final String	IntentTableViewState	= "state";
 	public static final String	IntentTableViewIP		= "ipAddr";
 	public static final String	IntentTableViewHost		= "host";

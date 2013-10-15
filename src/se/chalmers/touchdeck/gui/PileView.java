@@ -31,7 +31,6 @@ import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
 import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
-import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
@@ -64,6 +63,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 	private Card						mCard;
 	private final HashSet<Card>			mPeekedCards	= new HashSet<Card>();
 	private Pile						mCurrentPile;
+	private String						mMyGameIp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		mGuiController = GuiController.getInstance();
 
 		mPileId = getIntent().getExtras().getInt(Constant.IntentPileViewPileId);
-
+		mMyGameIp = getIntent().getExtras().getString(Constant.IntentPileViewIp);
 		mCurrentPile = mGuiController.getGameState().getPiles().get(mPileId);
 
 		setupButtons();
@@ -161,7 +161,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			return;
 		} else if (mCurrentPile.getOwner().equals("noOwner")) {
 			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName());
-		} else if (mCurrentPile.getOwner().equals(IpFinder.getMyIp())) {
+		} else if (mCurrentPile.getOwner().equals(mMyGameIp)) {
 			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + " - Protected by you");
 		} else {
 			pileViewText.setText("[" + mCurrentPile.getSize() + "] " + mCurrentPile.getName() + " - Protected by someone else");

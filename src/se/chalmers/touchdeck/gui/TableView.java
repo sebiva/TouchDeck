@@ -339,7 +339,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public void onClick(View view) {
 		if (mTableState.equals(TableState.move)) {
 			Intent pileView = new Intent(this, PileView.class);
-			pileView.putExtra("pileId", mMoveOp.getPile1());
+			pileView.putExtra(Constant.IntentPileViewPileId, mMoveOp.getPile1());
+			pileView.putExtra(Constant.IntentPileViewIp, mMyGameIp);
 			// Tell the pileView which pile was clicked
 			mMoveOp.setPile2(view.getId());
 			mGuiController.sendOperation(mMoveOp);
@@ -384,7 +385,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			// allowing access to the pile view.
 			if ((p.getOwner().equals(mMyGameIp)) || (p.getOwner().equals("noOwner"))) {
 				Intent pileView = new Intent(this, PileView.class);
-				pileView.putExtra("pileId", mPileId);
+				pileView.putExtra(Constant.IntentPileViewPileId, mPileId);
+				pileView.putExtra(Constant.IntentPileViewIp, mMyGameIp);
 				startActivity(pileView);
 			} else {
 				mToast = Toast.makeText(this, "This pile is protected by another user!", Toast.LENGTH_SHORT);
@@ -410,19 +412,22 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		mTableState = tableState;
 		TextView tableStateText = (TextView) findViewById(R.id.tableStateText);
 		String modeStr = "";
-		String pileName = mGuiController.getGameState().getPiles().get(mPileId).getName();
 		switch (mTableState) {
 		case deal:
-			modeStr = "Dealing from " + pileName;
+			modeStr = "Dealing from " + mGuiController.getGameState().getPiles().get(mPileId).getName();
+			;
 			break;
 		case move:
-			modeStr = "Moving from " + pileName;
+			modeStr = "Moving from " + mGuiController.getGameState().getPiles().get(mPileId).getName();
+			;
 			break;
 		case moveAll:
-			modeStr = "Moving all from " + pileName;
+			modeStr = "Moving all from " + mGuiController.getGameState().getPiles().get(mPileId).getName();
+			;
 			break;
 		case pileMove:
-			modeStr = "Moving " + pileName;
+			modeStr = "Moving " + mGuiController.getGameState().getPiles().get(mPileId).getName();
+			;
 			break;
 		default:
 		}
@@ -459,7 +464,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		if (mTableState.equals(TableState.move)) {
 			// Abort the move and go back to the pileView
 			Intent i = new Intent(this, PileView.class);
-			i.putExtra("pileId", mPileId);
+			i.putExtra(Constant.IntentPileViewPileId, mPileId);
+			i.putExtra(Constant.IntentPileViewIp, mMyGameIp);
 			setTableState(TableState.normal);
 			startActivity(i);
 			return;
