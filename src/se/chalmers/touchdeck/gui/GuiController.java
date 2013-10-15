@@ -198,22 +198,22 @@ public class GuiController implements Observer {
 	 * Terminates the session
 	 */
 	public void terminate() {
-		Log.e("in GuC terminate", "ip : " + mMyIpAddr);
+		Log.d("in GuC terminate", "ip : " + mMyIpAddr);
 		if (mGuiUpdater != null) {
 			mGuiUpdater.end(mMyIpAddr);
 			mGuiUpdater = null;
 		}
-		Log.e("in GuC terminate", "GuiUpdater ended");
+		Log.d("in GuC terminate", "GuiUpdater ended");
 		if (!mTerminating) {
 			Operation op = new Operation(Op.disconnect);
 			op.setIpAddr(mMyIpAddr);
 			sendOperation(op);
-			Log.e("in GuC terminate", "Disconnect sent");
+			Log.d("in GuC terminate", "Disconnect sent");
 		}
 
 		mGuiToGameConnection.end();
 		mGuiToGameConnection = null;
-		Log.e("in GuC terminate", "GuiToGame Ended");
+		Log.d("in GuC terminate", "GuiToGame Ended");
 
 		sInstance = null;
 

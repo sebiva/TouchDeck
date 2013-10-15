@@ -437,9 +437,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	public void onDestroy() {
 		super.onDestroy();
 		if (!mTerminateMode) {
-			mGuiController.terminate();
+			// mGuiController.terminate();
 			android.os.Process.killProcess(android.os.Process.myPid());
 		}
+		// TODO mTerminateMode = false
 	}
 
 	/**
@@ -466,6 +467,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 		if (mIsBackPressedBefore) {
 			super.onBackPressed();
+			mGuiController.terminate();
 			finish();
 			return;
 		}

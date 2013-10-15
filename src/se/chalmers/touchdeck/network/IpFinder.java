@@ -34,7 +34,7 @@ import android.util.Log;
  * @author group17
  */
 public class IpFinder {
-
+	private static String		mIpAddr				= null;
 	private static final int	MAX_LENGTH_OF_IP	= 15;
 
 	/**
@@ -43,16 +43,19 @@ public class IpFinder {
 	 * @return The ip address
 	 */
 	public static String getMyIp() {
-		String ipAddress = null;
+		if (mIpAddr != null) {
+			return mIpAddr;
+		}
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
 				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
 					if (!inetAddress.isLoopbackAddress()) {
-						ipAddress = inetAddress.getHostAddress().toString();
-						if (ipAddress != null && ipAddress.length() > MAX_LENGTH_OF_IP) {
-							ipAddress = null;
+						mIpAddr = inetAddress.getHostAddress().toString();
+						// Filter out IPv6 addresses
+						if (mIpAddr != null && mIpAddr.length() > MAX_LENGTH_OF_IP) {
+							mIpAddr = null;
 						}
 					}
 				}
@@ -61,9 +64,10 @@ public class IpFinder {
 		} catch (SocketException se) {
 			Log.e("GuC", "Error getting ip address");
 		}
-		if (ipAddress == null) {
-			ipAddress = "127.0.0.1";
+		// If no other address found, use the loopback address
+		if (mIpAddr == null) {
+			mIpAddr = "127.0.0.1";
 		}
-		return ipAddress;
+		return mIpAddr;
 	}
 }
