@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -24,12 +24,12 @@ package se.chalmers.touchdeck.test.zgui;
 import java.util.ArrayList;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gui.GuiController;
 import se.chalmers.touchdeck.gui.PileView;
 import se.chalmers.touchdeck.gui.StartScreen;
 import se.chalmers.touchdeck.gui.TableView;
+import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
@@ -48,7 +48,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 	private Solo				solo;
 
 	private GuiController		gc;
-	private int					pilePos				= GameController.MID_OF_TABLE;
+	private int					pilePos				= Constant.MidOfTable;
 	private PileView			pileView;
 	private String				secondPileName;
 	private int					secondPilePos;
@@ -87,7 +87,7 @@ public class PileViewFlipTest extends ActivityInstrumentationTestCase2<StartScre
 		pileView = (PileView) solo.getCurrentActivity();
 
 		gc = GuiController.getInstance();
-		pilePos = tableView.getResources().getInteger(R.integer.initial_pile_id);
+		pilePos = Constant.MidOfTable;
 
 	}
 

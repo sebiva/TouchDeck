@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -28,6 +28,7 @@ import se.chalmers.touchdeck.gamecontroller.GameState;
 import se.chalmers.touchdeck.gamecontroller.Operation;
 import se.chalmers.touchdeck.gamecontroller.Operation.Op;
 import se.chalmers.touchdeck.models.Card;
+import se.chalmers.touchdeck.models.Constant;
 import se.chalmers.touchdeck.models.Pile;
 
 /**
@@ -38,7 +39,7 @@ import se.chalmers.touchdeck.models.Pile;
 public class GameControllerTest extends TestCase {
 	private static GameState		gs;
 	private final GameController	gc				= new GameController();
-	private static final int		MID_OF_TABLE	= GameController.MID_OF_TABLE;
+	private static final int		MID_OF_TABLE	= Constant.MidOfTable;
 
 	@Override
 	protected void setUp() throws Exception {

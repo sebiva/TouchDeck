@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -222,7 +223,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 		try {
 			openContextMenu(v);
 		} catch (NullPointerException e) {
-
+			Log.e("PileView", "Could not find View");
 		}
 	}
 

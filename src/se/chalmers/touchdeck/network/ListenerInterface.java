@@ -53,7 +53,7 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 			Log.e("ListenerInt" + mPort, "Server socket could not be set up on port " + mPort);
 			return;
 		}
-		// Accept all incomming requests to this socket and assign them a connection handler
+		// Accept all incoming requests to this socket and assign them a connection handler
 		do {
 			try {
 				Socket clientSocket = mServerSocket.accept();
@@ -76,31 +76,33 @@ public abstract class ListenerInterface extends Observable implements Runnable {
 
 	public void end(String ipAddr) {
 		Log.d("Listener" + mPort, ipAddr);
-		mLoopForever = false;
 		ConnectionHandler c = mHandlers.get(ipAddr);
 		mHandlers.remove(ipAddr);
 		if (c == null) {
 			try {
 				mServerSocket.close();
+				Log.d("ListenerInt " + mPort, "ConnectionHandler null for : " + ipAddr + " closing server socket");
 			} catch (IOException e) {
 				Log.e("ListenerInt " + mPort, "Error closing server socket");
 			}
-			Log.d("ListenerInt " + mPort, "connection null, closing server");
 			return;
 		}
 		try {
-			c.interrupt();
 			c.isStopped = true;
+			c.interrupt();
 			c.clientSocket.close();
+			Log.d("ListenerInt " + mPort, "Closed connection Handler: " + ipAddr);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e("ListenerInt " + mPort, "Error closing connection Handler: " + ipAddr);
 		}
-		if (mHandlers.size() == 0 || ipAddr.equals(IpFinder.getMyIp())) {
+		if (mHandlers.size() == 0 || ipAddr.equals(IpFinder.LOOP_BACK)) {
 			try {
-				Log.d("in Listener" + mPort, "All handlers killed");
+				mLoopForever = false;
+				Log.d("ListenerInt " + mPort, "All handlers killed");
 				mServerSocket.close();
+				Log.d("ListenerInt " + mPort, "Server Socket closed");
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.e("ListenerInt " + mPort, "Could not create server socket");
 			}
 		}
 	}

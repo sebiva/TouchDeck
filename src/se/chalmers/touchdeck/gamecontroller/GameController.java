@@ -327,22 +327,32 @@ public class GameController {
 			break;
 
 		case disconnect:
-			Log.e("in GaC Disconnect", "hello!");
-			String ipDeviceAddr = op.getIpAddr();
 
+			String ipDeviceAddr = op.getIpAddr();
+			Log.d("in GaC Disconnect", ipDeviceAddr);
 			GameToGuiConnection conn = mGameToGuiThreads.get(ipDeviceAddr);
 			conn.end();
 			mGameToGuiThreads.remove(op.getIpAddr());
-			Log.e("in GaC Disconnect", "GameToGui removed, ip : " + ipDeviceAddr);
+			Log.d("in GaC Disconnect", "GameToGui removed, ip : " + ipDeviceAddr);
 
 			mGameListener.end(op.getIpAddr());
-			if (ipDeviceAddr.equals(IpFinder.getMyIp())) {
-				Log.e("host", "Leaving");
+			if (ipDeviceAddr.equals(IpFinder.LOOP_BACK)) {
+				Log.d("GaC host", "Leaving");
 				mGameState.setHostStillLeft(false);
 				sendUpdatedState();
 				mAllGameToGuiSockets.clear();
 			}
-			Log.e("in GaC Disconnect", "GameListener ended");
+			// Remove ownership of piles for the user
+			for (Pile p : mTable) {
+				if (p != null) {
+					if (p.getOwner().equals(ipDeviceAddr)) {
+						p.setOwner("noOwner");
+					}
+				} else {
+				}
+			}
+			sendUpdatedState();
+			Log.d("in GaC Disconnect", "GameListener ended");
 			break;
 		default:
 		}

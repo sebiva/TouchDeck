@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstršm, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstrï¿½m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -22,9 +22,9 @@
 package se.chalmers.touchdeck.test.zgui;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gamecontroller.GameController;
 import se.chalmers.touchdeck.gui.StartScreen;
 import se.chalmers.touchdeck.gui.TableView;
+import se.chalmers.touchdeck.models.Constant;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
@@ -35,7 +35,7 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<StartScreen>
 	private TableView	tableView;
 	private StartScreen	startScreen;
 	private Solo		solo;
-	private final int	deckPos	= GameController.MID_OF_TABLE;
+	private final int	deckPos	= Constant.MidOfTable;
 
 	public TableViewTest() {
 		super(StartScreen.class);
