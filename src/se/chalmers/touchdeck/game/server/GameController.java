@@ -276,8 +276,8 @@ public class GameController {
 			Pile toPile = mTable.get(op.getPile2());
 			if (fromPile != null && toPile != null) {
 				int totalCards = fromPile.getSize();
-				for (int i = 0; i < totalCards; i++) {
-					Card card = fromPile.takeCard(0);
+				for (int i = totalCards; i > 0; i--) {
+					Card card = fromPile.takeCard(i - 1);
 					toPile.addCard(card);
 				}
 				sendUpdatedState();

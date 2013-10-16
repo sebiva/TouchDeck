@@ -94,11 +94,12 @@ public class PileNameDialog extends Observable {
 					mDialogText.setText(mDefaultName);
 					Log.d("joinDialog", "Name is (default) " + mDefaultName);
 				} else {
+					String str = mInput.getText().toString().replaceAll("\t", "");
+					str = str.replaceAll("\n", "");
 					// Set the name to the entered value
-					mDialogText.setText(mInput.getText().toString());
+					mDialogText.setText(str);
 					Log.d("joinDialog", "Name is " + mInput.getText().toString());
 				}
-
 			}
 		});
 		// What to do if the cancel-button is pressed
@@ -113,5 +114,4 @@ public class PileNameDialog extends Observable {
 		alert.show();
 
 	}
-
 }

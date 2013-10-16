@@ -41,6 +41,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -102,12 +103,15 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		mGuiController.setTableView(this);
 	}
 
+	public void optionsBtnClicked(View v) {
+		openOptionsMenu();
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.table_options_menu, menu);
 		return true;
-
 	}
 
 	@Override
@@ -209,7 +213,11 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		String pileName = mGuiController.getGameState().getPiles().get(mPileId).getName();
+		Pile pile = mGuiController.getGameState().getPiles().get(mPileId);
+		if (pile == null) {
+			return false;
+		}
+		String pileName = pile.getName();
 		switch (item.getItemId()) {
 		case R.id.menu_item_shuffle:
 			mGuiController.sendOperation(new Operation(Op.shuffle, mPileId));
@@ -308,7 +316,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				// Set the tableview as the listener to the text view
 				textView.setOnClickListener(this);
 				registerForContextMenu(textView);
-				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
+				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 1);
 
 				textView.setId(Constant.NumColumns * i + j);
 				textView.setTag("Pile " + (Constant.NumRows * i + j));
@@ -412,24 +420,33 @@ public class TableView extends Activity implements OnClickListener, Observer {
 		mTableState = tableState;
 		TextView tableStateText = (TextView) findViewById(R.id.tableStateText);
 		String modeStr = "";
+		LinearLayout textbar = (LinearLayout) findViewById(R.id.textbar);
+
+		Pile pile = mGuiController.getGameState().getPiles().get(mPileId);
+		String pileName = "";
+		if (pile != null) {
+			pileName = mGuiController.getGameState().getPiles().get(mPileId).getName();
+		}
 		switch (mTableState) {
 		case deal:
-			modeStr = "Dealing from " + mGuiController.getGameState().getPiles().get(mPileId).getName();
-			;
+			modeStr = "Dealing from " + pileName;
+			textbar.setBackgroundColor(Constant.TextbarAlertColor);
+			Log.e("oau", "aoeu");
 			break;
 		case move:
-			modeStr = "Moving from " + mGuiController.getGameState().getPiles().get(mPileId).getName();
-			;
+			modeStr = "Moving from " + pileName;
+			textbar.setBackgroundColor(Constant.TextbarAlertColor);
 			break;
 		case moveAll:
-			modeStr = "Moving all from " + mGuiController.getGameState().getPiles().get(mPileId).getName();
-			;
+			modeStr = "Moving all from " + pileName;
+			textbar.setBackgroundColor(Constant.TextbarAlertColor);
 			break;
 		case pileMove:
-			modeStr = "Moving " + mGuiController.getGameState().getPiles().get(mPileId).getName();
-			;
+			modeStr = "Moving " + pileName;
+			textbar.setBackgroundColor(Constant.TextbarAlertColor);
 			break;
 		default:
+			textbar.setBackgroundColor(Constant.TextbarNormalColor);
 		}
 		tableStateText.setText(modeStr);
 	}
@@ -474,6 +491,10 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			return;
 		} else if (mTableState.equals(TableState.deal)) {
 			// Exit deal mode
+			setTableState(TableState.normal);
+			return;
+		} else if (mTableState.equals(TableState.pileMove)) {
+			// Exit pile move mode
 			setTableState(TableState.normal);
 			return;
 		}
@@ -569,7 +590,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				if (dt.getString().equals(gameState.getDefaultPileName())) {
 					// If the default name has already been taken, let the gameController handle it
 					Op operation = dt.getContext() == Context.namePile ? Op.create : Op.rename;
-
 					mGuiController.sendOperation(new Operation(operation, dt.getId(), gameState.getDefaultPileName()));
 					return;
 				}
@@ -587,10 +607,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				// Go ahead with creating or renaming
 				Op operation = dt.getContext() == Context.namePile ? Op.create : Op.rename;
 				mGuiController.sendOperation(new Operation(operation, dt.getId(), dt.getString()));
-
 			}
 		}
-
 	}
 
 	/**

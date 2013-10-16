@@ -45,6 +45,8 @@ public class Constant {
 	public static final int		PileMargin				= 5;
 	public static final int		MaxPileNameDisplayed	= 7;
 	public static final int		PileNameTextSize		= 12;
+	public static final int		TextbarAlertColor		= 0xff303a7a;
+	public static final int		TextbarNormalColor		= 0xff000000;
 
 	/**
 	 * Strings
