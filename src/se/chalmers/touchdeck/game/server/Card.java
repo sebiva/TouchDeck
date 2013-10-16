@@ -23,6 +23,7 @@ package se.chalmers.touchdeck.game.server;
 
 import java.io.Serializable;
 
+import se.chalmers.touchdeck.misc.Constant;
 import se.chalmers.touchdeck.misc.enums.Face;
 import se.chalmers.touchdeck.misc.enums.Rank;
 import se.chalmers.touchdeck.misc.enums.Suit;
@@ -163,7 +164,7 @@ public class Card implements Serializable {
 	public String getImageName() {
 		// Setting the buttons picture based on the face up/down state of the card
 		if (!mFaceUp) {
-			return "b2fv";
+			return Constant.BackOfCardImage;
 		} else {
 			return mRank + "_of_" + mSuit;
 		}

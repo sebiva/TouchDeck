@@ -44,6 +44,7 @@ public class Constant {
 	public static final int		MaxPileNameLength		= 20;
 	public static final int		PileMargin				= 5;
 	public static final int		MaxPileNameDisplayed	= 7;
+	public static final int		PileNameTextSize		= 12;
 
 	/**
 	 * Strings
@@ -56,5 +57,8 @@ public class Constant {
 	public static final String	IntentTableViewIP		= "ipAddr";
 	public static final String	IntentTableViewHost		= "host";
 	public static final String	PileHasNoOwner			= "noOwner";
+	public static final String	BackOfCardImage			= "rb";
+	public static final String	ProtectedCardImage		= "bb";
+	public static final String	EmptyCardImage			= "empty";
 
 }

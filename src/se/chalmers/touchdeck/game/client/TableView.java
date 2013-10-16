@@ -28,12 +28,12 @@ import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.game.client.dialogs.DialogText;
-import se.chalmers.touchdeck.game.client.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.game.client.dialogs.DialogText.Context;
+import se.chalmers.touchdeck.game.client.dialogs.PileNameDialog;
 import se.chalmers.touchdeck.game.server.GameState;
 import se.chalmers.touchdeck.game.server.Operation;
-import se.chalmers.touchdeck.game.server.Pile;
 import se.chalmers.touchdeck.game.server.Operation.Op;
+import se.chalmers.touchdeck.game.server.Pile;
 import se.chalmers.touchdeck.misc.Constant;
 import se.chalmers.touchdeck.misc.enums.TableState;
 import se.chalmers.touchdeck.network.IpFinder;
@@ -303,7 +303,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				registerForContextMenu(btn);
 
 				TextView textView = new TextView(this);
-				textView.setTextSize(12);
+				textView.setTextSize(Constant.PileNameTextSize);
 
 				// Set the tableview as the listener to the text view
 				textView.setOnClickListener(this);
@@ -517,8 +517,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			TextView tv = (TextView) ll.getChildAt(1);
 
 			if (p == null) {
-				b.setBackgroundResource(0);
-				b.setBackgroundColor(0);
+				b.setBackgroundResource(getResources().getIdentifier(Constant.EmptyCardImage, "drawable", getPackageName()));
 				tv.setText("");
 			} else {
 
@@ -533,7 +532,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 					// if the pile is protected by a user.
 
 					if (!p.getOwner().equals(Constant.PileHasNoOwner)) {
-						int back = this.getResources().getIdentifier(getString(R.string.back_of_card), "drawable", this.getPackageName());
+						int back = getResources().getIdentifier(Constant.ProtectedCardImage, "drawable", getPackageName());
 						b.setBackgroundResource(back);
 					} else {
 
