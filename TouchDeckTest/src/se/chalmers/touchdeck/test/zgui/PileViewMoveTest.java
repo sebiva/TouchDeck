@@ -91,7 +91,7 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 
 	public void testMoveCard() {
 
-		Pile deck = gc.getGameState().getPiles().get(deckPos + 1);
+		Pile deck = gc.getGameState().getPiles().get(deckPos);
 		// Must be here for some reason
 		soloPile = new Solo(getInstrumentation(), pileView);
 
@@ -116,10 +116,10 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 
 		// Update
 		secondPile = gc.getGameState().getPiles().get(secondPilePos);
-		deck = gc.getGameState().getPiles().get(deckPos + 1);
+		deck = gc.getGameState().getPiles().get(deckPos);
 		Card secondCardToBeMoved = deck.getCard(2);
 
-		soloTable.clickOnButton(deckPos + 1);
+		soloTable.clickOnButton(deckPos);
 
 		// Flips the third card
 		soloTable.clickOnButton(2);

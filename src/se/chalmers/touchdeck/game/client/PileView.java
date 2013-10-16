@@ -136,8 +136,10 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 			break;
 
 		case R.id.menu_item_peek_all:
-			mPeekedCards.addAll(mCurrentPile.getCards());
-			setupButtons();
+			if (mCurrentPile != null) {
+				mPeekedCards.addAll(mCurrentPile.getCards());
+				setupButtons();
+			}
 			break;
 
 		case R.id.menu_item_unpeek_all:

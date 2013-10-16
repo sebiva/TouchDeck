@@ -26,6 +26,8 @@ import se.chalmers.touchdeck.game.client.StartScreen;
 import se.chalmers.touchdeck.game.client.TableView;
 import se.chalmers.touchdeck.misc.Constant;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
+import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -60,11 +62,15 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<StartScreen>
 	public void testCreatePile() {
 
 		// Click on an empty pile position
+
 		solo.clickOnButton(deckPos - 5);
 		solo.clickOnButton("OK");
-		// Click on the new created pile
-		String pilename = solo.getText(13).getText().toString();
 
+		for (TextView t : solo.getCurrentViews(TextView.class)) {
+			Log.e("oaeu", "slkaskes" + t.getText().toString());
+		}
+		// Click on the new created pile
+		String pilename = solo.getText(deckPos * 2 + 3 - 5 * 2 + 1).getText().toString();
 		assertEquals("[0]Pile 1", pilename);
 
 		// Click on a different empty pile position
@@ -72,7 +78,7 @@ public class TableViewTest extends ActivityInstrumentationTestCase2<StartScreen>
 		solo.enterText(0, "MyCoolPile");
 		solo.clickOnButton("OK");
 
-		String pilename2 = solo.getText(15).getText().toString();
+		String pilename2 = solo.getText(deckPos * 2 + 3 - 4 * 2 + 1).getText().toString();
 		assertEquals("[0]MyCoolP", pilename2);
 	}
 }

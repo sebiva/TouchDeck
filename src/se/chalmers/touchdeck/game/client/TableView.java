@@ -321,7 +321,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, Constant.TableTextWeight);
 
 				textView.setId(Constant.NumColumns * i + j);
-				textView.setTag("Pile " + (Constant.NumRows * i + j));
+				textView.setTag("Pile " + (Constant.NumColumns * i + j));
 
 				lLayout.addView(btn);
 				btn.setLayoutParams(btnParams);
