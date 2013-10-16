@@ -19,11 +19,9 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gamecontroller;
+package se.chalmers.touchdeck.game.server;
 
 import java.io.Serializable;
-
-import se.chalmers.touchdeck.models.Card;
 
 /**
  * Class representing the operations that can be made on cards and piles

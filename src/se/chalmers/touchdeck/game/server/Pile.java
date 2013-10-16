@@ -19,13 +19,13 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.models;
+package se.chalmers.touchdeck.game.server;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import se.chalmers.touchdeck.exceptions.CardNotFoundException;
+import se.chalmers.touchdeck.misc.exceptions.CardNotFoundException;
 
 /**
  * Class modeling a pile

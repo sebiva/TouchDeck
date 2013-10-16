@@ -19,7 +19,7 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gui;
+package se.chalmers.touchdeck.game.client;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,12 +27,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gamecontroller.GameController;
-import se.chalmers.touchdeck.gamecontroller.GameState;
-import se.chalmers.touchdeck.gui.dialogs.DialogText;
-import se.chalmers.touchdeck.gui.dialogs.JoinGameDialog;
-import se.chalmers.touchdeck.models.Constant;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.client.dialogs.DialogText;
+import se.chalmers.touchdeck.game.client.dialogs.JoinGameDialog;
+import se.chalmers.touchdeck.game.server.GameController;
+import se.chalmers.touchdeck.game.server.GameState;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.misc.Constant;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

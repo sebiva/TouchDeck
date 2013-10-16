@@ -19,7 +19,7 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gui.dialogs;
+package se.chalmers.touchdeck.game.client.dialogs;
 
 import java.util.Observable;
 import java.util.Observer;

@@ -19,7 +19,7 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gui;
+package se.chalmers.touchdeck.game.client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,15 +27,15 @@ import java.util.Observable;
 import java.util.Observer;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.enums.TableState;
-import se.chalmers.touchdeck.gamecontroller.GameState;
-import se.chalmers.touchdeck.gamecontroller.Operation;
-import se.chalmers.touchdeck.gamecontroller.Operation.Op;
-import se.chalmers.touchdeck.gui.dialogs.DialogText;
-import se.chalmers.touchdeck.gui.dialogs.DialogText.Context;
-import se.chalmers.touchdeck.gui.dialogs.PileNameDialog;
-import se.chalmers.touchdeck.models.Constant;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.client.dialogs.DialogText;
+import se.chalmers.touchdeck.game.client.dialogs.PileNameDialog;
+import se.chalmers.touchdeck.game.client.dialogs.DialogText.Context;
+import se.chalmers.touchdeck.game.server.GameState;
+import se.chalmers.touchdeck.game.server.Operation;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.game.server.Operation.Op;
+import se.chalmers.touchdeck.misc.Constant;
+import se.chalmers.touchdeck.misc.enums.TableState;
 import se.chalmers.touchdeck.network.IpFinder;
 import android.app.Activity;
 import android.content.Intent;

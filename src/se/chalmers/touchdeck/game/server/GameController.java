@@ -19,7 +19,7 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gamecontroller;
+package se.chalmers.touchdeck.game.server;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -29,11 +29,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import se.chalmers.touchdeck.enums.Rank;
-import se.chalmers.touchdeck.enums.Suit;
-import se.chalmers.touchdeck.models.Card;
-import se.chalmers.touchdeck.models.Constant;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.misc.Constant;
+import se.chalmers.touchdeck.misc.enums.Rank;
+import se.chalmers.touchdeck.misc.enums.Suit;
 import se.chalmers.touchdeck.network.GameListener;
 import se.chalmers.touchdeck.network.GameToGuiConnection;
 import se.chalmers.touchdeck.network.IpFinder;

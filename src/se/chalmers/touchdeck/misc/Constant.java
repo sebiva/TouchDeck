@@ -19,7 +19,7 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.models;
+package se.chalmers.touchdeck.misc;
 
 /**
  * Holds all constants for touchDeck

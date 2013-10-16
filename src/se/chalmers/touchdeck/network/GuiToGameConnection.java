@@ -23,9 +23,9 @@ package se.chalmers.touchdeck.network;
 
 import java.net.Socket;
 
-import se.chalmers.touchdeck.gamecontroller.Operation;
-import se.chalmers.touchdeck.gamecontroller.Operation.Op;
-import se.chalmers.touchdeck.gui.GuiController;
+import se.chalmers.touchdeck.game.client.GuiController;
+import se.chalmers.touchdeck.game.server.Operation;
+import se.chalmers.touchdeck.game.server.Operation.Op;
 
 /**
  * Sets up a single connection from the GuiController to the GameController

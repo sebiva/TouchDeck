@@ -23,8 +23,8 @@ package se.chalmers.touchdeck.network;
 
 import java.io.Serializable;
 
-import se.chalmers.touchdeck.gamecontroller.GameState;
-import se.chalmers.touchdeck.gui.GuiController;
+import se.chalmers.touchdeck.game.client.GuiController;
+import se.chalmers.touchdeck.game.server.GameState;
 
 /**
  * @author group17

@@ -18,14 +18,13 @@
  You should have received a copy of the GNU General Public License
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package se.chalmers.touchdeck.enums;
+package se.chalmers.touchdeck.misc.enums;
 
 /**
- * Enum representing a cards suit
+ * Enum representing a cards rank
  * 
  * @author group17
  */
-public enum Suit {
-	hearts, diamonds, spades, clubs
+public enum Rank {
+	ace, two, three, four, five, six, seven, eight, nine, ten, jack, queen, king
 }

@@ -22,10 +22,10 @@
 package se.chalmers.touchdeck.test.models;
 
 import junit.framework.TestCase;
-import se.chalmers.touchdeck.enums.Face;
-import se.chalmers.touchdeck.enums.Rank;
-import se.chalmers.touchdeck.enums.Suit;
-import se.chalmers.touchdeck.models.Card;
+import se.chalmers.touchdeck.game.server.Card;
+import se.chalmers.touchdeck.misc.enums.Face;
+import se.chalmers.touchdeck.misc.enums.Rank;
+import se.chalmers.touchdeck.misc.enums.Suit;
 
 /**
  * Tests the methods in the Card class

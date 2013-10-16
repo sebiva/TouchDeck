@@ -23,7 +23,7 @@ package se.chalmers.touchdeck.network;
 
 import java.net.Socket;
 
-import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.game.server.GameController;
 
 /**
  * Sets up a single connection from the GameController to the GuiController

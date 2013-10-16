@@ -19,11 +19,13 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.enums;
+package se.chalmers.touchdeck.misc.enums;
 
 /**
- * Represents the state of the table
+ * Enum representing a cards face status
+ * 
+ * @author group17
  */
-public enum TableState {
-	normal, move, moveAll, deal, pileMove
+public enum Face {
+	up, down
 }

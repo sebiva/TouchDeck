@@ -19,18 +19,18 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gui;
+package se.chalmers.touchdeck.game.client;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.enums.TableState;
-import se.chalmers.touchdeck.gamecontroller.Operation;
-import se.chalmers.touchdeck.gamecontroller.Operation.Op;
-import se.chalmers.touchdeck.models.Card;
-import se.chalmers.touchdeck.models.Constant;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.server.Card;
+import se.chalmers.touchdeck.game.server.Operation;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.game.server.Operation.Op;
+import se.chalmers.touchdeck.misc.Constant;
+import se.chalmers.touchdeck.misc.enums.TableState;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;

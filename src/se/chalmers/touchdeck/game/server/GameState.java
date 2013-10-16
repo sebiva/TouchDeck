@@ -19,13 +19,11 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gamecontroller;
+package se.chalmers.touchdeck.game.server;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import se.chalmers.touchdeck.models.Pile;
 
 /**
  * Represents the state of the game. Holds the position and content of all piles and therefore all cards. Also holds a

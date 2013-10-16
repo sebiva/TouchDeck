@@ -19,13 +19,13 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.models;
+package se.chalmers.touchdeck.game.server;
 
 import java.io.Serializable;
 
-import se.chalmers.touchdeck.enums.Face;
-import se.chalmers.touchdeck.enums.Rank;
-import se.chalmers.touchdeck.enums.Suit;
+import se.chalmers.touchdeck.misc.enums.Face;
+import se.chalmers.touchdeck.misc.enums.Rank;
+import se.chalmers.touchdeck.misc.enums.Suit;
 
 /**
  * Class modeling a card in a deck

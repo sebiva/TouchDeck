@@ -22,9 +22,9 @@
 package se.chalmers.touchdeck.test.zgui;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gui.StartScreen;
-import se.chalmers.touchdeck.gui.TableView;
-import se.chalmers.touchdeck.models.Constant;
+import se.chalmers.touchdeck.game.client.StartScreen;
+import se.chalmers.touchdeck.game.client.TableView;
+import se.chalmers.touchdeck.misc.Constant;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;

@@ -19,13 +19,13 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.enums;
+package se.chalmers.touchdeck.misc.enums;
 
 /**
- * Enum representing a cards face status
+ * Enum representing a cards suit
  * 
  * @author group17
  */
-public enum Face {
-	up, down
+public enum Suit {
+	hearts, diamonds, spades, clubs
 }

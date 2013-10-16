@@ -22,13 +22,13 @@
 package se.chalmers.touchdeck.test.zgui;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gui.GuiController;
-import se.chalmers.touchdeck.gui.PileView;
-import se.chalmers.touchdeck.gui.StartScreen;
-import se.chalmers.touchdeck.gui.TableView;
-import se.chalmers.touchdeck.models.Card;
-import se.chalmers.touchdeck.models.Constant;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.client.GuiController;
+import se.chalmers.touchdeck.game.client.PileView;
+import se.chalmers.touchdeck.game.client.StartScreen;
+import se.chalmers.touchdeck.game.client.TableView;
+import se.chalmers.touchdeck.game.server.Card;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.misc.Constant;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 

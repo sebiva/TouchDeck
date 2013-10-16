@@ -22,14 +22,14 @@
 package se.chalmers.touchdeck.test.game.controller;
 
 import junit.framework.TestCase;
-import se.chalmers.touchdeck.enums.Face;
-import se.chalmers.touchdeck.gamecontroller.GameController;
-import se.chalmers.touchdeck.gamecontroller.GameState;
-import se.chalmers.touchdeck.gamecontroller.Operation;
-import se.chalmers.touchdeck.gamecontroller.Operation.Op;
-import se.chalmers.touchdeck.models.Card;
-import se.chalmers.touchdeck.models.Constant;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.server.Card;
+import se.chalmers.touchdeck.game.server.GameController;
+import se.chalmers.touchdeck.game.server.GameState;
+import se.chalmers.touchdeck.game.server.Operation;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.game.server.Operation.Op;
+import se.chalmers.touchdeck.misc.Constant;
+import se.chalmers.touchdeck.misc.enums.Face;
 
 /**
  * Tests the gamecontroller class

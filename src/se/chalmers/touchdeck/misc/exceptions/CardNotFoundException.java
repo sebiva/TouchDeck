@@ -19,7 +19,7 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.exceptions;
+package se.chalmers.touchdeck.misc.exceptions;
 
 /**
  * Exception thrown when a card is not found

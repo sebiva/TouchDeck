@@ -23,8 +23,8 @@ package se.chalmers.touchdeck.network;
 
 import java.io.Serializable;
 
-import se.chalmers.touchdeck.gamecontroller.GameController;
-import se.chalmers.touchdeck.gamecontroller.Operation;
+import se.chalmers.touchdeck.game.server.GameController;
+import se.chalmers.touchdeck.game.server.Operation;
 
 /**
  * Listens to incoming connections from guiControllers, and handles their requests for operations

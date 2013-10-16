@@ -19,7 +19,7 @@
  along with TouchDeck.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.chalmers.touchdeck.gui;
+package se.chalmers.touchdeck.game.client;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -27,11 +27,11 @@ import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 
-import se.chalmers.touchdeck.enums.TableState;
-import se.chalmers.touchdeck.gamecontroller.GameState;
-import se.chalmers.touchdeck.gamecontroller.Operation;
-import se.chalmers.touchdeck.gamecontroller.Operation.Op;
-import se.chalmers.touchdeck.models.Constant;
+import se.chalmers.touchdeck.game.server.GameState;
+import se.chalmers.touchdeck.game.server.Operation;
+import se.chalmers.touchdeck.game.server.Operation.Op;
+import se.chalmers.touchdeck.misc.Constant;
+import se.chalmers.touchdeck.misc.enums.TableState;
 import se.chalmers.touchdeck.network.GuiToGameConnection;
 import se.chalmers.touchdeck.network.GuiUpdater;
 import android.content.Intent;
