@@ -40,6 +40,8 @@ public class GameToGuiConnection extends ConnectionInterface {
 
 	/**
 	 * Add the socket to the gameController
+	 * 
+	 * @param socket The socket to add
 	 */
 	@Override
 	public void send(Socket socket) {

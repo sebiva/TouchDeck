@@ -41,6 +41,9 @@ public class GameListener extends ListenerInterface {
 
 	/**
 	 * Handle the operations from the guiController
+	 * 
+	 * @param s The operation to handle
+	 * @param ipAddr The ip-address of the user performing the operation
 	 */
 	@Override
 	public void handle(Serializable s, String ipAddr) {

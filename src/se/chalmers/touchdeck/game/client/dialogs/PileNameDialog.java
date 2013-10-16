@@ -49,13 +49,15 @@ public class PileNameDialog extends Observable {
 	 * @param o The object that will listen to the input
 	 * @param id The id of the button that was pressed
 	 * @param msg The message that will be shown to the user
+	 * @param defaultName The name to set as default
+	 * @param context whether it's create or rename dialog
 	 */
 
 	public PileNameDialog(Observer o, int id, String msg, String defaultName, DialogText.Context context) {
 		mDialogText = new DialogText(o, id, context);
 		mContext = context;
-		this.mMessage = msg;
-		this.mDefaultName = defaultName;
+		mMessage = msg;
+		mDefaultName = defaultName;
 	}
 
 	/**

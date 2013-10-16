@@ -31,8 +31,8 @@ import java.util.Observer;
  * @author group17
  */
 public class DialogText extends Observable {
-	private String		str			= null;
-	private final int	buttonId;
+	private String		mStr		= null;
+	private final int	mButtonId;
 	private Context		mContext	= Context.namePile;
 
 	public enum Context {
@@ -42,12 +42,12 @@ public class DialogText extends Observable {
 	/**
 	 * Creates a new Object to handle the data from the dialog from a specific button
 	 * 
-	 * @param o
-	 * @param id
+	 * @param o The observer
+	 * @param id The id
 	 */
 	public DialogText(Observer o, int id) {
 		addObserver(o);
-		buttonId = id;
+		mButtonId = id;
 	}
 
 	public DialogText(Observer o, int id, Context context) {
@@ -61,7 +61,7 @@ public class DialogText extends Observable {
 	 * @param str The text to set
 	 */
 	public void setText(String str) {
-		this.str = str;
+		this.mStr = str;
 		setChanged();
 		notifyObservers(this);
 	}
@@ -72,7 +72,7 @@ public class DialogText extends Observable {
 	 * @return The text from the dialog
 	 */
 	public String getString() {
-		return str;
+		return mStr;
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class DialogText extends Observable {
 	 * @return The id of the button
 	 */
 	public int getId() {
-		return buttonId;
+		return mButtonId;
 	}
 
 	public Context getContext() {

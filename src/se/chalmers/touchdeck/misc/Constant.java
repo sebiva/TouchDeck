@@ -47,6 +47,10 @@ public class Constant {
 	public static final int		PileNameTextSize		= 12;
 	public static final int		TextbarAlertColor		= 0xff303a7a;
 	public static final int		TextbarNormalColor		= 0xff000000;
+	public static final int		RepeatShuffle			= 10;
+	public static final int		ExitDubbleTapTimeout	= 2000;
+	public static final int		TableButtonWeight		= 9;
+	public static final int		TableTextWeight			= 2;
 
 	/**
 	 * Strings

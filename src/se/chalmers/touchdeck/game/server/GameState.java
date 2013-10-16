@@ -46,11 +46,11 @@ public class GameState implements Serializable {
 	 * Holds the state for the game
 	 * 
 	 * @param piles A list of all the piles on the table
-	 * @param pileNames
+	 * @param pileNames A set of all the pile names
 	 */
 	public GameState(ArrayList<Pile> piles, HashSet<String> pileNames) {
-		this.mPiles = piles;
-		this.mPileNames = pileNames;
+		mPiles = piles;
+		mPileNames = pileNames;
 	}
 
 	/**
@@ -110,14 +110,14 @@ public class GameState implements Serializable {
 	}
 
 	/**
-	 * @return the mIsRestarted
+	 * @return Whether or not the game has been restarted
 	 */
 	public boolean getIsRestarted() {
 		return mIsRestarted;
 	}
 
 	/**
-	 * @param mIsRestarted the mIsRestarted to set
+	 * @param isRestarted Whether or not the game has been restarted
 	 */
 	public void setIsRestarted(boolean isRestarted) {
 		mIsRestarted = isRestarted;

@@ -139,17 +139,18 @@ public class Card implements Serializable {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null || getClass() != obj.getClass())
+		} else if (obj == null || getClass() != obj.getClass()) {
 			return false;
+		}
 		Card other = (Card) obj;
 		return (mRank == other.mRank && mSuit == other.mSuit);
 
 	}
 
 	/**
-	 * Returns a string representation of the card
+	 * @return a string representation of the card
 	 */
 	@Override
 	public String toString() {

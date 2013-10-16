@@ -42,6 +42,8 @@ public class GuiToGameConnection extends ConnectionInterface {
 
 	/**
 	 * Send the Socket to the GuiController, allowing it to send operations to the gameController
+	 * 
+	 * @param socket The socket to send
 	 */
 	@Override
 	public void send(Socket socket) {

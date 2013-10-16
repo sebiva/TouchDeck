@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import se.chalmers.touchdeck.misc.Constant;
 import se.chalmers.touchdeck.misc.exceptions.CardNotFoundException;
 
 /**
@@ -106,6 +107,8 @@ public class Pile implements Serializable {
 
 	/**
 	 * Sets the name of pile
+	 * 
+	 * @param name The name to set to the pile
 	 */
 	public void setName(String name) {
 		mName = name;
@@ -114,6 +117,7 @@ public class Pile implements Serializable {
 	/**
 	 * Returns the card at a certain index
 	 * 
+	 * @param cardPos the position of the card
 	 * @return The requested card, or null if pos was out of range
 	 */
 	public Card getCard(int cardPos) {
@@ -130,7 +134,7 @@ public class Pile implements Serializable {
 	 * Randomly rearranges the order of cards in the pile, effectively shuffling it
 	 */
 	public void shuffle() {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < Constant.RepeatShuffle; i++) {
 			Collections.shuffle(mCards);
 		}
 	}

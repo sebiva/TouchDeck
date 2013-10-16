@@ -37,9 +37,9 @@ import android.widget.EditText;
  * @author group17
  */
 public class JoinGameDialog extends Observable {
-	private EditText			input;
-	private final DialogText	dt;
-	private final String		msg;
+	private EditText			mInput;
+	private final DialogText	mDialogText;
+	private final String		mMessage;
 
 	/**
 	 * Creates a new Dialog object
@@ -49,8 +49,8 @@ public class JoinGameDialog extends Observable {
 	 * @param msg The message that will be shown to the user
 	 */
 	public JoinGameDialog(Observer o, int id, String msg) {
-		dt = new DialogText(o, id);
-		this.msg = msg;
+		mDialogText = new DialogText(o, id);
+		mMessage = msg;
 	}
 
 	/**
@@ -60,23 +60,23 @@ public class JoinGameDialog extends Observable {
 	 */
 	public void show(Activity act) {
 		// A text input for the user to enter the name in
-		input = new EditText(act);
-		input.setText("192.168.0.1");
+		mInput = new EditText(act);
+		mInput.setText("192.168.0.1");
 		AlertDialog.Builder alert = new AlertDialog.Builder(act);
 
 		alert.setTitle("Join game");
-		alert.setMessage(msg);
+		alert.setMessage(mMessage);
 
 		// Set an EditText view to get user input
-		alert.setView(input);
+		alert.setView(mInput);
 		// What to do if the ok-button is pressed
 		alert.setPositiveButton(string.ok, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
 
 				// Set the IP to the entered value
-				dt.setText(input.getText().toString());
-				Log.d("joinDialog", "IP is " + input.getText().toString());
+				mDialogText.setText(mInput.getText().toString());
+				Log.d("joinDialog", "IP is " + mInput.getText().toString());
 
 			}
 		});

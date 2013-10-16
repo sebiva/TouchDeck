@@ -27,8 +27,8 @@ import java.util.LinkedList;
 import se.chalmers.touchdeck.R;
 import se.chalmers.touchdeck.game.server.Card;
 import se.chalmers.touchdeck.game.server.Operation;
-import se.chalmers.touchdeck.game.server.Pile;
 import se.chalmers.touchdeck.game.server.Operation.Op;
+import se.chalmers.touchdeck.game.server.Pile;
 import se.chalmers.touchdeck.misc.Constant;
 import se.chalmers.touchdeck.misc.enums.TableState;
 import android.app.Activity;
@@ -106,6 +106,8 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
 
 	/**
 	 * Called when an option in the context menu is chosen
+	 * 
+	 * @param item The item that was chosen
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {

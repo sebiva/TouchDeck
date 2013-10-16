@@ -114,10 +114,10 @@ public class Operation implements Serializable {
 	}
 
 	/**
-	 * @param mCard the mCard to set
+	 * @param card the card to set
 	 */
-	public void setCard(Card mCard) {
-		this.mCard = mCard;
+	public void setCard(Card card) {
+		mCard = card;
 	}
 
 	/**

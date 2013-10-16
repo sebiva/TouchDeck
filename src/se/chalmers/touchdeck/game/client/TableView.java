@@ -210,6 +210,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
 
 	/**
 	 * Called when an option in the context menu is chosen.
+	 * 
+	 * @param item The item that was chosen
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -301,7 +303,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				Button btn = new Button(this);
 				// Create the layout parameters for the button, all buttons
 				// should be the same size
-				LayoutParams btnParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 9);
+				LayoutParams btnParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, Constant.TableButtonWeight);
 
 				btn.setId(Constant.NumColumns * i + j);
 				btn.setTag("Pile " + (Constant.NumRows * i + j));
@@ -316,7 +318,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				// Set the tableview as the listener to the text view
 				textView.setOnClickListener(this);
 				registerForContextMenu(textView);
-				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
+				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, Constant.TableTextWeight);
 
 				textView.setId(Constant.NumColumns * i + j);
 				textView.setTag("Pile " + (Constant.NumRows * i + j));
@@ -400,9 +402,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				mToast = Toast.makeText(this, "This pile is protected by another user!", Toast.LENGTH_SHORT);
 				mToast.show();
 			}
-		}
-
-		else {
+		} else {
 			// Prompt the user to create a new pile
 			String msg = "Please enter a name for the pile: ";
 			PileNameDialog dialog = new PileNameDialog(this, mPileId, msg, mGuiController.getGameState().getDefaultPileName(),
@@ -517,7 +517,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			public void run() {
 				mIsBackPressedBefore = false;
 			}
-		}, 2000);
+		}, Constant.ExitDubbleTapTimeout);
 	}
 
 	/**
@@ -612,14 +612,16 @@ public class TableView extends Activity implements OnClickListener, Observer {
 	}
 
 	/**
-	 * @param mMoveOp the mMoveOp to set
+	 * @param moveOp the mMoveOp to set
 	 */
-	public void setmMoveOp(Operation mMoveOp) {
-		this.mMoveOp = mMoveOp;
+	public void setmMoveOp(Operation moveOp) {
+		mMoveOp = moveOp;
 	}
 
 	/**
-	 * @b Set the terminateFlag, makes the tableView close politely
+	 * Set the terminateFlag, makes the tableView close politely
+	 * 
+	 * @param terminateMode Set the terminate mode
 	 */
 	public void setTerminate(boolean terminateMode) {
 		mTerminateMode = terminateMode;
