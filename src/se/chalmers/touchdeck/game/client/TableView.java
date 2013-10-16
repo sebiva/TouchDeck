@@ -316,7 +316,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 				// Set the tableview as the listener to the text view
 				textView.setOnClickListener(this);
 				registerForContextMenu(textView);
-				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 1);
+				LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 2);
 
 				textView.setId(Constant.NumColumns * i + j);
 				textView.setTag("Pile " + (Constant.NumRows * i + j));
@@ -538,7 +538,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 			TextView tv = (TextView) ll.getChildAt(1);
 
 			if (p == null) {
-				b.setBackgroundResource(getResources().getIdentifier(Constant.EmptyCardImage, "drawable", getPackageName()));
+				b.setBackgroundResource(getResources().getIdentifier(Constant.NoPileImage, "drawable", getPackageName()));
 				tv.setText("");
 			} else {
 
@@ -564,7 +564,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
 						b.setBackgroundResource(imgRes);
 					}
 				} else {
-					b.setBackgroundColor(0xff00dd00);
+					b.setBackgroundResource(getResources().getIdentifier(Constant.EmptyPileImage, "drawable", getPackageName()));
 				}
 
 			}

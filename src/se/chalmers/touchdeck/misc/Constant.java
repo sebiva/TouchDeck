@@ -61,6 +61,7 @@ public class Constant {
 	public static final String	PileHasNoOwner			= "noOwner";
 	public static final String	BackOfCardImage			= "rb";
 	public static final String	ProtectedCardImage		= "bb";
-	public static final String	EmptyCardImage			= "empty";
+	public static final String	NoPileImage				= "nopile";
+	public static final String	EmptyPileImage			= "empty";
 
 }
