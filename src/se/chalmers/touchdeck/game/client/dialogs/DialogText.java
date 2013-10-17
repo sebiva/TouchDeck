@@ -31,60 +31,73 @@ import java.util.Observer;
  * @author group17
  */
 public class DialogText extends Observable {
-	private String		mStr		= null;
-	private final int	mButtonId;
-	private Context		mContext	= Context.namePile;
+    private String    mStr     = null;
+    private final int mButtonId;
+    private Context   mContext = Context.namePile;
 
-	public enum Context {
-		namePile, renamePile
-	}
+    /**
+     * The context of the DialogText (Whether it as rename or create dialog).
+     */
+    public enum Context {
+        namePile, renamePile
+    }
 
-	/**
-	 * Creates a new Object to handle the data from the dialog from a specific button
-	 * 
-	 * @param o The observer
-	 * @param id The id
-	 */
-	public DialogText(Observer o, int id) {
-		addObserver(o);
-		mButtonId = id;
-	}
+    /**
+     * Creates a new Object to handle the data from the dialog from a specific button.
+     * 
+     * @param o The observer
+     * @param id The id of the button
+     */
+    public DialogText(Observer o, int id) {
+        addObserver(o);
+        mButtonId = id;
+    }
 
-	public DialogText(Observer o, int id, Context context) {
-		this(o, id);
-		mContext = context;
-	}
+    /**
+     * Creates a new DialogText to handle the data from the dialog from a specific button.
+     * 
+     * @param o The observer
+     * @param id The id of the button
+     * @param context The context of the dialog
+     */
+    public DialogText(Observer o, int id, Context context) {
+        this(o, id);
+        mContext = context;
+    }
 
-	/**
-	 * Set the text that is contained
-	 * 
-	 * @param str The text to set
-	 */
-	public void setText(String str) {
-		this.mStr = str;
-		setChanged();
-		notifyObservers(this);
-	}
+    /**
+     * Set the text that is contained.
+     * 
+     * @param str The text to set
+     */
+    public void setText(String str) {
+        this.mStr = str;
+        setChanged();
+        notifyObservers(this);
+    }
 
-	/**
-	 * Gives the text that was given to the dialog
-	 * 
-	 * @return The text from the dialog
-	 */
-	public String getString() {
-		return mStr;
-	}
+    /**
+     * Gives the text that was given to the dialog.
+     * 
+     * @return The text from the dialog
+     */
+    public String getString() {
+        return mStr;
+    }
 
-	/**
-	 * Gives the id of the button the dialog was created from
-	 * 
-	 * @return The id of the button
-	 */
-	public int getId() {
-		return mButtonId;
-	}
+    /**
+     * Gives the id of the button the dialog was created from.
+     * 
+     * @return The id of the button
+     */
+    public int getId() {
+        return mButtonId;
+    }
 
-	public Context getContext() {
-		return mContext;
-	}
+    /**
+     * @return The context of the dialog (Whether it's a rename or create dialog)
+     */
+    public Context getContext() {
+        return mContext;
+    }
 }

@@ -22,10 +22,10 @@
 package se.chalmers.touchdeck.misc.enums;
 
 /**
- * Enum representing a cards suit
+ * Enum representing a cards suit.
  * 
  * @author group17
  */
 public enum Suit {
-	hearts, diamonds, spades, clubs
+    hearts, diamonds, spades, clubs
 }

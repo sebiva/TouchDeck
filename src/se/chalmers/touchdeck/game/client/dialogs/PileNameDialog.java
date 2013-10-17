@@ -32,88 +32,89 @@ import android.util.Log;
 import android.widget.EditText;
 
 /**
- * A dialog shown to the user that lets it choose a name when creating a new pile
+ * A dialog shown to the user that lets it choose a name when creating a new pile.
  * 
  * @author group17
  */
 public class PileNameDialog extends Observable {
-	private EditText			mInput;
-	private final DialogText	mDialogText;
-	private final String		mMessage;
-	private final String		mDefaultName;
-	private DialogText.Context	mContext	= DialogText.Context.namePile;
+    private EditText           mInput;
+    private final DialogText   mDialogText;
+    private final String       mMessage;
+    private final String       mDefaultName;
+    private DialogText.Context mContext = DialogText.Context.namePile;
 
-	/**
-	 * Creates a new Dialog object
-	 * 
-	 * @param o The object that will listen to the input
-	 * @param id The id of the button that was pressed
-	 * @param msg The message that will be shown to the user
-	 * @param defaultName The name to set as default
-	 * @param context whether it's create or rename dialog
-	 */
+    /**
+     * Creates a new Dialog object.
+     * 
+     * @param o The object that will listen to the input
+     * @param id The id of the button that was pressed
+     * @param msg The message that will be shown to the user
+     * @param defaultName The name to set as default
+     * @param context whether it's create or rename dialog
+     */
 
-	public PileNameDialog(Observer o, int id, String msg, String defaultName, DialogText.Context context) {
-		mDialogText = new DialogText(o, id, context);
-		mContext = context;
-		mMessage = msg;
-		mDefaultName = defaultName;
-	}
+    public PileNameDialog(Observer o, int id, String msg, String defaultName,
+            DialogText.Context context) {
+        mDialogText = new DialogText(o, id, context);
+        mContext = context;
+        mMessage = msg;
+        mDefaultName = defaultName;
+    }
 
-	/**
-	 * Shows the dialog in the specified activity. Prompts the user to enter an name for the pile to be created. If no
-	 * name is entered, a default name is given
-	 * 
-	 * @param act The activity to show the dialog in
-	 */
-	public void show(Activity act) {
-		// A text input for the user to enter the name in
-		mInput = new EditText(act);
-		AlertDialog.Builder alert = new AlertDialog.Builder(act);
-		switch (mContext) {
-		case namePile:
-			alert.setTitle("Create pile");
-			break;
-		case renamePile:
-			alert.setTitle("Rename pile");
-			break;
-		default:
-			break;
-		}
+    /**
+     * Shows the dialog in the specified activity. Prompts the user to enter an name for the pile to be created. If no
+     * name is entered, a default name is given
+     * 
+     * @param act The activity to show the dialog in
+     */
+    public void show(Activity act) {
+        // A text input for the user to enter the name in
+        mInput = new EditText(act);
+        AlertDialog.Builder alert = new AlertDialog.Builder(act);
+        switch (mContext) {
+        case namePile:
+            alert.setTitle("Create pile");
+            break;
+        case renamePile:
+            alert.setTitle("Rename pile");
+            break;
+        default:
+            break;
+        }
 
-		alert.setMessage(mMessage);
+        alert.setMessage(mMessage);
 
-		// Set an EditText view to get user input
-		alert.setView(mInput);
-		// What to do if the ok-button is pressed
-		alert.setPositiveButton(string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-				// OK
-				// Check if a name was entered
-				if (mInput.getText().toString().trim().equals("")) {
-					// Set the name to a unique default value
-					mDialogText.setText(mDefaultName);
-					Log.d("joinDialog", "Name is (default) " + mDefaultName);
-				} else {
-					String str = mInput.getText().toString().replaceAll("\t", "");
-					str = str.replaceAll("\n", "");
-					// Set the name to the entered value
-					mDialogText.setText(str);
-					Log.d("joinDialog", "Name is " + mInput.getText().toString());
-				}
-			}
-		});
-		// What to do if the cancel-button is pressed
-		alert.setNegativeButton(string.cancel, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-				// Cancelled
-				Log.d("joinDialog", "You cancelled!");
-			}
-		});
-		// Show the dialog
-		alert.show();
+        // Set an EditText view to get user input
+        alert.setView(mInput);
+        // What to do if the ok-button is pressed
+        alert.setPositiveButton(string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // OK
+                // Check if a name was entered
+                if (mInput.getText().toString().trim().equals("")) {
+                    // Set the name to a unique default value
+                    mDialogText.setText(mDefaultName);
+                    Log.d("joinDialog", "Name is (default) " + mDefaultName);
+                } else {
+                    String str = mInput.getText().toString().replaceAll("\t", "");
+                    str = str.replaceAll("\n", "");
+                    // Set the name to the entered value
+                    mDialogText.setText(str);
+                    Log.d("joinDialog", "Name is " + mInput.getText().toString());
+                }
+            }
+        });
+        // What to do if the cancel-button is pressed
+        alert.setNegativeButton(string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // Cancelled
+                Log.d("joinDialog", "You cancelled!");
+            }
+        });
+        // Show the dialog
+        alert.show();
 
-	}
+    }
 }

@@ -22,10 +22,10 @@
 package se.chalmers.touchdeck.misc.enums;
 
 /**
- * Enum representing a cards face status
+ * Enum representing a cards face status.
  * 
  * @author group17
  */
 public enum Face {
-	up, down
+    up, down
 }

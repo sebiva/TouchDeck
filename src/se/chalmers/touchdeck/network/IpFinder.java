@@ -29,46 +29,48 @@ import java.util.Enumeration;
 import android.util.Log;
 
 /**
- * Used to get the ip of the device
+ * Used to get the ip of the device.
  * 
  * @author group17
  */
 public class IpFinder {
-	private static String		mIpAddr				= null;
-	public static String		LOOP_BACK			= "127.0.0.1";
-	private static final int	MAX_LENGTH_OF_IP	= 15;
+    private static String    mIpAddr          = null;
+    public static String     LOOP_BACK        = "127.0.0.1";
+    private static final int MAX_LENGTH_OF_IP = 15;
 
-	/**
-	 * Get the ip of the device
-	 * 
-	 * @return The ip address
-	 */
-	public static String getMyIp() {
-		if (mIpAddr != null) {
-			return mIpAddr;
-		}
-		try {
-			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-				NetworkInterface intf = en.nextElement();
-				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-					InetAddress inetAddress = enumIpAddr.nextElement();
-					if (!inetAddress.isLoopbackAddress()) {
-						mIpAddr = inetAddress.getHostAddress().toString();
-						// Filter out IPv6 addresses
-						if (mIpAddr != null && mIpAddr.length() > MAX_LENGTH_OF_IP) {
-							mIpAddr = null;
-						}
-					}
-				}
-			}
+    /**
+     * Get the ip of the device.
+     * 
+     * @return The ip address
+     */
+    public static String getMyIp() {
+        if (mIpAddr != null) {
+            return mIpAddr;
+        }
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en
+                    .hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
+                        .hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        mIpAddr = inetAddress.getHostAddress().toString();
+                        // Filter out IPv6 addresses
+                        if (mIpAddr != null && mIpAddr.length() > MAX_LENGTH_OF_IP) {
+                            mIpAddr = null;
+                        }
+                    }
+                }
+            }
 
-		} catch (SocketException se) {
-			Log.e("GuC", "Error getting ip address");
-		}
-		// If no other address found, use the loopback address
-		if (mIpAddr == null) {
-			mIpAddr = LOOP_BACK;
-		}
-		return mIpAddr;
-	}
+        } catch (SocketException se) {
+            Log.e("GuC", "Error getting ip address");
+        }
+        // If no other address found, use the loopback address
+        if (mIpAddr == null) {
+            mIpAddr = LOOP_BACK;
+        }
+        return mIpAddr;
+    }
 }

@@ -29,127 +29,130 @@ import se.chalmers.touchdeck.misc.Constant;
 import se.chalmers.touchdeck.misc.exceptions.CardNotFoundException;
 
 /**
- * Class modeling a pile
+ * Class modeling a pile.
  * 
  * @author group17
  */
 public class Pile implements Serializable {
-	/**
-	 * Serializable
-	 */
-	private static final long		serialVersionUID	= -3056217673776714467L;
-	private final LinkedList<Card>	mCards				= new LinkedList<Card>();
-	private String					mName;
-	private String					mOwner				= "noOwner";
 
-	/**
-	 * Constructor
-	 */
-	public Pile() {
+    private static final long      serialVersionUID = -3056217673776714467L;
+    private final LinkedList<Card> mCards           = new LinkedList<Card>();
+    private String                 mName;
+    private String                 mOwner           = "noOwner";
 
-	}
+    /**
+     * Constructor.
+     */
+    public Pile() {
 
-	public Pile(String name) {
-		this.mName = name;
-	}
+    }
 
-	/**
-	 * Adds a card to the pile
-	 * 
-	 * @param card The card to add
-	 */
-	public void addCard(Card card) {
-		mCards.addFirst(card);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param name The name of the pile
+     */
+    public Pile(String name) {
+        this.mName = name;
+    }
 
-	/**
-	 * Takes one card from the pile
-	 * 
-	 * @param pos The position of the card
-	 * @return The card
-	 * @throws CardNotFoundException If there is no such card in the pile
-	 */
-	public Card takeCard(int pos) {
-		try {
-			Card card = mCards.remove(pos);
-			return card;
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
-	}
+    /**
+     * Adds a card to the pile.
+     * 
+     * @param card The card to add
+     */
+    public void addCard(Card card) {
+        mCards.addFirst(card);
+    }
 
-	/**
-	 * Returns the number of cards in the pile
-	 * 
-	 * @return The number of cars in the pile
-	 */
-	public int getSize() {
-		return mCards.size();
-	}
+    /**
+     * Takes one card from the pile.
+     * 
+     * @param pos The position of the card
+     * @return The card
+     * @throws CardNotFoundException If there is no such card in the pile
+     */
+    public Card takeCard(int pos) {
+        try {
+            Card card = mCards.remove(pos);
+            return card;
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
 
-	/**
-	 * Returns the cards in the pile
-	 * 
-	 * @return The cards in the piles
-	 */
-	public LinkedList<Card> getCards() {
-		return mCards;
-	}
+    /**
+     * Returns the number of cards in the pile.
+     * 
+     * @return The number of cars in the pile
+     */
+    public int getSize() {
+        return mCards.size();
+    }
 
-	/**
-	 * Gives the name of pile
-	 * 
-	 * @return The name
-	 */
-	public String getName() {
-		return mName;
-	}
+    /**
+     * Returns the cards in the pile.
+     * 
+     * @return The cards in the piles
+     */
+    public LinkedList<Card> getCards() {
+        return mCards;
+    }
 
-	/**
-	 * Sets the name of pile
-	 * 
-	 * @param name The name to set to the pile
-	 */
-	public void setName(String name) {
-		mName = name;
-	}
+    /**
+     * Gives the name of pile.
+     * 
+     * @return The name
+     */
+    public String getName() {
+        return mName;
+    }
 
-	/**
-	 * Returns the card at a certain index
-	 * 
-	 * @param cardPos the position of the card
-	 * @return The requested card, or null if pos was out of range
-	 */
-	public Card getCard(int cardPos) {
-		try {
-			Card card = mCards.get(cardPos);
-			return card;
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
+    /**
+     * Sets the name of pile.
+     * 
+     * @param name The name to set to the pile
+     */
+    public void setName(String name) {
+        mName = name;
+    }
 
-	}
+    /**
+     * Returns the card at a certain index.
+     * 
+     * @param cardPos the position of the card
+     * @return The requested card, or null if pos was out of range
+     */
+    public Card getCard(int cardPos) {
+        try {
+            Card card = mCards.get(cardPos);
+            return card;
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
 
-	/**
-	 * Randomly rearranges the order of cards in the pile, effectively shuffling it
-	 */
-	public void shuffle() {
-		for (int i = 0; i < Constant.RepeatShuffle; i++) {
-			Collections.shuffle(mCards);
-		}
-	}
+    }
 
-	/**
-	 * @return the Owner
-	 */
-	public String getOwner() {
-		return mOwner;
-	}
+    /**
+     * Randomly rearranges the order of cards in the pile, effectively shuffling it.
+     */
+    public void shuffle() {
+        for (int i = 0; i < Constant.RepeatShuffle; i++) {
+            Collections.shuffle(mCards);
+        }
+    }
 
-	/**
-	 * @param Owner the Owner to set
-	 */
-	public void setOwner(String owner) {
-		this.mOwner = owner;
-	}
+    /**
+     * @return the Owner
+     */
+    public String getOwner() {
+        return mOwner;
+    }
+
+    /**
+     * @param owner the Owner to set
+     */
+    public void setOwner(String owner) {
+        this.mOwner = owner;
+    }
 }

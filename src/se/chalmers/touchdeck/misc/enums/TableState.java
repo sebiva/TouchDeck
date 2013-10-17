@@ -22,8 +22,8 @@
 package se.chalmers.touchdeck.misc.enums;
 
 /**
- * Represents the state of the table
+ * Represents the state of the table.
  */
 public enum TableState {
-	normal, move, moveAll, deal, pileMove
+    normal, move, moveAll, deal, pileMove
 }

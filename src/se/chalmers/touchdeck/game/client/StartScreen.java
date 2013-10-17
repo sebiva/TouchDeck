@@ -46,75 +46,79 @@ import android.view.View;
  */
 public class StartScreen extends Activity implements Observer {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.start_screen);
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.start_screen);
+    }
 
-	/**
-	 * Called when the 'create game' - button is pressed. An intent is created and a TableView activity is started,
-	 * along with the gamecontroller as the user is the host of the game.
-	 * 
-	 * @param v The view (button) that is pressed
-	 */
-	public void createGame(View v) {
-		Intent launchGui = new Intent(this, TableView.class);
-		GameController gc = new GameController();
-		launchGui.putExtra(Constant.IntentTableViewState, gc.getGameState());
-		launchGui.putExtra(Constant.IntentTableViewIP, Constant.IntentTableViewHost);
-		startActivity(launchGui);
-	}
+    /**
+     * Called when the 'create game' - button is pressed. An intent is created and a TableView activity is started,
+     * along with the gamecontroller as the user is the host of the game.
+     * 
+     * @param v The view (button) that is pressed
+     */
+    public void createGame(View v) {
+        Intent launchGui = new Intent(this, TableView.class);
+        GameController gc = new GameController();
+        launchGui.putExtra(Constant.IntentTableViewState, gc.getGameState());
+        launchGui.putExtra(Constant.IntentTableViewIP, Constant.IntentTableViewHost);
+        startActivity(launchGui);
+    }
 
-	/**
-	 * Called when the 'join game' - button is pressed. An intent is created and a TableView activity is started. As the
-	 * user is not the host, no GameController will be created
-	 * 
-	 * @param v The view (button) that is pressed
-	 */
-	public void joinGame(View v) {
-		int id = v.getId();
-		String msg = "Please enter the host IP: ";
-		JoinGameDialog dialog = new JoinGameDialog(this, id, msg);
-		dialog.show(this);
+    /**
+     * Called when the 'join game' - button is pressed. An intent is created and a TableView activity is started. As the
+     * user is not the host, no GameController will be created.
+     * 
+     * @param v The view (button) that is pressed
+     */
+    public void joinGame(View v) {
+        int id = v.getId();
+        String msg = "Please enter the host IP: ";
+        JoinGameDialog dialog = new JoinGameDialog(this, id, msg);
+        dialog.show(this);
 
-	}
+    }
 
-	/**
-	 * Make this view not open again when pressing back
-	 */
-	@Override
-	public void onStop() {
-		super.onStop();
-		finish();
-	}
+    /**
+     * Make this view not open again when pressing back.
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        finish();
+    }
 
-	/**
-	 * Listens to the dialog for the ip to be entered
-	 */
-	@Override
-	public void update(Observable obs, Object param) {
+    /**
+     * Listens to the dialog for the ip to be entered.
+     * 
+     * @param obs The observable object, in this case, the DialogText
+     * @param param The parameter passed on, in this case the Dialog text
+     */
+    @Override
+    public void update(Observable obs, Object param) {
 
-		if (obs instanceof DialogText) {
-			DialogText dt = (DialogText) param;
+        if (obs instanceof DialogText) {
+            DialogText dt = (DialogText) param;
 
-			if (!JoinGameDialog.validIP(dt.getString())) {
-				// Prompt the user to try again
-				String msg = "Please enter a valid IP: ";
-				JoinGameDialog dialog = new JoinGameDialog(this, dt.getId(), msg);
-				dialog.show(this);
-			} else {
-				Intent launchGui = new Intent(this, TableView.class);
-				ArrayList<Pile> emptyPiles = new ArrayList<Pile>();
-				int numButtons = Constant.NumOfPiles;
-				for (int i = 0; i < numButtons; i++) {
-					emptyPiles.add(null);
-				}
-				launchGui.putExtra(Constant.IntentTableViewState, new GameState(emptyPiles, new HashSet<String>()));
-				launchGui.putExtra(Constant.IntentTableViewIP, dt.getString());
-				startActivity(launchGui);
-			}
+            if (!JoinGameDialog.validIP(dt.getString())) {
+                // Prompt the user to try again
+                String msg = "Please enter a valid IP: ";
+                JoinGameDialog dialog = new JoinGameDialog(this, dt.getId(), msg);
+                dialog.show(this);
+            } else {
+                Intent launchGui = new Intent(this, TableView.class);
+                ArrayList<Pile> emptyPiles = new ArrayList<Pile>();
+                int numButtons = Constant.NumOfPiles;
+                for (int i = 0; i < numButtons; i++) {
+                    emptyPiles.add(null);
+                }
+                launchGui.putExtra(Constant.IntentTableViewState, new GameState(emptyPiles,
+                        new HashSet<String>()));
+                launchGui.putExtra(Constant.IntentTableViewIP, dt.getString());
+                startActivity(launchGui);
+            }
 
-		}
-	}
+        }
+    }
 }

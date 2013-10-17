@@ -24,134 +24,135 @@ package se.chalmers.touchdeck.game.server;
 import java.io.Serializable;
 
 /**
- * Class representing the operations that can be made on cards and piles
+ * Class representing the operations that can be made on cards and piles.
  * 
  * @author group17
  */
 public class Operation implements Serializable {
-	/**
-	 * Serializable
-	 */
-	private static final long	serialVersionUID	= -2413214187514892785L;
 
-	public enum Op {
-		move, flip, create, connect, shuffle, delete, rename, faceUp, faceDown, moveAll, protect, unprotect, disconnect, pileMove, restart
-	}
+    private static final long serialVersionUID = -2413214187514892785L;
 
-	private Op		mOp;
-	private Integer	mPile1;
-	private Integer	mPile2;
-	private Card	mCard;
-	private String	mName;
-	private String	mIpAddr;
+    /**
+     * The operations that can be performed.
+     */
+    public enum Op {
+        move, flip, create, connect, shuffle, delete, rename, faceUp, faceDown, moveAll, protect, unprotect, disconnect, pileMove, restart
+    }
 
-	// connect / disconnect / restart
-	public Operation(Op op) {
-		mOp = op;
-	}
+    private Op      mOp;
+    private Integer mPile1;
+    private Integer mPile2;
+    private Card    mCard;
+    private String  mName;
+    private String  mIpAddr;
 
-	// shuffle / delete / faceUp / faceDown
-	public Operation(Op op, Integer pile1) {
-		mOp = op;
-		mPile1 = pile1;
-	}
+    // connect / disconnect / restart
+    public Operation(Op op) {
+        mOp = op;
+    }
 
-	// create / rename / protect / unprotect
-	public Operation(Op op, Integer pile1, String name) {
-		mOp = op;
-		mPile1 = pile1;
-		mName = name;
-	}
+    // shuffle / delete / faceUp / faceDown
+    public Operation(Op op, Integer pile1) {
+        mOp = op;
+        mPile1 = pile1;
+    }
 
-	// flip
-	public Operation(Op op, Integer pile1, Card card) {
-		mOp = op;
-		mPile1 = pile1;
-		mCard = card;
-	}
+    // create / rename / protect / unprotect
+    public Operation(Op op, Integer pile1, String name) {
+        mOp = op;
+        mPile1 = pile1;
+        mName = name;
+    }
 
-	// move
-	public Operation(Op op, Integer pile1, Integer pile2, Card card) {
-		mOp = op;
-		mPile1 = pile1;
-		mPile2 = pile2;
-		mCard = card;
-	}
+    // flip
+    public Operation(Op op, Integer pile1, Card card) {
+        mOp = op;
+        mPile1 = pile1;
+        mCard = card;
+    }
 
-	/**
-	 * @return the pile1
-	 */
-	public Integer getPile1() {
-		return mPile1;
-	}
+    // move
+    public Operation(Op op, Integer pile1, Integer pile2, Card card) {
+        mOp = op;
+        mPile1 = pile1;
+        mPile2 = pile2;
+        mCard = card;
+    }
 
-	/**
-	 * @param pile1 the pile1 to set
-	 */
-	public void setPile1(Integer pile1) {
-		this.mPile1 = pile1;
-	}
+    /**
+     * @return the pile1
+     */
+    public Integer getPile1() {
+        return mPile1;
+    }
 
-	/**
-	 * @return the pile2
-	 */
-	public Integer getPile2() {
-		return mPile2;
-	}
+    /**
+     * @param pile1 the pile1 to set
+     */
+    public void setPile1(Integer pile1) {
+        this.mPile1 = pile1;
+    }
 
-	/**
-	 * @param pile2 the pile2 to set
-	 */
-	public void setPile2(Integer pile2) {
-		this.mPile2 = pile2;
-	}
+    /**
+     * @return the pile2
+     */
+    public Integer getPile2() {
+        return mPile2;
+    }
 
-	/**
-	 * @return the mCard
-	 */
-	public Card getCard() {
-		return mCard;
-	}
+    /**
+     * @param pile2 the pile2 to set
+     */
+    public void setPile2(Integer pile2) {
+        this.mPile2 = pile2;
+    }
 
-	/**
-	 * @param card the card to set
-	 */
-	public void setCard(Card card) {
-		mCard = card;
-	}
+    /**
+     * @return the mCard
+     */
+    public Card getCard() {
+        return mCard;
+    }
 
-	/**
-	 * @return the op
-	 */
-	public Op getOp() {
-		return mOp;
-	}
+    /**
+     * @param card the card to set
+     */
+    public void setCard(Card card) {
+        mCard = card;
+    }
 
-	/**
-	 * @param op the op to set
-	 */
-	public void setOp(Op op) {
-		this.mOp = op;
-	}
+    /**
+     * @return the op
+     */
+    public Op getOp() {
+        return mOp;
+    }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return mName;
-	}
+    /**
+     * @param op the op to set
+     */
+    public void setOp(Op op) {
+        this.mOp = op;
+    }
 
-	/**
-	 * @return the ipAddr
-	 */
-	public String getIpAddr() {
-		return mIpAddr;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return mName;
+    }
 
-	/**
-	 * @param ipAddr the ipAddr to set
-	 */
-	public void setIpAddr(String ipAddr) {
-		this.mIpAddr = ipAddr;
-	}
+    /**
+     * @return the ipAddr
+     */
+    public String getIpAddr() {
+        return mIpAddr;
+    }
+
+    /**
+     * @param ipAddr the ipAddr to set
+     */
+    public void setIpAddr(String ipAddr) {
+        this.mIpAddr = ipAddr;
+    }
 }
