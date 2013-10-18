@@ -250,7 +250,7 @@ public class PileView extends Activity implements OnClickListener, OnLongClickLi
      */
     @Override
     public boolean onLongClick(View v) {
-        this.closeContextMenu();
+        closeContextMenu();
         return true;
     }
 

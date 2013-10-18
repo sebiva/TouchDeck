@@ -103,7 +103,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
     }
 
     /**
-     * Called when the OptionsButton is pressed
+     * Called when the OptionsButton is pressed.
      * 
      * @param v The view that was pressed
      */
@@ -522,7 +522,7 @@ public class TableView extends Activity implements OnClickListener, Observer {
             finish();
             return;
         }
-        this.mIsBackPressedBefore = true;
+        mIsBackPressedBefore = true;
         if (mToast != null) {
             mToast.cancel();
         }
@@ -579,8 +579,8 @@ public class TableView extends Activity implements OnClickListener, Observer {
                         // Set the picture of the pile to be the picture of the
                         // card on top.
                         String imgName = p.getCard(0).getImageName();
-                        int imgRes = this.getResources().getIdentifier(imgName, "drawable",
-                                this.getPackageName());
+                        int imgRes = getResources().getIdentifier(imgName, "drawable",
+                                getPackageName());
                         b.setBackgroundResource(imgRes);
                     }
                 } else {

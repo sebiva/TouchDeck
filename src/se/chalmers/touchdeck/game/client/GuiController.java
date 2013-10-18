@@ -219,6 +219,10 @@ public class GuiController implements Observer {
      * Terminates the session.
      */
     public void terminate() {
+        if (mPileView != null) {
+            mPileView.finish();
+        }
+
         if (mGuiUpdater != null) {
             mGuiUpdater.end(mMyIpAddr);
             mGuiUpdater = null;

@@ -71,7 +71,7 @@ public class DialogText extends Observable {
      * @param str The text to set
      */
     public void setText(String str) {
-        this.mStr = str;
+        mStr = str;
         setChanged();
         notifyObservers(this);
     }

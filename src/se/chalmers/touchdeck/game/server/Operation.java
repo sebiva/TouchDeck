@@ -90,7 +90,7 @@ public class Operation implements Serializable {
      * @param pile1 the pile1 to set
      */
     public void setPile1(Integer pile1) {
-        this.mPile1 = pile1;
+        mPile1 = pile1;
     }
 
     /**
@@ -104,7 +104,7 @@ public class Operation implements Serializable {
      * @param pile2 the pile2 to set
      */
     public void setPile2(Integer pile2) {
-        this.mPile2 = pile2;
+        mPile2 = pile2;
     }
 
     /**
@@ -132,7 +132,7 @@ public class Operation implements Serializable {
      * @param op the op to set
      */
     public void setOp(Op op) {
-        this.mOp = op;
+        mOp = op;
     }
 
     /**
@@ -153,6 +153,6 @@ public class Operation implements Serializable {
      * @param ipAddr the ipAddr to set
      */
     public void setIpAddr(String ipAddr) {
-        this.mIpAddr = ipAddr;
+        mIpAddr = ipAddr;
     }
 }

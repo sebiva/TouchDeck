@@ -61,7 +61,7 @@ public class GameState implements Serializable {
      * @param piles the piles to set
      */
     public void setPiles(ArrayList<Pile> piles) {
-        this.mPiles = piles;
+        mPiles = piles;
     }
 
     /**

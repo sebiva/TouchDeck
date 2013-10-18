@@ -52,7 +52,7 @@ public class Pile implements Serializable {
      * @param name The name of the pile
      */
     public Pile(String name) {
-        this.mName = name;
+        mName = name;
     }
 
     /**
@@ -151,6 +151,6 @@ public class Pile implements Serializable {
      * @param owner the Owner to set
      */
     public void setOwner(String owner) {
-        this.mOwner = owner;
+        mOwner = owner;
     }
 }
