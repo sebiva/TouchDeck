@@ -71,14 +71,12 @@ public abstract class ListenerInterface extends Observable implements Runnable {
                 Socket clientSocket = mServerSocket.accept();
                 ConnectionHandler handler = new ConnectionHandler(clientSocket);
                 String ipAddr = clientSocket.getInetAddress().toString().substring(1); // Remove a "/"
-                Log.d("in Listener " + mPort, "IP : " + ipAddr);
                 mHandlers.put(ipAddr, handler);
                 new Thread(handler).start();
-                Log.d("ListenerInt " + mPort, "New connection handler started: "
-                        + clientSocket.getInetAddress().getHostAddress());
+                Log.d("ListenerInt " + mPort, "New connection handler started: " + ipAddr);
             } catch (IOException e) {
                 if (mServerSocket.isClosed()) {
-                    Log.e("ListenerInt " + mPort, "Server socket closed!");
+                    Log.d("ListenerInt " + mPort, "Server socket closed!");
                 } else {
                     Log.e("ListenerInt " + mPort, "Could not create client socket");
                 }
@@ -94,7 +92,6 @@ public abstract class ListenerInterface extends Observable implements Runnable {
      * @param ipAddr The ip address of the device that is leaving
      */
     public void end(String ipAddr) {
-        Log.d("Listener" + mPort, ipAddr);
         ConnectionHandler c = mHandlers.get(ipAddr);
         mHandlers.remove(ipAddr);
         if (c == null) {
@@ -118,7 +115,6 @@ public abstract class ListenerInterface extends Observable implements Runnable {
         if (mHandlers.size() == 0 || ipAddr.equals(IpFinder.LOOP_BACK)) {
             try {
                 mLoopForever = false;
-                Log.d("ListenerInt " + mPort, "All handlers killed");
                 mServerSocket.close();
                 Log.d("ListenerInt " + mPort, "Server Socket closed");
             } catch (IOException e) {
@@ -147,7 +143,6 @@ public abstract class ListenerInterface extends Observable implements Runnable {
         public void run() {
             // Keep reading the input
             while (!isStopped) {
-                Log.d("ListenerInt " + mPort, "In handling loop");
                 ObjectInputStream ois = null;
                 try {
                     if (clientSocket == null) {

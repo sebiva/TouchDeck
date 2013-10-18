@@ -120,7 +120,7 @@ public class GuiController implements Observer {
             Log.d("SendOp GuC", "Operation written into socket" + op.getOp().toString());
             out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("SendOp GuC", "Error writing operation into socket");
         }
     }
 
@@ -134,7 +134,7 @@ public class GuiController implements Observer {
     public void update(Observable obs, Object param) {
         if (obs instanceof GuiUpdater) {
             mConnectedToGame = true;
-            Log.d("network GuC", "in observer - update, connected : " + mConnectedToGame);
+            Log.d("in GuC observer", "Connected : " + mConnectedToGame);
             // Update the state of the game
             GameState gs = (GameState) param;
             // If the host has left, close the session
@@ -149,7 +149,7 @@ public class GuiController implements Observer {
 
             setGameState(gs);
 
-            Log.d("network GuC", "New state Received");
+            Log.d("in GuC observer", "New state Received");
             // Force it to run on the UI-thread
             mTableView.runOnUiThread(new Runnable() {
                 @Override
@@ -219,27 +219,23 @@ public class GuiController implements Observer {
      * Terminates the session.
      */
     public void terminate() {
-
-        Log.d("in GuC terminate", "ip : " + mMyIpAddr);
         if (mGuiUpdater != null) {
             mGuiUpdater.end(mMyIpAddr);
             mGuiUpdater = null;
-            Log.d("in GuC terminate", "GuiUpdater ended");
         }
         if (!mTerminating && mConnectedToGame) {
             // If it was the user itself initiating the termination, tell the host
             Operation op = new Operation(Op.disconnect);
             op.setIpAddr(mMyIpAddr);
             sendOperation(op);
-            Log.d("in GuC terminate", "Disconnect sent");
         }
         if (mGuiToGameConnection != null) {
             mGuiToGameConnection.end();
             mGuiToGameConnection = null;
-            Log.d("in GuC terminate", "GuiToGame Ended");
         }
 
         sInstance = null;
+        Log.d("in GuC terminate", "GuiController terminated");
     }
 
     /**

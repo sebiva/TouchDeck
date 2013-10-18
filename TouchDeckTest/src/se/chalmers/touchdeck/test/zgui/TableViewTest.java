@@ -26,59 +26,54 @@ import se.chalmers.touchdeck.game.client.StartScreen;
 import se.chalmers.touchdeck.game.client.TableView;
 import se.chalmers.touchdeck.misc.Constant;
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
-import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 
 public class TableViewTest extends ActivityInstrumentationTestCase2<StartScreen> {
 
-	private TableView	tableView;
-	private StartScreen	startScreen;
-	private Solo		solo;
-	private final int	deckPos	= Constant.MidOfTable;
+    private TableView   tableView;
+    private StartScreen startScreen;
+    private Solo        solo;
+    private final int   deckPos = Constant.MidOfTable;
 
-	public TableViewTest() {
-		super(StartScreen.class);
-	}
+    public TableViewTest() {
+        super(StartScreen.class);
+    }
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		setActivityInitialTouchMode(false); // Turn off touch mode in the emulator.
-		startScreen = getActivity(); // Get the Activity under test, starting it if necessary.
-		// Go Through the startscreen to get to the tableView
-		solo = new Solo(getInstrumentation(), startScreen);
-		solo.clickOnButton(startScreen.getResources().getString(R.string.create_btn));
-		solo = new Solo(getInstrumentation(), tableView);
-	}
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        setActivityInitialTouchMode(false); // Turn off touch mode in the emulator.
+        startScreen = getActivity(); // Get the Activity under test, starting it if necessary.
+        // Go Through the startscreen to get to the tableView
+        solo = new Solo(getInstrumentation(), startScreen);
+        solo.clickOnButton(startScreen.getResources().getString(R.string.create_btn));
+        solo = new Solo(getInstrumentation(), tableView);
+    }
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		setActivityInitialTouchMode(true); // Turn on touch mode in the emulator.
-	}
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        setActivityInitialTouchMode(true); // Turn on touch mode in the emulator.
+    }
 
-	public void testCreatePile() {
+    public void testCreatePile() {
 
-		// Click on an empty pile position
+        // Click on an empty pile position
 
-		solo.clickOnButton(deckPos - 5);
-		solo.clickOnButton("OK");
+        solo.clickOnButton(deckPos - 5);
+        solo.clickOnButton("OK");
 
-		for (TextView t : solo.getCurrentViews(TextView.class)) {
-			Log.e("oaeu", "slkaskes" + t.getText().toString());
-		}
-		// Click on the new created pile
-		String pilename = solo.getText(deckPos * 2 + 3 - 5 * 2 + 1).getText().toString();
-		assertEquals("[0]Pile 1", pilename);
+        // Click on the new created pile
+        String pilename = solo.getText(deckPos * 2 + 3 - 5 * 2 + 1).getText().toString();
+        assertEquals("[0]Pile 1", pilename);
 
-		// Click on a different empty pile position
-		solo.clickOnButton(deckPos - 4);
-		solo.enterText(0, "MyCoolPile");
-		solo.clickOnButton("OK");
+        // Click on a different empty pile position
+        solo.clickOnButton(deckPos - 4);
+        solo.enterText(0, "MyCoolPile");
+        solo.clickOnButton("OK");
 
-		String pilename2 = solo.getText(deckPos * 2 + 3 - 4 * 2 + 1).getText().toString();
-		assertEquals("[0]MyCoolP", pilename2);
-	}
+        String pilename2 = solo.getText(deckPos * 2 + 3 - 4 * 2 + 1).getText().toString();
+        assertEquals("[0]MyCoolP", pilename2);
+    }
 }

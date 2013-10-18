@@ -56,7 +56,7 @@ public abstract class ConnectionInterface implements Runnable {
             Log.d("ConInt " + mPort, "Client socket setup at " + mIpAddr + ":" + mPort);
             send(mSocket);
         } catch (IOException e1) {
-            Log.e("ConInt " + mPort, "Error setting up client" + e1.getMessage() + mIpAddr);
+            Log.e("ConInt " + mPort, "Error setting up client" + mIpAddr + e1.getMessage());
         }
     }
 
@@ -85,7 +85,6 @@ public abstract class ConnectionInterface implements Runnable {
             }
         } catch (IOException e) {
             Log.e("ConInt " + mPort, "Error closing socket");
-            e.printStackTrace();
         }
     }
 }

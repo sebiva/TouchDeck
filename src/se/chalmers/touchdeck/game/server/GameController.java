@@ -73,7 +73,7 @@ public class GameController {
      * @param socket The socket to add as the connection to the guiController
      */
     public void addSocket(Socket socket) {
-        Log.d("network GaC", "socket added to list " + socket.getRemoteSocketAddress().toString());
+        Log.d("in GaC", "socket added to list " + socket.getRemoteSocketAddress().toString());
         mAllGameToGuiSockets.add(socket);
     }
 
@@ -83,7 +83,7 @@ public class GameController {
      * @param socket The socket to remove
      */
     public void removeSocket(Socket socket) {
-        Log.e("In GaC", "Socket removed from list" + socket.getRemoteSocketAddress().toString());
+        Log.d("in GaC", "Socket removed from list" + socket.getRemoteSocketAddress().toString());
         mAllGameToGuiSockets.remove(socket);
     }
 
@@ -92,7 +92,7 @@ public class GameController {
      */
     public void sendUpdatedState() {
         ObjectOutputStream out = null;
-        Log.e("in GaC, sendUpdatedState ", "Sockets left: " + mAllGameToGuiSockets.size());
+        Log.d("in GaC, sendUpdatedState ", "Sockets left: " + mAllGameToGuiSockets.size());
 
         for (Socket socket : mAllGameToGuiSockets) {
             try {
@@ -103,7 +103,7 @@ public class GameController {
                         + mGameState.getHostStillLeft());
                 out.flush();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("in GaC, sendUpdatedState", "Error sending updated state");
             }
         }
     }
@@ -127,11 +127,19 @@ public class GameController {
     }
 
     /**
+     * @return the gamestate
+     */
+    public GameState getGameState() {
+        return mGameState;
+    }
+
+    /**
      * Performs the given operation and sends out the updated state to all guis.
      * 
      * @param op The operation to perform
      */
     public synchronized void performOperation(Operation op) {
+        // Make sure the user is allowed to perform the operation
         String ipAddr = op.getIpAddr();
         Integer pilePosition = op.getPile1();
         if (pilePosition != null) {
@@ -146,222 +154,335 @@ public class GameController {
         switch (op.getOp()) {
 
         case move:
-            Pile srcPile = mTable.get(op.getPile1());
-            Pile destPile = mTable.get(op.getPile2());
-            if (destPile != null && srcPile != null) {
-                Card cardToMove = op.getCard();
-                for (int i = 0; i < srcPile.getSize(); i++) {
-                    Card card = srcPile.getCard(i);
-                    if (card.equals(cardToMove)) {
-                        srcPile.takeCard(i);
-                        destPile.addCard(card);
-                        sendUpdatedState();
-                        return;
-                    }
-                }
-            }
-
+            moveCard(mTable.get(op.getPile1()), mTable.get(op.getPile2()), op.getCard());
             break;
 
         case flip:
-            Card cardToFlip = op.getCard();
-            Pile currentPile = mTable.get(op.getPile1());
-            for (int i = 0; i < currentPile.getSize(); i++) {
-                Card c = currentPile.getCard(i);
-                if (c.equals(cardToFlip)) {
-                    c.flipFace();
-                    sendUpdatedState();
-                    return;
-                }
-            }
-            break;
-
-        case create:
-            int pilePos = op.getPile1();
-            if (mTable.get(pilePos) != null) {
-                return; // There was already a pile there
-            }
-            String name = "";
-            if (mPileNames.contains(op.getName())) {
-                // Sets the next available default name
-                int defaultNo = mGameState.getDefaultPileNo();
-                do {
-                    name = "Pile " + defaultNo;
-                    defaultNo++;
-                } while (mGameState.getPileNames().contains(name));
-                mGameState.setDefaultPileNo(defaultNo);
-            } else if (op.getName().equals("Pile " + mGameState.getDefaultPileNo())) {
-                name = mGameState.getDefaultPileName();
-                mGameState.setDefaultPileNo(mGameState.getDefaultPileNo() + 1);
-            } else {
-                name = op.getName();
-            }
-
-            mTable.set(pilePos, new Pile(name));
-            mPileNames.add(name);
-            sendUpdatedState();
-            break;
-
-        case connect:
-            GameToGuiConnection connection = new GameToGuiConnection(op.getIpAddr(), mGuiPort, this);
-            new Thread(connection).start();
-            mGameToGuiThreads.put(op.getIpAddr(), connection);
-            break;
-
-        case shuffle:
-            Pile pileToShuffle = mTable.get(op.getPile1());
-            if (pileToShuffle != null) {
-                pileToShuffle.shuffle();
-                sendUpdatedState();
-            }
-            break;
-
-        case delete:
-            int pilePosToDelete = op.getPile1();
-            if (mTable.get(pilePosToDelete) != null && mTable.get(pilePosToDelete).getSize() == 0) {
-                mPileNames.remove(mTable.get(pilePosToDelete).getName());
-                mTable.set(pilePosToDelete, null);
-                sendUpdatedState();
-            }
-            break;
-
-        case rename:
-            Pile pileToRename = mTable.get(op.getPile1());
-            if (pileToRename == null) {
-                return;
-            }
-            String oldName = pileToRename.getName();
-            String newName = "";
-            if (mPileNames.contains(op.getName())) {
-                // Sets the next available default name
-                int defaultNo = mGameState.getDefaultPileNo();
-                do {
-                    newName = "Pile " + defaultNo;
-                    defaultNo++;
-                } while (mGameState.getPileNames().contains(newName));
-                mGameState.setDefaultPileNo(defaultNo);
-            } else if (op.getName().equals("Pile " + mGameState.getDefaultPileNo())) {
-                newName = mGameState.getDefaultPileName();
-                mGameState.setDefaultPileNo(mGameState.getDefaultPileNo() + 1);
-            } else {
-                newName = op.getName();
-            }
-
-            pileToRename.setName(newName);
-            mPileNames.add(newName);
-            mPileNames.remove(oldName);
-            sendUpdatedState();
-            break;
-
-        case faceUp:
-            Pile pileToFaceUp = mTable.get(op.getPile1());
-            if (pileToFaceUp != null) {
-                for (Card p : pileToFaceUp.getCards()) {
-                    p.setFaceUp();
-                }
-                sendUpdatedState();
-            }
-            break;
-
-        case faceDown:
-            Pile pileToFaceDown = mTable.get(op.getPile1());
-            if (pileToFaceDown != null) {
-                for (Card p : pileToFaceDown.getCards()) {
-                    p.setFaceDown();
-                }
-                sendUpdatedState();
-            }
-            break;
-
-        case moveAll:
-            Pile fromPile = mTable.get(op.getPile1());
-            Pile toPile = mTable.get(op.getPile2());
-            if (fromPile != null && toPile != null) {
-                int totalCards = fromPile.getSize();
-                for (int i = totalCards; i > 0; i--) {
-                    Card card = fromPile.takeCard(i - 1);
-                    toPile.addCard(card);
-                }
-                sendUpdatedState();
-            }
+            flipCard(mTable.get(op.getPile1()), op.getCard());
             break;
 
         case protect:
-            Pile pileToProtect = mTable.get(op.getPile1());
-            if (pileToProtect != null) {
-                pileToProtect.setOwner(op.getName());
-                sendUpdatedState();
-            }
-
+            protectPile(mTable.get(op.getPile1()), op.getName());
             break;
 
         case unprotect:
-            Pile protectedPile = mTable.get(op.getPile1());
-            if (protectedPile != null && protectedPile.getOwner().equals(op.getName())) {
-                protectedPile.setOwner(Constant.PileHasNoOwner);
-                sendUpdatedState();
-            }
+            unProtectPile(mTable.get(op.getPile1()), op.getName());
             break;
 
-        case restart:
-            mTable.clear();
-            for (int i = 0; i < Constant.NumOfPiles; i++) {
-                mTable.add(i, null);
-            }
-            mPileNames.clear();
-            createDeck();
-            mGameState.setDefaultPileNo(1);
-            mGameState.setIsRestarted(true);
-            sendUpdatedState();
-            mGameState.setIsRestarted(false);
+        case create:
+            createPile(op.getPile1(), op.getName());
+            break;
+
+        case rename:
+            renamePile(op.getPile1(), op.getName());
+            break;
+
+        case shuffle:
+            shufflePile(op.getPile1());
+            break;
+
+        case delete:
+            deletePile(op.getPile1());
+            break;
+
+        case faceUp:
+            faceUpPile(op.getPile1());
+            break;
+
+        case faceDown:
+            faceDownPile(op.getPile1());
+            break;
+
+        case moveAll:
+            moveAllFromPile(mTable.get(op.getPile1()), mTable.get(op.getPile2()));
             break;
 
         case pileMove:
-            Pile pileToMove = mTable.get(op.getPile1());
-            Pile destination = mTable.get(op.getPile2());
-            if (pileToMove != null && destination == null) {
-                mTable.set(op.getPile2(), pileToMove);
-                mTable.set(op.getPile1(), destination);
-                sendUpdatedState();
-            }
+            movePile(op.getPile1(), op.getPile2());
+            break;
+
+        case restart:
+            restartGame();
+            break;
+
+        case connect:
+            connectClient(op.getIpAddr());
             break;
 
         case disconnect:
-
-            String ipDeviceAddr = op.getIpAddr();
-            Log.d("in GaC Disconnect", ipDeviceAddr);
-            GameToGuiConnection conn = mGameToGuiThreads.get(ipDeviceAddr);
-            conn.end();
-            mGameToGuiThreads.remove(op.getIpAddr());
-            Log.d("in GaC Disconnect", "GameToGui removed, ip : " + ipDeviceAddr);
-
-            mGameListener.end(op.getIpAddr());
-            if (ipDeviceAddr.equals(IpFinder.LOOP_BACK)) {
-                Log.d("GaC host", "Leaving");
-                mGameState.setHostStillLeft(false);
-                sendUpdatedState();
-                mAllGameToGuiSockets.clear();
-            }
-            // Remove ownership of piles for the user
-            for (Pile p : mTable) {
-                if (p != null) {
-                    if (p.getOwner().equals(ipDeviceAddr)) {
-                        p.setOwner(Constant.PileHasNoOwner);
-                    }
-                }
-            }
-            sendUpdatedState();
-            Log.d("in GaC Disconnect", "GameListener ended");
+            disconnectClient(op.getIpAddr());
             break;
         default:
         }
     }
 
     /**
-     * @return the gamestate
+     * Moves a card, cardToMove, from srcPile to destPile.
+     * 
+     * @param srcPile The pile to move from
+     * @param destPile The pile to move to
+     * @param cardToMove The card to move
      */
-    public GameState getGameState() {
-        return mGameState;
+    private void moveCard(Pile srcPile, Pile destPile, Card cardToMove) {
+        if (destPile != null && srcPile != null) {
+            for (int i = 0; i < srcPile.getSize(); i++) {
+                Card card = srcPile.getCard(i);
+                if (card.equals(cardToMove)) {
+                    srcPile.takeCard(i);
+                    destPile.addCard(card);
+                    sendUpdatedState();
+                    return;
+                }
+            }
+        }
     }
 
+    /**
+     * Flips the face of a card.
+     * 
+     * @param currentPile The pile where the card is
+     * @param cardToFlip The card to flip
+     */
+    private void flipCard(Pile currentPile, Card cardToFlip) {
+        for (int i = 0; i < currentPile.getSize(); i++) {
+            Card c = currentPile.getCard(i);
+            if (c.equals(cardToFlip)) {
+                c.flipFace();
+                sendUpdatedState();
+                return;
+            }
+        }
+    }
+
+    /**
+     * Protects a pile.
+     * 
+     * @param pileToProtect The pile to protect
+     * @param name The name (ip address) of the user protecting it
+     */
+    private void protectPile(Pile pileToProtect, String name) {
+        if (pileToProtect != null) {
+            pileToProtect.setOwner(name);
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Unprotects a pile.
+     * 
+     * @param protectedPile The pile that is protected
+     * @param name The name (ip address) of the user unprotecting it
+     */
+    private void unProtectPile(Pile protectedPile, String name) {
+        if (protectedPile != null && protectedPile.getOwner().equals(name)) {
+            protectedPile.setOwner(Constant.PileHasNoOwner);
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Create a new Pile.
+     * 
+     * @param pilePos The position on which to create the pile
+     * @param nameEntered The name entered for the pile
+     */
+    private void createPile(int pilePos, String nameEntered) {
+        if (mTable.get(pilePos) != null) {
+            return; // There was already a pile there
+        }
+        String name = getNameForPile(nameEntered);
+        mPileNames.add(name);
+        mTable.set(pilePos, new Pile(name));
+        sendUpdatedState();
+    }
+
+    /**
+     * Renames a pile.
+     * 
+     * @param pilePos The position of the pile to rename
+     * @param nameEntered The new name entered for the pile
+     */
+    private void renamePile(int pilePos, String nameEntered) {
+        Pile pileToRename = mTable.get(pilePos);
+        if (pileToRename == null) {
+            return;
+        }
+        String newName = getNameForPile(nameEntered);
+        pileToRename.setName(newName);
+        mPileNames.add(newName);
+        String oldName = pileToRename.getName();
+        mPileNames.remove(oldName);
+        sendUpdatedState();
+    }
+
+    /**
+     * Set the name of for a pile, if it already exists, the proper default pile name is returned.
+     * 
+     * @param nameEntered The name that was entered for the pile
+     * @return The name the pile should have
+     */
+    private String getNameForPile(String nameEntered) {
+        String name = "";
+        if (mPileNames.contains(nameEntered)) {
+            // Sets the next available default name
+            int defaultNo = mGameState.getDefaultPileNo();
+            do {
+                name = "Pile " + defaultNo;
+                defaultNo++;
+            } while (mGameState.getPileNames().contains(name));
+            mGameState.setDefaultPileNo(defaultNo);
+        } else if (nameEntered.equals("Pile " + mGameState.getDefaultPileNo())) {
+            name = mGameState.getDefaultPileName();
+            mGameState.setDefaultPileNo(mGameState.getDefaultPileNo() + 1);
+        } else {
+            name = nameEntered;
+        }
+        return name;
+
+    }
+
+    /**
+     * Shuffles a pile.
+     * 
+     * @param pilePos The position of the pile to shuffle
+     */
+    private void shufflePile(int pilePos) {
+        Pile pileToShuffle = mTable.get(pilePos);
+        if (pileToShuffle != null) {
+            pileToShuffle.shuffle();
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Deletes a pile.
+     * 
+     * @param pilePosToDelete The position of the pile to delete
+     */
+    private void deletePile(int pilePosToDelete) {
+        if (mTable.get(pilePosToDelete) != null && mTable.get(pilePosToDelete).getSize() == 0) {
+            mPileNames.remove(mTable.get(pilePosToDelete).getName());
+            mTable.set(pilePosToDelete, null);
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Faces an entire pile face up.
+     * 
+     * @param pilePos The position of the pile to face up
+     */
+    private void faceUpPile(int pilePos) {
+        Pile pileToFaceUp = mTable.get(pilePos);
+        if (pileToFaceUp != null) {
+            for (Card p : pileToFaceUp.getCards()) {
+                p.setFaceUp();
+            }
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Faces an entire pile face down.
+     * 
+     * @param pilePos The position of the pile to face down
+     */
+    private void faceDownPile(int pilePos) {
+        Pile pileToFaceDown = mTable.get(pilePos);
+        if (pileToFaceDown != null) {
+            for (Card p : pileToFaceDown.getCards()) {
+                p.setFaceDown();
+            }
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Move all cards from one pile to another.
+     * 
+     * @param fromPile The pile to move from
+     * @param toPile The pile to move to
+     */
+    private void moveAllFromPile(Pile fromPile, Pile toPile) {
+        if (fromPile != null && toPile != null) {
+            int totalCards = fromPile.getSize();
+            for (int i = totalCards; i > 0; i--) {
+                Card card = fromPile.takeCard(i - 1);
+                toPile.addCard(card);
+            }
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Moves an entire pile.
+     * 
+     * @param pileToMovePos The position to move from
+     * @param pileDestinationPos The position to move to
+     */
+    private void movePile(int pileToMovePos, int pileDestinationPos) {
+        Pile pileToMove = mTable.get(pileToMovePos);
+        Pile destination = mTable.get(pileDestinationPos);
+        if (pileToMove != null && destination == null) {
+            mTable.set(pileDestinationPos, pileToMove);
+            mTable.set(pileToMovePos, destination);
+            sendUpdatedState();
+        }
+    }
+
+    /**
+     * Restarts the game.
+     */
+    private void restartGame() {
+        mTable.clear();
+        for (int i = 0; i < Constant.NumOfPiles; i++) {
+            mTable.add(i, null);
+        }
+        mPileNames.clear();
+        createDeck();
+        mGameState.setDefaultPileNo(1);
+        mGameState.setIsRestarted(true);
+        sendUpdatedState();
+        mGameState.setIsRestarted(false);
+    }
+
+    /**
+     * Connects a client to the game.
+     * 
+     * @param clientIpAddr The ip address of the client
+     */
+    private void connectClient(String clientIpAddr) {
+        GameToGuiConnection connection = new GameToGuiConnection(clientIpAddr, mGuiPort, this);
+        new Thread(connection).start();
+        mGameToGuiThreads.put(clientIpAddr, connection);
+    }
+
+    /**
+     * Disconnect a client from the game.
+     * 
+     * @param clientIpAddr The ip address of the client
+     */
+    private void disconnectClient(String clientIpAddr) {
+        GameToGuiConnection conn = mGameToGuiThreads.get(clientIpAddr);
+        conn.end();
+        mGameToGuiThreads.remove(clientIpAddr);
+
+        mGameListener.end(clientIpAddr);
+        if (clientIpAddr.equals(IpFinder.LOOP_BACK)) {
+            Log.d("in GaC", "Host leaving");
+            mGameState.setHostStillLeft(false);
+            sendUpdatedState();
+            mAllGameToGuiSockets.clear();
+        }
+        // Remove ownership of piles for the client
+        for (Pile p : mTable) {
+            if (p != null) {
+                if (p.getOwner().equals(clientIpAddr)) {
+                    p.setOwner(Constant.PileHasNoOwner);
+                }
+            }
+        }
+        sendUpdatedState();
+        Log.d("in GaC", "Disconnected: " + clientIpAddr);
+    }
 }

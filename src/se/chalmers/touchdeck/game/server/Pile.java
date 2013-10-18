@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import se.chalmers.touchdeck.misc.Constant;
-import se.chalmers.touchdeck.misc.exceptions.CardNotFoundException;
 
 /**
  * Class modeling a pile.
@@ -70,7 +69,6 @@ public class Pile implements Serializable {
      * 
      * @param pos The position of the card
      * @return The card
-     * @throws CardNotFoundException If there is no such card in the pile
      */
     public Card takeCard(int pos) {
         try {

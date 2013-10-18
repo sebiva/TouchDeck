@@ -29,7 +29,6 @@ import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.widget.EditText;
 
 /**
@@ -74,11 +73,8 @@ public class JoinGameDialog extends Observable {
         alert.setPositiveButton(string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-
                 // Set the IP to the entered value
                 mDialogText.setText(mInput.getText().toString());
-                Log.d("joinDialog", "IP is " + mInput.getText().toString());
-
             }
         });
         // What to do if the cancel-button is pressed
@@ -86,7 +82,6 @@ public class JoinGameDialog extends Observable {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 // Cancelled
-                Log.d("joinDialog", "You cancelled!");
             }
         });
         // Show the dialog

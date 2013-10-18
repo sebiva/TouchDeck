@@ -28,7 +28,6 @@ import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.widget.EditText;
 
 /**
@@ -95,13 +94,11 @@ public class PileNameDialog extends Observable {
                 if (mInput.getText().toString().trim().equals("")) {
                     // Set the name to a unique default value
                     mDialogText.setText(mDefaultName);
-                    Log.d("joinDialog", "Name is (default) " + mDefaultName);
                 } else {
                     String str = mInput.getText().toString().replaceAll("\t", "");
                     str = str.replaceAll("\n", "");
                     // Set the name to the entered value
                     mDialogText.setText(str);
-                    Log.d("joinDialog", "Name is " + mInput.getText().toString());
                 }
             }
         });
@@ -110,7 +107,6 @@ public class PileNameDialog extends Observable {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 // Cancelled
-                Log.d("joinDialog", "You cancelled!");
             }
         });
         // Show the dialog

@@ -41,7 +41,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -450,7 +449,6 @@ public class TableView extends Activity implements OnClickListener, Observer {
         case deal:
             modeStr = "Dealing from " + pileName;
             textbar.setBackgroundColor(Constant.TextbarAlertColor);
-            Log.e("oau", "aoeu");
             break;
         case move:
             modeStr = "Moving from " + pileName;
