@@ -1,11 +1,54 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="0dp"
-    tools:context=".TableView" 
-    android:id="@+id/tableTable"
-    android:background="#00cc00">
-    
- 
-</TableLayout>
+    android:background="#000000"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/textbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:layout_marginTop="1dp"
+        android:background="#000000"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/myIpText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#ffffff" 
+            android:layout_marginLeft="2dp"/>
+
+        <TextView
+            android:id="@+id/tableStateText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="2dp" />
+        
+        <TextView
+            android:id="@+id/tableOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/options_btn_text"
+            android:background="#555555"
+            android:textColor="#ffffff"
+            android:layout_marginLeft="2dp" 
+            android:onClick="optionsBtnClicked"
+            android:clickable="true"/>
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/tableTable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00cc00"
+        android:padding="0dp"
+        tools:context=".TableView" >
+    </TableLayout>
+
+</LinearLayout>

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -28,42 +28,63 @@ import java.net.Socket;
 import android.util.Log;
 
 /**
- * Used to set up a single connection
+ * Used to set up a single connection.
  * 
  * @author group17
  */
 public abstract class ConnectionInterface implements Runnable {
-	private final String	mIpAddr;
-	private final int		mPort;
-	private Socket			mSocket;
+    private final String mIpAddr;
+    private final int    mPort;
+    private Socket       mSocket;
 
-	public ConnectionInterface(String ipAddr, int port) {
-		mIpAddr = ipAddr;
-		mPort = port;
-	}
+    /**
+     * Create a new Connection Object for the given ip and port.
+     * 
+     * @param ipAddr The ip address
+     * @param port The port
+     */
+    public ConnectionInterface(String ipAddr, int port) {
+        mIpAddr = ipAddr;
+        mPort = port;
+    }
 
-	@Override
-	public void run() {
-		try {
-			InetAddress serverAddr = InetAddress.getByName(mIpAddr);
-			mSocket = new Socket(serverAddr, mPort);
-			Log.d("ConInt", "Client socket setup at " + mIpAddr + ":" + mPort);
-			send(mSocket);
-		} catch (IOException e1) {
-			Log.e("ConInt", "Error setting up client" + e1.getMessage() + mIpAddr);
-		}
-	}
+    @Override
+    public void run() {
+        try {
+            InetAddress serverAddr = InetAddress.getByName(mIpAddr);
+            mSocket = new Socket(serverAddr, mPort);
+            Log.d("ConInt " + mPort, "Client socket setup at " + mIpAddr + ":" + mPort);
+            send(mSocket);
+        } catch (IOException e1) {
+            Log.e("ConInt " + mPort, "Error setting up client" + mIpAddr + e1.getMessage());
+        }
+    }
 
-	public abstract void send(Socket socket);
+    /**
+     * Passes the created socket on.
+     * 
+     * @param socket The created socket
+     */
+    public abstract void send(Socket socket);
 
-	public abstract void remove(Socket socket);
+    /**
+     * Removes the socket.
+     * 
+     * @param socket The socket to remove
+     */
+    public abstract void remove(Socket socket);
 
-	public void end() {
-		try {
-			remove(mSocket);
-			mSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    /**
+     * Ends the connection and closes the socket.
+     */
+    public void end() {
+        try {
+            remove(mSocket);
+            if (mSocket != null) {
+                mSocket.close();
+            }
+        } catch (IOException e) {
+            Log.e("ConInt " + mPort, "Error closing socket");
+        }
+    }
 }

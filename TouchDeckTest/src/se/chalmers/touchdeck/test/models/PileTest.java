@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstr√∂m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -22,10 +22,10 @@
 package se.chalmers.touchdeck.test.models;
 
 import junit.framework.TestCase;
-import se.chalmers.touchdeck.enums.Rank;
-import se.chalmers.touchdeck.enums.Suit;
-import se.chalmers.touchdeck.models.Card;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.server.Card;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.misc.enums.Rank;
+import se.chalmers.touchdeck.misc.enums.Suit;
 
 /**
  * Tests the pile class
@@ -86,15 +86,15 @@ public class PileTest extends TestCase {
 		Card c5 = p.takeCard(0);
 		assertEquals(null, c5);
 	}
-	
+
 	/**
 	 * Test creating piles
 	 */
 	public void testSetName() {
-		Pile p1 = new Pile("name1"); 			//Set initial name.
+		Pile p1 = new Pile("name1"); // Set initial name.
 		assertEquals("name1", p1.getName());
-		
-		p1.setName("name2");					// Change name.
+
+		p1.setName("name2"); // Change name.
 		assertEquals("name2", p1.getName());
 	}
 }

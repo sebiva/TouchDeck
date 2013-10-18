@@ -1,4 +1,4 @@
 TouchDeck
 ==
 
-*"We know where you are. We know where you’ve been. We can more or less know what you’re thinking about."* - Eric Schmidt
+*"That's one small step for man, one giant leap for mankind."* - Neil Armstrong

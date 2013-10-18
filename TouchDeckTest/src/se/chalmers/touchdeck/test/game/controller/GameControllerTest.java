@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstr√∂m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -22,13 +22,14 @@
 package se.chalmers.touchdeck.test.game.controller;
 
 import junit.framework.TestCase;
-import se.chalmers.touchdeck.enums.Face;
-import se.chalmers.touchdeck.gamecontroller.GameController;
-import se.chalmers.touchdeck.gamecontroller.GameState;
-import se.chalmers.touchdeck.gamecontroller.Operation;
-import se.chalmers.touchdeck.gamecontroller.Operation.Op;
-import se.chalmers.touchdeck.models.Card;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.server.Card;
+import se.chalmers.touchdeck.game.server.GameController;
+import se.chalmers.touchdeck.game.server.GameState;
+import se.chalmers.touchdeck.game.server.Operation;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.game.server.Operation.Op;
+import se.chalmers.touchdeck.misc.Constant;
+import se.chalmers.touchdeck.misc.enums.Face;
 
 /**
  * Tests the gamecontroller class
@@ -38,7 +39,7 @@ import se.chalmers.touchdeck.models.Pile;
 public class GameControllerTest extends TestCase {
 	private static GameState		gs;
 	private final GameController	gc				= new GameController();
-	private static final int		MID_OF_TABLE	= GameController.MID_OF_TABLE;
+	private static final int		MID_OF_TABLE	= Constant.MidOfTable;
 
 	@Override
 	protected void setUp() throws Exception {

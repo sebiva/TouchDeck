@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstr√∂m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -23,31 +23,40 @@ package se.chalmers.touchdeck.network;
 
 import java.io.Serializable;
 
-import se.chalmers.touchdeck.gamecontroller.GameController;
-import se.chalmers.touchdeck.gamecontroller.Operation;
+import se.chalmers.touchdeck.game.server.GameController;
+import se.chalmers.touchdeck.game.server.Operation;
 
 /**
- * Listens to incoming connections from guiControllers, and handles their requests for operations
+ * Listens to incoming connections from guiControllers, and handles their requests for operations.
  * 
  * @author group17
  */
 public class GameListener extends ListenerInterface {
-	private final GameController	mGameController;
+    private final GameController mGameController;
 
-	public GameListener(GameController gc, int port) {
-		super(true, port);
-		mGameController = gc;
-	}
+    /**
+     * Creates a new game listener.
+     * 
+     * @param gc The associated GameController
+     * @param port The port to listen to
+     */
+    public GameListener(GameController gc, int port) {
+        super(true, port);
+        mGameController = gc;
+    }
 
-	/**
-	 * Handle the operations from the guiController
-	 */
-	@Override
-	public void handle(Serializable s, String ipAddr) {
-		if (s instanceof Operation) {
-			Operation op = (Operation) s;
-			op.setIpAddr(ipAddr);
-			mGameController.performOperation(op);
-		}
-	}
+    /**
+     * Handle the operations from the guiController.
+     * 
+     * @param s The operation to handle
+     * @param ipAddr The ip-address of the user performing the operation
+     */
+    @Override
+    public void handle(Serializable s, String ipAddr) {
+        if (s instanceof Operation) {
+            Operation op = (Operation) s;
+            op.setIpAddr(ipAddr);
+            mGameController.performOperation(op);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -23,32 +23,40 @@ package se.chalmers.touchdeck.network;
 
 import java.io.Serializable;
 
-import se.chalmers.touchdeck.gamecontroller.GameState;
-import se.chalmers.touchdeck.gui.GuiController;
+import se.chalmers.touchdeck.game.client.GuiController;
+import se.chalmers.touchdeck.game.server.GameState;
 
 /**
+ * Listens to updates sent over the network from the GameController. Notifies the GuiController of the updated state.
+ * 
  * @author group17
  */
 public class GuiUpdater extends ListenerInterface {
 
-	public GuiUpdater(GuiController guiController, int port) {
-		super(false, port);
-		addObserver(guiController);
-	}
+    /**
+     * Creates a new GuiUpdater.
+     * 
+     * @param guiController The associated GuiController
+     * @param port The port it will listen to
+     */
+    public GuiUpdater(GuiController guiController, int port) {
+        super(false, port);
+        addObserver(guiController);
+    }
 
-	@Override
-	public void handle(Serializable s, String ipAddr) {
-		if (s instanceof GameState) {
-			GameState gameState = (GameState) s;
-			if (gameState != null) {
-				setChanged();
-				notifyObservers(gameState);
-			}
-		}
-	}
+    @Override
+    public void handle(Serializable s, String ipAddr) {
+        if (s instanceof GameState) {
+            GameState gameState = (GameState) s;
+            if (gameState != null) {
+                setChanged();
+                notifyObservers(gameState);
+            }
+        }
+    }
 
-	@Override
-	public void end(String ipAddr) {
-		super.end(ipAddr);
-	}
+    @Override
+    public void end(String ipAddr) {
+        super.end(ipAddr);
+    }
 }

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -23,37 +23,55 @@ package se.chalmers.touchdeck.network;
 
 import java.net.Socket;
 
-import se.chalmers.touchdeck.gamecontroller.GameController;
+import se.chalmers.touchdeck.game.server.GameController;
 
 /**
- * Sets up a single connection from the GameController to the GuiController
+ * Sets up a single connection from the GameController to the GuiController.
  * 
  * @author group17
  */
 public class GameToGuiConnection extends ConnectionInterface {
-	private final GameController	mGameController;
+    private final GameController mGameController;
 
-	public GameToGuiConnection(String ipAddr, int port, GameController gameController) {
-		super(ipAddr, port);
-		mGameController = gameController;
-	}
+    /**
+     * Creates a new GameToGuiConnection Object.
+     * 
+     * @param ipAddr The ip address that will be connected
+     * @param port The port to connect to
+     * @param gameController The associated GameController
+     */
+    public GameToGuiConnection(String ipAddr, int port, GameController gameController) {
+        super(ipAddr, port);
+        mGameController = gameController;
+    }
 
-	/**
-	 * Add the socket to the gameController
-	 */
-	@Override
-	public void send(Socket socket) {
-		mGameController.addSocket(socket);
-		mGameController.sendUpdatedState();
-	}
+    /**
+     * Add the socket to the GameController.
+     * 
+     * @param socket The socket to add
+     */
+    @Override
+    public void send(Socket socket) {
+        mGameController.addSocket(socket);
+        mGameController.sendUpdatedState();
+    }
 
-	@Override
-	public void end() {
-		super.end();
-	}
+    /**
+     * End the connection.
+     */
+    @Override
+    public void end() {
+        super.end();
+    }
 
-	public void remove(Socket socket) {
-		mGameController.removeSocket(socket);
-	}
+    /**
+     * Removes the socket from the GameController.
+     * 
+     * @param socket The socket to remove
+     */
+    @Override
+    public void remove(Socket socket) {
+        mGameController.removeSocket(socket);
+    }
 
 }

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="initial_pile_id">10</integer>
-    <integer name="table_RowC_ount">3</integer>
-    <integer name="table_Col_Count">8</integer>
     <integer name="menu_move_all_subID">10001</integer>
     <integer name="menu_move_subID">10002</integer>
     <integer name="menu_protectID">10003</integer>

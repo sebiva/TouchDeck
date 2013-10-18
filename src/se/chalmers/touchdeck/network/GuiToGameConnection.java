@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engstr�m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -23,42 +23,59 @@ package se.chalmers.touchdeck.network;
 
 import java.net.Socket;
 
-import se.chalmers.touchdeck.gamecontroller.Operation;
-import se.chalmers.touchdeck.gamecontroller.Operation.Op;
-import se.chalmers.touchdeck.gui.GuiController;
+import se.chalmers.touchdeck.game.client.GuiController;
+import se.chalmers.touchdeck.game.server.Operation;
+import se.chalmers.touchdeck.game.server.Operation.Op;
 
 /**
- * Sets up a single connection from the GuiController to the GameController
+ * Sets up a single connection from the GuiController to the GameController.
  * 
  * @author group17
  */
 public class GuiToGameConnection extends ConnectionInterface {
-	private final GuiController	mGuiController;
+    private final GuiController mGuiController;
 
-	public GuiToGameConnection(String ipAddr, int port, GuiController guiController) {
-		super(ipAddr, port);
-		mGuiController = guiController;
-	}
+    /**
+     * Creates a new GuiToGameConnection object.
+     * 
+     * @param ipAddr The ip address it will connect to
+     * @param port The port it will connect to
+     * @param guiController The associated GuiController
+     */
+    public GuiToGameConnection(String ipAddr, int port, GuiController guiController) {
+        super(ipAddr, port);
+        mGuiController = guiController;
+    }
 
-	/**
-	 * Send the Socket to the GuiController, allowing it to send operations to the gameController
-	 */
-	@Override
-	public void send(Socket socket) {
-		mGuiController.setSocket(socket);
-		Operation operation = new Operation(Op.connect);
-		mGuiController.sendOperation(operation);
-	}
+    /**
+     * Send the Socket to the GuiController, allowing it to send operations to the gameController.
+     * 
+     * @param socket The socket to send
+     */
+    @Override
+    public void send(Socket socket) {
+        mGuiController.setSocket(socket);
+        Operation operation = new Operation(Op.connect);
+        mGuiController.sendOperation(operation);
+    }
 
-	@Override
-	public void end() {
-		super.end();
-	}
+    /**
+     * End the connection.
+     */
+    @Override
+    public void end() {
+        super.end();
+    }
 
-	@Override
-	public void remove(Socket socket) {
-		mGuiController.removeSocket();
+    /**
+     * Removes the socket from the GuiController.
+     * 
+     * @param socket The socket to remove
+     */
+    @Override
+    public void remove(Socket socket) {
+        mGuiController.removeSocket();
 
-	}
+    }
 
 }

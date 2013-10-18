@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2013 Karl Engström, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
+ Copyright (c) 2013 Karl Engstr√∂m, Sebastian Ivarsson, Jacob Lundberg, Joakim Karlsson, Alexander Persson and Fredrik Westling
  */
 
 /**
@@ -22,24 +22,22 @@
 package se.chalmers.touchdeck.test.zgui;
 
 import se.chalmers.touchdeck.R;
-import se.chalmers.touchdeck.gamecontroller.GameController;
-import se.chalmers.touchdeck.gui.GuiController;
-import se.chalmers.touchdeck.gui.PileView;
-import se.chalmers.touchdeck.gui.StartScreen;
-import se.chalmers.touchdeck.gui.TableView;
-import se.chalmers.touchdeck.models.Card;
-import se.chalmers.touchdeck.models.Pile;
+import se.chalmers.touchdeck.game.client.GuiController;
+import se.chalmers.touchdeck.game.client.PileView;
+import se.chalmers.touchdeck.game.client.StartScreen;
+import se.chalmers.touchdeck.game.client.TableView;
+import se.chalmers.touchdeck.game.server.Card;
+import se.chalmers.touchdeck.game.server.Pile;
+import se.chalmers.touchdeck.misc.Constant;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
-import com.jayway.android.robotium.solo.Condition;
 import com.jayway.android.robotium.solo.Solo;
 
 public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScreen> {
 
 	private static final String	FLIP_CARD_OPTION	= "Flip card";
 	private static final String	MOVE_CARD_OPTION	= "Move card";
-	private static final String	DECK				= "deck";
 
 	private StartScreen			startScreen;
 	private TableView			tableView;
@@ -48,7 +46,7 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 	private Solo				soloPile;
 
 	private GuiController		gc;
-	private int					deckPos				= GameController.MID_OF_TABLE;
+	private int					deckPos				= Constant.MidOfTable;
 	private PileView			pileView;
 	private String				secondPileName;
 	private int					secondPilePos;
@@ -88,12 +86,12 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 		pileView = (PileView) soloTable.getCurrentActivity();
 
 		gc = GuiController.getInstance();
-		deckPos = tableView.getResources().getInteger(R.integer.initial_pile_id);
+		deckPos = Constant.MidOfTable;
 	}
 
 	public void testMoveCard() {
 
-		Pile deck = gc.getGameState().getPiles().get(deckPos + 1);
+		Pile deck = gc.getGameState().getPiles().get(deckPos);
 		// Must be here for some reason
 		soloPile = new Solo(getInstrumentation(), pileView);
 
@@ -118,10 +116,10 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 
 		// Update
 		secondPile = gc.getGameState().getPiles().get(secondPilePos);
-		deck = gc.getGameState().getPiles().get(deckPos + 1);
+		deck = gc.getGameState().getPiles().get(deckPos);
 		Card secondCardToBeMoved = deck.getCard(2);
 
-		soloTable.clickOnButton(deckPos + 1);
+		soloTable.clickOnButton(deckPos);
 
 		// Flips the third card
 		soloTable.clickOnButton(2);
@@ -151,15 +149,5 @@ public class PileViewMoveTest extends ActivityInstrumentationTestCase2<StartScre
 
 	private void clickBack(Solo solo) {
 		solo.sendKey(KeyEvent.KEYCODE_BACK);
-	}
-
-	private void waitTime(Solo solo, int timeMilli) {
-		solo.waitForCondition(new Condition() {
-
-			@Override
-			public boolean isSatisfied() {
-				return false;
-			}
-		}, timeMilli);
 	}
 }
